@@ -1,0 +1,48 @@
+// =============================================================================
+// 3Sum — Step 2 of 2: The Squeeze
+// =============================================================================
+// Goal: For each valid anchor, place left and right fingers on the remaining
+// entries and squeeze inward — recording balanced triplets and skipping duplicates.
+
+function threeSum(nums: number[]): number[][] {
+  // ✓ Step 1: Sort the ledger and pin each anchor (locked)
+  const ledger = [...nums].sort((a, b) => a - b);
+  const triplets: number[][] = [];
+
+  for (let i = 0; i < ledger.length - 2; i++) {
+    if (ledger[i] > 0) break;
+    if (i > 0 && ledger[i] === ledger[i - 1]) continue;
+
+    throw new Error('not implemented');
+  }
+
+  return triplets;
+}
+
+// Tests
+test('empty ledger returns no triplets', () => threeSum([]), []);
+test('all-positive entries — break immediately', () => threeSum([1, 2, 3]), []);
+test('standard case', () => threeSum([-1, 0, 1, 2, -1, -4]), [[-1, -1, 2], [-1, 0, 1]]);
+test('all zeros', () => threeSum([0, 0, 0]), [[0, 0, 0]]);
+test('no valid triplet', () => threeSum([0, 1, 1]), []);
+test('duplicate values need dedup', () => threeSum([-2, 0, 0, 2, 2]), [[-2, 0, 2]]);
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function test(desc: string, fn: () => unknown, expected: unknown): void {
+  try {
+    const actual = fn();
+    const pass = JSON.stringify(actual) === JSON.stringify(expected);
+    console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+    if (!pass) {
+      console.log(`  expected: ${JSON.stringify(expected)}`);
+      console.log(`  received: ${JSON.stringify(actual)}`);
+    }
+  } catch (e) {
+    if (e instanceof Error && e.message === 'not implemented') {
+      console.log(`TODO  ${desc}`);
+    } else {
+      throw e;
+    }
+  }
+}

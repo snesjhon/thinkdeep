@@ -1,0 +1,61 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   DSA for Humans — GitLab Light (default)
+   Source: github.com/snesjhon/gitlab-nvim-theme
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --active-phase-color: var(--purple);
+
+  --bg: #fafaff;
+  --bg-alt: #f0f0fa;
+  --bg-highlight: #efeffc;
+  --sel-bg: #e2def8;
+  --border: #d0d0e8;
+  --border-dark: #b0b0d8;
+  --fg: #303030;
+  --fg-alt: #585870;
+  --fg-comment: #7878a8;
+  --fg-gutter: #a0a0c0;
+
+  --blue: #006cd8;
+  --link: #165390;
+  --green: #0a7f3d;
+  --orange: #af551d;
+  --red: #a31700;
+  --purple: #583cac;
+  --cyan: #00798a;
+
+  --blue-tint: #e8f0fd;
+  --green-tint: #e6f4ec;
+  --orange-tint: #fdf3e6;
+  --purple-tint: #ede8f8;
+
+}
+
+/* GitLab Dark — .dark on <html> */
+.dark {
+  --bg: #28262b;
+  --bg-alt: #222025;
+  --bg-highlight: #312f35;
+  --sel-bg: #5d5277;
+  --border: #3e3c42;
+  --border-dark: #555560;
+  --fg: #ffffff;
+  --fg-alt: #aeada8;
+  --fg-comment: #8b7aa0;
+  --fg-gutter: #666666;
+
+  --blue: #7fb6ed;
+  --link: #bfa5c0;
+  --green: #52b87a;
+  --orange: #d99530;
+  --red: #f57f6c;
+  --purple: #ad95e9;
+  --cyan: #32c5d2;
+  --pink: #f88aaf;
+
+  --blue-tint: #1a2838;
+  --green-tint: #1f3828;
+  --orange-tint: #342a12;
+  --purple-tint: #2d2650;
+
+}
