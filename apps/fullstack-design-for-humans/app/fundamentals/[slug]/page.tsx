@@ -7,7 +7,7 @@ import {
   getPrecedingSection,
 } from '@/lib/fundamentals'
 import { extractHeadings } from '@/lib/headings'
-import { TableOfContents } from '@for-humans/ui'
+import { TableOfContents, PageHero, PageLayout } from '@for-humans/ui'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
 
 const PHASE_COLORS = ['var(--purple)', 'var(--blue)', 'var(--green)', 'var(--orange)', 'var(--cyan)']
@@ -34,44 +34,28 @@ export default function FundamentalsPage({ params }: Props) {
   const strippedContent = guide.content.replace(/^#[^#].*\n+/, '').trimStart()
   const headings = extractHeadings(strippedContent)
 
-  const heroGradient =
-    'linear-gradient(150deg, color-mix(in srgb, var(--purple) 10%, var(--bg)) 0%, color-mix(in srgb, var(--blue) 6%, var(--bg)) 50%, var(--bg) 90%)'
-
   return (
     <>
-      <section
-        className="-mt-28 px-10 pt-28 pb-12 border-b border-b-[var(--border)]"
-        style={{ background: heroGradient }}
-      >
-        <div className="block lg:grid gap-x-24 lg:grid-cols-[350px_minmax(250px,0.8fr)]">
-          <div className="hidden lg:block" />
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              {phase && (
-                <span className="text-xs text-[var(--fg-gutter)]">
-                  {phase.emoji} {phase.label}
-                </span>
-              )}
-            </div>
-            <h1 className="text-5xl font-bold leading-tight text-[var(--fg)] font-display">
-              {section?.label ?? guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
-            </h1>
-            {section && (
-              <p className="mt-3 text-lg italic leading-snug text-[var(--purple)]">
-                &quot;{section.mentalModelHook}&quot;
-              </p>
-            )}
-          </div>
+      <PageHero>
+        <div className="flex items-center gap-2 mb-3">
+          {phase && (
+            <span className="text-xs text-[var(--fg-gutter)]">
+              {phase.emoji} {phase.label}
+            </span>
+          )}
         </div>
-      </section>
+        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)] font-display">
+          {section?.label ?? guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
+        </h1>
+        {section && (
+          <p className="mt-3 text-lg italic leading-snug text-[var(--purple)]">
+            &quot;{section.mentalModelHook}&quot;
+          </p>
+        )}
+      </PageHero>
 
-      <div style={{ background: color ? `color-mix(in srgb, ${color} 8%, var(--bg))` : 'var(--bg)' }}>
-        <div className="block lg:grid items-start gap-x-24 px-10 py-10 lg:grid-cols-[350px_minmax(250px,0.8fr)]">
-          <aside className="hidden lg:block sticky top-20 self-start max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <TableOfContents headings={headings} title="Contents" />
-          </aside>
-
-          <section className="min-w-0 space-y-8">
+      <PageLayout accentColor={color} aside={<TableOfContents headings={headings} title="Contents" />}>
+        <section className="space-y-8">
             <div className="rounded-xl p-5 bg-[var(--bg-alt)] border border-[var(--border)]">
               <p className="text-sm mb-1 text-[var(--fg-alt)]">
                 <span className="font-semibold text-[var(--fg)]">Prerequisites:</span>
@@ -111,9 +95,8 @@ export default function FundamentalsPage({ params }: Props) {
                 </Link>
               )}
             </div>
-          </section>
-        </div>
-      </div>
+        </section>
+      </PageLayout>
     </>
   )
 }

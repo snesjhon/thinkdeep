@@ -13,3 +13,5 @@ export {
 } from './PathComponents'
 export type { PathPhase } from './PathComponents'
 export { pColor } from './pathUtils'
+export { PageHero } from './PageHero'
+export { PageLayout } from './PageLayout'

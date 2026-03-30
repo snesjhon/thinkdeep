@@ -31,7 +31,7 @@ const DIFF_FG: Record<string, string> = {
 };
 import { extractHeadings } from '@/lib/headings';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
-import { TableOfContents, PhaseColorSync } from '@for-humans/ui';
+import { TableOfContents, PhaseColorSync, PageHero, PageLayout } from '@for-humans/ui';
 
 interface Props {
   params: { id: string };
@@ -82,17 +82,10 @@ export default function ProblemPage({ params }: Props) {
         getAllProblems().find((p) => p.id === allInSection[idx + 1].id) || null;
   }
 
-  const heroGradient =
-    'linear-gradient(150deg, color-mix(in srgb, var(--purple) 10%, var(--bg)) 0%, color-mix(in srgb, var(--blue) 6%, var(--bg)) 50%, var(--bg) 90%)';
-
   return (
     <>
       {color && <PhaseColorSync color={color} />}
-      <section
-        className="-mt-28 px-10 pt-28 border-b border-b-[var(--border)]"
-        style={{ background: heroGradient }}
-      >
-        <div className="flex flex-col items-center py-10">
+      <PageHero>
           <h1 className="text-5xl font-display leading-tight text-[var(--fg)] mb-0">
             {problem.title}
           </h1>
@@ -121,22 +114,10 @@ export default function ProblemPage({ params }: Props) {
               </mark>
             )}
           </div>
-        </div>
-      </section>
+      </PageHero>
 
-      <div
-        style={{
-          background: color
-            ? `color-mix(in srgb, ${color} 8%, var(--bg))`
-            : 'var(--bg)',
-        }}
-      >
-        <div className="block lg:grid items-start gap-12 px-10 py-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)]">
-          <aside className="hidden lg:block sticky top-20 self-start max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <TableOfContents headings={headings} title="Contents" />
-          </aside>
-
-          <section className="min-w-0 space-y-8">
+      <PageLayout accentColor={color} aside={<TableOfContents headings={headings} title="Contents" />}>
+        <section className="space-y-8">
             {mentalModelContent ? (
               <MarkdownRenderer
                 content={mentalModelContent}
@@ -170,9 +151,8 @@ export default function ProblemPage({ params }: Props) {
                 <div />
               )}
             </div>
-          </section>
-        </div>
-      </div>
+        </section>
+      </PageLayout>
     </>
   );
 }

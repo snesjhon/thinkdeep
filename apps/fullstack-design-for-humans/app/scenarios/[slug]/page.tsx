@@ -3,12 +3,10 @@ import Link from 'next/link'
 import { loadScenario, getAllScenarioSlugsFromDisk } from '@/lib/content'
 import { getScenarioBySlug } from '@/lib/journey'
 import { extractHeadings } from '@/lib/headings'
-import { TableOfContents } from '@for-humans/ui'
+import { TableOfContents, PageHero, PageLayout } from '@for-humans/ui'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
 import CheckWork from '@/components/CheckWork'
 
-const PHASE_COLORS = ['var(--purple)', 'var(--blue)', 'var(--green)', 'var(--orange)', 'var(--cyan)']
-const phaseColor = (n: number) => PHASE_COLORS[(n - 1) % PHASE_COLORS.length]
 
 interface Props {
   params: { slug: string }
@@ -26,7 +24,7 @@ export default function ScenarioPage({ params }: Props) {
   if (!match) notFound()
 
   const { scenario, section, phase } = match
-  const color = phaseColor(phase.number)
+  const color = ['var(--purple)', 'var(--blue)', 'var(--green)', 'var(--orange)', 'var(--cyan)'][(phase.number - 1) % 5]
 
   const strippedBrief = content.brief.replace(/^#[^#].*\n+/, '').trimStart()
   const strippedWalkthrough = content.walkthrough
@@ -43,27 +41,13 @@ export default function ScenarioPage({ params }: Props) {
 
   return (
     <>
-      <section
-        className="-mt-28 px-10 pt-28 pb-12 border-b border-b-[var(--border)]"
-        style={{ background: 'linear-gradient(150deg, color-mix(in srgb, var(--purple) 10%, var(--bg)) 0%, color-mix(in srgb, var(--blue) 6%, var(--bg)) 50%, var(--bg) 90%)' }}
-      >
-        <div className="block lg:grid gap-x-24 lg:grid-cols-[280px_minmax(250px,0.9fr)]">
-          <div className="hidden lg:block" />
-          <div>
-            <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">{section.label}</p>
-            <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">{scenario.label}</h1>
-          </div>
-        </div>
-      </section>
+      <PageHero>
+        <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">{section.label}</p>
+        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">{scenario.label}</h1>
+      </PageHero>
 
-      <div style={{ background: `color-mix(in srgb, ${color} 8%, var(--bg))` }}>
-        <div className="block lg:grid items-start gap-x-24 px-10 py-10 lg:grid-cols-[280px_minmax(250px,0.9fr)]">
-          <aside className="hidden lg:block sticky top-20 self-start max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <TableOfContents headings={headings} title="Contents" />
-            <CheckWork slug={params.slug} />
-          </aside>
-
-          <section className="min-w-0 space-y-8">
+      <PageLayout accentColor={color} aside={<><TableOfContents headings={headings} title="Contents" /><CheckWork slug={params.slug} /></>}>
+          <section className="space-y-8">
             <div className="rounded-xl p-6 bg-[var(--bg-alt)] border border-[var(--border)]">
               <p className="text-xs font-semibold uppercase mb-4 text-[var(--fg-gutter)] font-[ui-monospace,monospace] tracking-[0.08em]">
                 Your task
@@ -104,8 +88,7 @@ export default function ScenarioPage({ params }: Props) {
               )}
             </div>
           </section>
-        </div>
-      </div>
+      </PageLayout>
     </>
   )
 }

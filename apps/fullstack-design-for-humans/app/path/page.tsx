@@ -9,6 +9,7 @@ import {
   StepGuideCard,
   PlaceholderGuideCard,
   pColor,
+  PageHero,
 } from '@for-humans/ui'
 
 type SectionEntry = {
@@ -79,28 +80,23 @@ export default function PathPage() {
 
   const phaseGroups = buildPhaseGroups()
 
-  const heroGradient =
-    'linear-gradient(150deg, color-mix(in srgb, var(--purple) 10%, var(--bg)) 0%, color-mix(in srgb, var(--blue) 6%, var(--bg)) 50%, var(--bg) 90%)'
-
   return (
     <>
-      <section
-        className="-mt-28 px-10 pt-28 pb-12 border-b border-b-[var(--border)]"
-        style={{ background: heroGradient }}
-      >
-        <div className="block lg:grid gap-x-24 lg:grid-cols-[350px_minmax(250px,0.8fr)]">
-          <div className="hidden lg:block" />
-          <div>
-            <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">The Path</h1>
-            <p className="text-sm text-[var(--fg-gutter)] mt-2">
-              {totalSections} mental models · {totalScenarios} build tasks · 1 real app
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero>
+        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">The Path</h1>
+        <p className="text-sm text-[var(--fg-gutter)] mt-2">
+          {totalSections} mental models · {totalScenarios} build tasks · 1 real app
+        </p>
+      </PageHero>
 
       <div className="relative">
-        <aside className="hidden lg:block absolute top-0 left-0 h-full pl-10 pt-10 w-[calc(350px+2.5rem)]">
+        <aside
+          className="hidden lg:block absolute top-0 left-0 h-full pl-10 pt-10 w-[calc(314px+2.5rem)]"
+          style={{
+            background: 'color-mix(in srgb, var(--active-phase-color) 8%, var(--bg))',
+            transition: 'background 300ms ease',
+          }}
+        >
           <div className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
             <PathTOC phases={phaseGroups.map((g) => g.phase)} />
           </div>
@@ -124,7 +120,7 @@ export default function PathPage() {
 
           return (
             <div key={phase.number} id={`phase-zone-${phase.number}`} style={{ background: zoneBg }}>
-              <div className="block lg:grid gap-x-24 px-10 lg:grid-cols-[350px_minmax(250px,0.8fr)]">
+              <div className="block lg:grid gap-12 px-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)]">
                 <div className="hidden lg:block" />
                 <div className="min-w-0">
                   <PhaseBannerContent phase={phase} color={color} chapterLabel={chapterLabel} />
@@ -222,7 +218,7 @@ export default function PathPage() {
           )
         })}
 
-        <div className="block lg:grid gap-x-24 px-10 lg:grid-cols-[350px_minmax(250px,0.8fr)]">
+        <div className="block lg:grid gap-12 px-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)]">
           <div className="hidden lg:block" />
           <div className="flex items-center gap-4 pt-8 pb-16">
             <div className="flex-1 h-px bg-[var(--border)]" />

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { loadScenario, getAllScenarioSlugsFromDisk } from '@/lib/content';
 import { getScenarioBySlug } from '@/lib/journey';
 import { extractHeadings } from '@/lib/headings';
-import { TableOfContents } from '@for-humans/ui';
+import { TableOfContents, PageHero, PageLayout } from '@for-humans/ui';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 const PHASE_COLORS = [
@@ -50,33 +50,17 @@ export default function ScenarioPage({ params }: Props) {
   const nextScenario =
     idx < allScenarios.length - 1 ? allScenarios[idx + 1] : null;
 
-  const heroGradient =
-    'linear-gradient(150deg, color-mix(in srgb, var(--purple) 10%, var(--bg)) 0%, color-mix(in srgb, var(--blue) 6%, var(--bg)) 50%, var(--bg) 90%)';
-
   return (
     <>
-      <section
-        className="-mt-28 px-10 pt-28 pb-12 border-b border-b-[var(--border)]"
-        style={{ background: heroGradient }}
-      >
-        <div className="block lg:grid gap-x-24 lg:grid-cols-[350px_minmax(250px,0.9fr)]">
-          <div className="hidden lg:block" />
-          <div>
-            <div>
-              <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">
-                {section.label}
-              </p>
-            </div>
-            <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">
-              {scenario.label}
-            </h1>
-          </div>
-        </div>
-      </section>
+      <PageHero>
+        <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">{section.label}</p>
+        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">{scenario.label}</h1>
+      </PageHero>
 
-      <div style={{ background: `color-mix(in srgb, ${color} 8%, var(--bg))` }}>
-        <div className="block lg:grid items-start gap-x-24 px-10 py-10 lg:grid-cols-[350px_minmax(250px,0.9fr)]">
-          <aside className="hidden lg:block sticky top-20 self-start max-h-[calc(100vh-5rem)] overflow-y-auto">
+      <PageLayout
+        accentColor={color}
+        aside={
+          <>
             <TableOfContents headings={headings} title="Contents" />
             {scenario.relatedFundamentalsSlugs.length > 0 && (
               <div className="mt-8">
@@ -96,9 +80,10 @@ export default function ScenarioPage({ params }: Props) {
                 </div>
               </div>
             )}
-          </aside>
-
-          <section className="min-w-0 space-y-8">
+          </>
+        }
+      >
+          <section className="space-y-8">
             <div className="rounded-xl p-6 bg-[var(--bg-alt)] border border-[var(--border)]">
               <p className="text-xs font-semibold uppercase mb-4 text-[var(--fg-gutter)] font-[ui-monospace,monospace] tracking-[0.08em]">
                 Requirements
@@ -153,8 +138,7 @@ export default function ScenarioPage({ params }: Props) {
               )}
             </div>
           </section>
-        </div>
-      </div>
+      </PageLayout>
     </>
   );
 }
