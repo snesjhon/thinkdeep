@@ -948,6 +948,153 @@ blockquote > p {
 }
 
 /* =============================================================================
+   Linked List Trace (:::trace-ll)
+   ============================================================================= */
+
+/* Outer row — flex, items start-aligned so each col-unit tops flush */
+.ll-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  justify-content: center;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 1.25rem;
+  flex-wrap: nowrap;
+}
+
+/* Each col-unit wraps one node-col + one arrow (or null terminus with no arrow).
+   align-items: center keeps the arrow vertically centered against the node-col. */
+.ll-col-unit {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* The vertical stack: pointer badges on top, node box below */
+.ll-node-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Fixed-height badge row — always reserves space so all node-cols are the same height */
+.ll-ptrs-above {
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+/* Node box — matches dfh-trace-cell sizing */
+.ll-node {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 17px;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--fg-alt);
+  flex-shrink: 0;
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    color 0.18s;
+}
+
+/* Node color variants — driven by the primary pointer's color */
+.ll-node.ll-node-blue {
+  background: var(--blue-tint);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.ll-node.ll-node-orange {
+  background: var(--orange-tint);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+.ll-node.ll-node-green {
+  background: var(--green-tint);
+  border-color: var(--green);
+  color: var(--green);
+}
+.ll-node.ll-node-purple {
+  background: var(--purple-tint);
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+/* Null terminus box — dashed border, italic "null" text */
+.ll-null-box {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--fg-gutter);
+  border: 2px dashed var(--border);
+  background: transparent;
+  flex-shrink: 0;
+}
+
+/* Arrow SVG — inherits the muted fg-gutter color */
+.ll-arrow {
+  color: var(--fg-gutter);
+  flex-shrink: 0;
+}
+
+/* Pointer badge color variants */
+.dfh-ptr.ll-ptr-blue {
+  background: var(--blue-tint);
+  color: var(--blue);
+}
+.dfh-ptr.ll-ptr-orange {
+  background: var(--orange-tint);
+  color: var(--orange);
+}
+.dfh-ptr.ll-ptr-green {
+  background: var(--green-tint);
+  color: var(--green);
+}
+.dfh-ptr.ll-ptr-purple {
+  background: var(--purple-tint);
+  color: var(--purple);
+}
+
+/* Action badge color variants */
+.dfh-trace-badge.ll-badge-rewire {
+  background: var(--orange-tint);
+  color: var(--orange);
+  border: 1px solid var(--orange);
+}
+.dfh-trace-badge.ll-badge-found {
+  background: var(--green-tint);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+.dfh-trace-badge.ll-badge-delete {
+  background: color-mix(in srgb, var(--red) 12%, var(--bg-alt));
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+.dfh-trace-badge.ll-badge-done {
+  background: var(--purple-tint);
+  color: var(--purple);
+  border: 1px solid var(--purple);
+}
+
+/* =============================================================================
    Scrollbar
    ============================================================================= */
 ::-webkit-scrollbar {

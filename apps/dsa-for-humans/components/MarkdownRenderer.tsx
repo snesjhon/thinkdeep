@@ -13,6 +13,8 @@ import PrefixSuffixTrace from './PrefixSuffixTrace';
 import type { PrefixSuffixStep } from './PrefixSuffixTrace';
 import HashMapTrace from './HashMapTrace';
 import type { HashMapStep } from './HashMapTrace';
+import LinkedListTrace from './LinkedListTrace';
+import type { LinkedListStep } from './LinkedListTrace';
 
 interface MarkdownRendererProps {
   content: string;
@@ -35,6 +37,10 @@ type TraceMapSegment = BaseSegment & {
   type: 'trace-map';
   steps: HashMapStep[];
 };
+type TraceLLSegment = BaseSegment & {
+  type: 'trace-ll';
+  steps: LinkedListStep[];
+};
 type StackBlitzSegment = BaseSegment & {
   type: 'stackblitz';
   file: string;
@@ -54,7 +60,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
   const result: BaseSegment[] = [];
   const configs: Array<{
     fence: RegExp;
-    type: 'trace' | 'trace-lr' | 'trace-ps' | 'trace-map';
+    type: 'trace' | 'trace-lr' | 'trace-ps' | 'trace-map' | 'trace-ll';
   }> = [
     { fence: /^:::trace\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace' },
     { fence: /^:::trace-lr\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-lr' },
@@ -63,6 +69,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       fence: /^:::trace-map\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm,
       type: 'trace-map',
     },
+    { fence: /^:::trace-ll\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-ll' },
   ];
 
   for (const seg of segments) {
@@ -75,7 +82,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       index: number;
       length: number;
       json: string;
-      type: 'trace' | 'trace-lr' | 'trace-ps' | 'trace-map';
+      type: 'trace' | 'trace-lr' | 'trace-ps' | 'trace-map' | 'trace-ll';
     };
     const matches: RawMatch[] = [];
     for (const { fence, type } of configs) {
@@ -213,6 +220,10 @@ export default function MarkdownRenderer({
         if (seg.type === 'trace-map')
           return (
             <HashMapTrace key={i} steps={(seg as TraceMapSegment).steps} />
+          );
+        if (seg.type === 'trace-ll')
+          return (
+            <LinkedListTrace key={i} steps={(seg as TraceLLSegment).steps} />
           );
         if (seg.type === 'stackblitz') {
           const s = seg as StackBlitzSegment;

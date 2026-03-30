@@ -138,6 +138,9 @@ export const JOURNEY: Phase[] = [
           'Reverse Linked List II (with sentinel node)',
           'Hot Shelf (LRU Cache)',
         ],
+        fundamentalsSlug: 'linked-lists',
+        fundamentalsBlurb:
+          'Sentinel nodes, fast/slow pointers, and in-place pointer rewiring — the three building blocks behind every linked list problem you will encounter on the path.',
         firstPass: [
           { id: '206', isFirstPass: true, difficulty: 'easy' },
           { id: '021', isFirstPass: true, difficulty: 'easy' },
