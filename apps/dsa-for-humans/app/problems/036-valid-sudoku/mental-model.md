@@ -11,6 +11,7 @@ Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to be val
 **Note:** A Sudoku board (partially filled) could be valid but is not necessarily solvable. Only the filled cells need to be validated according to the mentioned rules.
 
 **Example 1:**
+
 ```
 Input: board =
 [["5","3",".",".","7",".",".",".","."],
@@ -26,6 +27,7 @@ Output: true
 ```
 
 **Example 2:**
+
 ```
 Input: board =
 [["8","3",".",".","7",".",".",".","."],
@@ -40,7 +42,7 @@ Output: false
 
 Imagine you are a building inspector visiting a nine-by-nine apartment complex. The complex is arranged in a grid: nine floors of nine units each. Some units have a resident identified by a number from 1 to 9; others are vacant, marked with a dot. Your job is to verify that no two residents sharing the same **floor**, the same **column position**, or the same **wing** have identical numbers.
 
-The key word is *three*. Every unit in this building simultaneously belongs to three communities: its floor, its column, and the wing it sits in. Wings are nine rectangular districts you get by dividing the building into a three-by-three arrangement of three-by-three blocks — nine wings total, each containing exactly nine units. A resident number that appears twice on the same floor is a violation. A number that appears twice in the same column is also a violation. A number that appears twice in the same wing is a violation too. You must catch all three kinds in a single walk through the building.
+The key word is _three_. Every unit in this building simultaneously belongs to three communities: its floor, its column, and the wing it sits in. Wings are nine rectangular districts you get by dividing the building into a three-by-three arrangement of three-by-three blocks — nine wings total, each containing exactly nine units. A resident number that appears twice on the same floor is a violation. A number that appears twice in the same column is also a violation. A number that appears twice in the same wing is a violation too. You must catch all three kinds in a single walk through the building.
 
 Your tool is a set of logbooks — one per floor, one per column, one per wing. That is 27 logbooks total, all starting empty. When you visit an occupied unit, you check all three relevant logbooks before writing anything down. If any logbook already shows that number, you have found a duplicate and the board is invalid. If all three are clear, you record the number in each and move to the next unit.
 
@@ -48,7 +50,7 @@ Your tool is a set of logbooks — one per floor, one per column, one per wing. 
 
 ### The Setup
 
-You arrive at the building with an empty clipboard. The building has 81 units in a nine-by-nine arrangement. Some units are occupied with a resident numbered 1 through 9; others are vacant and you can ignore them entirely. Your task is not to solve any puzzle — you are only checking whether the *current* occupancy is legal. You set up 27 logbooks before beginning your walk: nine for the floors (Floor 0 through Floor 8), nine for the columns (Column 0 through Column 8), and nine for the wings (Wing 0 through Wing 8). Every logbook starts empty.
+You arrive at the building with an empty clipboard. The building has 81 units in a nine-by-nine arrangement. Some units are occupied with a resident numbered 1 through 9; others are vacant and you can ignore them entirely. Your task is not to solve any puzzle — you are only checking whether the _current_ occupancy is legal. You set up 27 logbooks before beginning your walk: nine for the floors (Floor 0 through Floor 8), nine for the columns (Column 0 through Column 8), and nine for the wings (Wing 0 through Wing 8). Every logbook starts empty.
 
 ### The Wing Numbering System
 
@@ -60,9 +62,73 @@ Wing 3 | Wing 4 | Wing 5
 Wing 6 | Wing 7 | Wing 8
 ```
 
-Given a unit on floor `r` and column `c`, you find its wing by asking two questions: which tier of wings is it in (top, middle, or bottom tier)? And which column section is it in (left, center, or right section)? Divide `r` by 3 and round down to get the tier (0, 1, or 2). Multiply by 3 to get that tier's starting wing number. Then divide `c` by 3 and round down to get the column section offset (0, 1, or 2). Add them together: `wingIndex = floor(r/3) × 3 + floor(c/3)`.
+Given a unit on floor `r` and column `c`, you find its wing by asking two questions: which tier of wings is it in (top, middle, or bottom tier)? And which column section is it in (left, center, or right section)?
 
-A unit at row 0, column 0 lands in Wing 0 (tier 0, section 0). A unit at row 5, column 7 lands in Wing 5 (tier 1, section 2 → 1×3+2=5). A unit at row 8, column 8 lands in Wing 8 (tier 2, section 2 → 2×3+2=8). The formula always produces a number between 0 and 8.
+- Divide `r` by 3 and round down to get the tier (0, 1, or 2).
+- Multiply by 3 to get that tier's starting wing number.
+- Then divide `c` by 3 and round down to get the column section offset (0, 1, or 2).
+
+**Add them together: `wingIndex = floor(r/3) × 3 + floor(c/3)`.**
+
+- A unit at row 0, column 0 lands in Wing 0 (tier 0, section 0).
+- A unit at row 5, column 7 lands in Wing 5 (tier 1, section 2 → 1×3+2=5).
+- A unit at row 8, column 8 lands in Wing 8 (tier 2, section 2 → 2×3+2=8).
+
+> The formula always produces a number between 0 and 8.
+
+## The Pattern Behind the Formula: 2D → 1D Flattening
+
+The formula `Math.floor(r/3) * 3 + Math.floor(c/3)` is an instance of a general pattern: **converting a 2D coordinate into a single 1D index**.
+
+The universal formula is:
+
+```
+index = row * width + col
+```
+
+The index is just "how many cells came before this one?"
+
+Two things come before cell:
+
+- `(row, col)` every cell in the rows above it, and every cell to its left in the same row.
+
+**Above**
+
+The rows above contain `row * width` cells total — because each row has exactly `width` cells, and there are `row` complete rows above you (same logic as 3 bags × 4 apples = 12 apples).
+
+**Left**
+
+The cells to the left number `col`.
+
+> Add them together: `row * width + col`.
+
+In the cluster formula, the "grid" is the **3×3 arrangement of clusters**, so `width = 3`:
+
+```
+row-band  = Math.floor(r / 3)   ← which row in the cluster grid (0, 1, or 2)
+col-band  = Math.floor(c / 3)   ← which col in the cluster grid (0, 1, or 2)
+clusterId = row-band * 3 + col-band
+```
+
+### The problem that makes this click: 74. Search a 2D Matrix
+
+That problem has you binary search a sorted `m × n` matrix by treating it as a flat array of `m * n` elements. At each midpoint you convert the 1D index back to a 2D cell:
+
+```typescript
+const row = Math.floor(mid / n);
+const col = mid % n;
+```
+
+This is the **reverse** direction — 1D → 2D. The same formula, rearranged:
+
+| Direction | Formula                                  | Used in                   |
+| --------- | ---------------------------------------- | ------------------------- |
+| 2D → 1D   | `row * width + col`                      | Valid Sudoku (cluster ID) |
+| 1D → 2D   | `row = idx / width`, `col = idx % width` | Search a 2D Matrix        |
+
+Working through 074 forces you to understand why `row * n + col` uniquely identifies any cell. Once that's in your head, the cluster formula in 036 isn't a new thing to memorize — it's the same pattern applied to a 3×3 grid of clusters.
+
+---
 
 ### Why This Approach
 
@@ -72,16 +138,25 @@ The brute-force alternative would be three separate scans — once for rows, onc
 
 I start by creating three families of logbooks: `rowBooks` (9 Sets), `colBooks` (9 Sets), and `wingBooks` (9 Sets). Each Set will track which resident numbers have appeared in that community. All 27 logbooks start empty.
 
-I then walk every unit with a nested loop over rows 0–8 and columns 0–8. For each unit, the first question is: is it vacant? If `board[r][c]` equals `'.'`, I skip it entirely — vacant units never cause a violation. For occupied units, I compute `wingIdx = floor(r/3) * 3 + floor(c/3)`, check whether the resident number already appears in `rowBooks[r]`, `colBooks[c]`, or `wingBooks[wingIdx]`, and return `false` immediately if any check fires. Otherwise I add the number to all three logbooks and continue. After all 81 units pass without a violation, I return `true`.
+I then walk every unit with a nested loop over rows 0–8 and columns 0–8. For each unit, the first question is: is it vacant?
+
+If `board[r][c]` equals `'.'`, I skip it entirely — vacant units never cause a violation.
+
+For occupied units,
+
+- I compute `wingIdx = floor(r/3) * 3 + floor(c/3)`,
+- check whether the resident number already appears in `rowBooks[r]`, `colBooks[c]`, or `wingBooks[wingIdx]`, and return `false` immediately if any check fires.
+
+Otherwise I add the number to all three logbooks and continue. After all 81 units pass without a violation, I return `true`.
 
 Take a board where `(0,0)='8'`, `(1,0)='6'`, `(2,2)='8'`, and all other cells `'.'`.
 
 :::trace-map
 [
-  {"input": ["8","6","8"], "currentI": -1, "map": [], "highlight": null, "action": null, "label": "Begin inspection. All 27 logbooks empty.", "vars": [{"name": "unit", "value": "(0,0)"}]},
-  {"input": ["8","6","8"], "currentI": 0, "map": [["R0:8",null],["C0:8",null],["W0:8",null]], "highlight": "R0:8", "action": "insert", "label": "Unit (0,0)='8'. Wing 0. All three logbooks clear — record '8' in Floor 0, Column 0, Wing 0.", "vars": [{"name": "unit", "value": "(0,0)"}]},
-  {"input": ["8","6","8"], "currentI": 1, "map": [["R0:8",null],["C0:8",null],["W0:8",null],["R1:6",null],["C0:6",null],["W0:6",null]], "highlight": "R1:6", "action": "insert", "label": "Unit (1,0)='6'. Wing 0. All three logbooks clear — record '6' in Floor 1, Column 0, Wing 0.", "vars": [{"name": "unit", "value": "(1,0)"}]},
-  {"input": ["8","6","8"], "currentI": 2, "map": [["R0:8",null],["C0:8",null],["W0:8",null],["R1:6",null],["C0:6",null],["W0:6",null]], "highlight": "W0:8", "action": "found", "label": "Unit (2,2)='8'. Wing 0 (floor(2/3)*3 + floor(2/3) = 0). Check Wing 0 logbook — '8' already recorded! Duplicate in Wing 0 → return false.", "vars": [{"name": "unit", "value": "(2,2)"}]}
+{"input": ["8","6","8"], "currentI": -1, "map": [], "highlight": null, "action": null, "label": "Begin inspection. All 27 logbooks empty.", "vars": [{"name": "unit", "value": "(0,0)"}]},
+{"input": ["8","6","8"], "currentI": 0, "map": [["R0:8",null],["C0:8",null],["W0:8",null]], "highlight": "R0:8", "action": "insert", "label": "Unit (0,0)='8'. Wing 0. All three logbooks clear — record '8' in Floor 0, Column 0, Wing 0.", "vars": [{"name": "unit", "value": "(0,0)"}]},
+{"input": ["8","6","8"], "currentI": 1, "map": [["R0:8",null],["C0:8",null],["W0:8",null],["R1:6",null],["C0:6",null],["W0:6",null]], "highlight": "R1:6", "action": "insert", "label": "Unit (1,0)='6'. Wing 0. All three logbooks clear — record '6' in Floor 1, Column 0, Wing 0.", "vars": [{"name": "unit", "value": "(1,0)"}]},
+{"input": ["8","6","8"], "currentI": 2, "map": [["R0:8",null],["C0:8",null],["W0:8",null],["R1:6",null],["C0:6",null],["W0:6",null]], "highlight": "W0:8", "action": "found", "label": "Unit (2,2)='8'. Wing 0 (floor(2/3) x 3 + floor(2/3) = 0). Check Wing 0 logbook — '8' already recorded! Duplicate in Wing 0 → return false.", "vars": [{"name": "unit", "value": "(2,2)"}]}
 ]
 :::
 
@@ -117,10 +192,10 @@ The critical rule is **check before you record**. The inspector reads all three 
 
 :::trace-map
 [
-  {"input": ["5","3","5"], "currentI": -1, "map": [], "highlight": null, "action": null, "label": "Logbooks ready. Inspection walk begins."},
-  {"input": ["5","3","5"], "currentI": 0, "map": [["R0:5",null],["C0:5",null],["W0:5",null]], "highlight": "R0:5", "action": "insert", "label": "Unit (0,0)='5'. Wing 0. Check R0, C0, W0 — all clear. Record '5' in all three logbooks."},
-  {"input": ["5","3","5"], "currentI": 1, "map": [["R0:5",null],["C0:5",null],["W0:5",null],["R0:3",null],["C1:3",null],["W0:3",null]], "highlight": "R0:3", "action": "insert", "label": "Unit (0,1)='3'. Wing 0. All three logbooks clear. Record '3' in Floor 0, Column 1, Wing 0."},
-  {"input": ["5","3","5"], "currentI": 2, "map": [["R0:5",null],["C0:5",null],["W0:5",null],["R0:3",null],["C1:3",null],["W0:3",null]], "highlight": "R0:5", "action": "found", "label": "Unit (0,8)='5'. Wing 2. Check Floor 0 logbook — '5' already recorded! Duplicate in Row 0 → return false."}
+{"input": ["5","3","5"], "currentI": -1, "map": [], "highlight": null, "action": null, "label": "Logbooks ready. Inspection walk begins."},
+{"input": ["5","3","5"], "currentI": 0, "map": [["R0:5",null],["C0:5",null],["W0:5",null]], "highlight": "R0:5", "action": "insert", "label": "Unit (0,0)='5'. Wing 0. Check R0, C0, W0 — all clear. Record '5' in all three logbooks."},
+{"input": ["5","3","5"], "currentI": 1, "map": [["R0:5",null],["C0:5",null],["W0:5",null],["R0:3",null],["C1:3",null],["W0:3",null]], "highlight": "R0:3", "action": "insert", "label": "Unit (0,1)='3'. Wing 0. All three logbooks clear. Record '3' in Floor 0, Column 1, Wing 0."},
+{"input": ["5","3","5"], "currentI": 2, "map": [["R0:5",null],["C0:5",null],["W0:5",null],["R0:3",null],["C1:3",null],["W0:3",null]], "highlight": "R0:5", "action": "found", "label": "Unit (0,8)='5'. Wing 2. Check Floor 0 logbook — '5' already recorded! Duplicate in Row 0 → return false."}
 ]
 :::
 
@@ -158,16 +233,16 @@ flowchart TD
 
 Using a board where `(0,0)='5'`, `(0,1)='3'`, `(1,0)='6'`, `(2,0)='5'` — all other cells `'.'`. The column-0 duplicate `'5'` is detected at unit `(2,0)`.
 
-| Step | Unit | Resident | Wing | Floor Book | Column Book | Wing Book | Outcome |
-|------|------|---------|------|------------|-------------|-----------|---------|
-| Start | — | — | — | all empty | all empty | all empty | 27 logbooks initialized |
-| 1 | (0, 0) | "5" | 0 | R0: miss | C0: miss | W0: miss | Record "5" → R0:{5}, C0:{5}, W0:{5} |
-| 2 | (0, 1) | "3" | 0 | R0: miss | C1: miss | W0: miss | Record "3" → R0:{5,3}, C1:{3}, W0:{5,3} |
-| 3 | (0, 2–8) | "." | — | — | — | — | Skip all vacant |
-| 4 | (1, 0) | "6" | 0 | R1: miss | C0: miss | W0: miss | Record "6" → R1:{6}, C0:{5,6}, W0:{5,3,6} |
-| 5 | (1, 1–8) | "." | — | — | — | — | Skip all vacant |
-| 6 | (2, 0) | "5" | 0 | R2: miss | **C0: found "5"!** | — | Duplicate in Column 0 → **return false** |
-| Done | — | — | — | — | — | — | Return false |
+| Step  | Unit     | Resident | Wing | Floor Book | Column Book        | Wing Book | Outcome                                   |
+| ----- | -------- | -------- | ---- | ---------- | ------------------ | --------- | ----------------------------------------- |
+| Start | —        | —        | —    | all empty  | all empty          | all empty | 27 logbooks initialized                   |
+| 1     | (0, 0)   | "5"      | 0    | R0: miss   | C0: miss           | W0: miss  | Record "5" → R0:{5}, C0:{5}, W0:{5}       |
+| 2     | (0, 1)   | "3"      | 0    | R0: miss   | C1: miss           | W0: miss  | Record "3" → R0:{5,3}, C1:{3}, W0:{5,3}   |
+| 3     | (0, 2–8) | "."      | —    | —          | —                  | —         | Skip all vacant                           |
+| 4     | (1, 0)   | "6"      | 0    | R1: miss   | C0: miss           | W0: miss  | Record "6" → R1:{6}, C0:{5,6}, W0:{5,3,6} |
+| 5     | (1, 1–8) | "."      | —    | —          | —                  | —         | Skip all vacant                           |
+| 6     | (2, 0)   | "5"      | 0    | R2: miss   | **C0: found "5"!** | —         | Duplicate in Column 0 → **return false**  |
+| Done  | —        | —        | —    | —          | —                  | —         | Return false                              |
 
 ---
 

@@ -170,7 +170,7 @@ export default function WebContainerEmbed({
         { Transaction },
         { HighlightStyle, syntaxHighlighting, foldEffect },
         { javascript },
-        { vim },
+        { vim, Vim },
         { tags },
       ] = await Promise.all([
         import('codemirror'),
@@ -303,6 +303,8 @@ export default function WebContainerEmbed({
       viewRef.current = view;
       _Transaction = Transaction; // make available to Effect 2
       _foldEffect = foldEffect; // make available to foldHelpers
+
+      Vim.map('jj', '<Esc>', 'insert');
 
       foldHelpers(view);
     })();
