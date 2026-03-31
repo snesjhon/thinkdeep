@@ -1,0 +1,26 @@
+import React from 'react';
+
+interface PageLayoutProps {
+  aside: React.ReactNode;
+  children: React.ReactNode;
+  accentColor?: string | null;
+}
+
+export function PageLayout({ aside, children, accentColor }: PageLayoutProps) {
+  return (
+    <div
+      style={{
+        background: accentColor
+          ? `color-mix(in srgb, ${accentColor} 8%, var(--bg))`
+          : 'var(--bg)',
+      }}
+    >
+      <div className="block xl:grid items-start gap-12 pl-10 py-10 xl:grid-cols-[1fr_220px]">
+        <div className="min-w-0">{children}</div>
+        <aside className="hidden xl:block sticky top-8 self-start max-h-[calc(100vh-2rem)] overflow-y-auto">
+          {aside}
+        </aside>
+      </div>
+    </div>
+  );
+}

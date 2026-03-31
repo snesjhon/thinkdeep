@@ -1,0 +1,20 @@
+{
+  "id": "conv-1774473233858-h32jqmgmz",
+  "title": "Explain Database Relationship Types",
+  "titleGenerationStatus": "success",
+  "createdAt": 1774473233864,
+  "updatedAt": 1774567717915,
+  "lastResponseAt": 1774567717915,
+  "sessionId": "2a60bb84-eb79-424b-84fa-6b1a7c5c7f34",
+  "sdkSessionId": "2a60bb84-eb79-424b-84fa-6b1a7c5c7f34",
+  "currentNote": "apps/system-design-for-humans/app/fundamentals/data-modeling/data-modeling-fundamentals.md",
+  "usage": {
+    "model": "haiku",
+    "inputTokens": 8,
+    "cacheCreationInputTokens": 600,
+    "cacheReadInputTokens": 88987,
+    "contextWindow": 200000,
+    "contextTokens": 89595,
+    "percentage": 45
+  }
+}

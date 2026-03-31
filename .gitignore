@@ -1,9 +1,14 @@
-node_modules
+node_modules/
+package-lock.json
+yarn.lock
 .next
-.env*.local
-.superpowers
-.worktrees
 .obsidian
-superpowers
-.claude
-.gitkeep
+
+# Claude Code — ignore personal settings, keep shared skills
+.claude/settings.local.json
+.claude/settings.json
+docs/superpowers/
+.superpowers/
+tsconfig.tsbuildinfo
+.env.local
+.env
