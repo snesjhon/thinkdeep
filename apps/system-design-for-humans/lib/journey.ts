@@ -38,6 +38,8 @@ export const JOURNEY: Phase[] = [
         label: 'API Design',
         mentalModelHook: 'An API is a contract between you and your consumers. Design for the consumer, not the implementation.',
         analogies: ['REST resources as nouns, methods as verbs', 'Status codes as intent, not just numbers'],
+        fundamentalsSlug: 'api-design',
+        fundamentalsBlurb: 'REST resource modeling, HTTP method semantics, status codes as contracts, versioning strategies, and response shape design — the surface area that consumers depend on.',
         firstPass: [],
         reinforce: [],
       },

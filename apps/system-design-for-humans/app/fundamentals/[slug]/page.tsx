@@ -7,7 +7,12 @@ import {
   getPrecedingSection,
 } from '@/lib/fundamentals';
 import { extractHeadings } from '@/lib/headings';
-import { TableOfContents, PageHero, PageLayout } from '@for-humans/ui';
+import {
+  TableOfContents,
+  PageHero,
+  PageLayout,
+  PhaseColorSync,
+} from '@for-humans/ui';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 const PHASE_COLORS = [
@@ -44,6 +49,7 @@ export default function FundamentalsPage({ params }: Props) {
 
   return (
     <>
+      {color && <PhaseColorSync color={color} />}
       <PageHero>
         <div className="flex items-center gap-2 mb-3">
           {phase && (
@@ -53,8 +59,7 @@ export default function FundamentalsPage({ params }: Props) {
           )}
         </div>
         <h1 className="text-5xl font-bold leading-tight text-[var(--fg)] font-display">
-          {section?.label ??
-            guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
+          {section?.label ?? guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
         </h1>
         {section && (
           <p className="mt-3 text-lg italic leading-snug text-[var(--purple)]">

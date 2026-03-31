@@ -3,7 +3,12 @@ import Link from 'next/link';
 import { loadScenario, getAllScenarioSlugsFromDisk } from '@/lib/content';
 import { getScenarioBySlug } from '@/lib/journey';
 import { extractHeadings } from '@/lib/headings';
-import { TableOfContents, PageHero, PageLayout } from '@for-humans/ui';
+import {
+  TableOfContents,
+  PageHero,
+  PageLayout,
+  PhaseColorSync,
+} from '@for-humans/ui';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 const PHASE_COLORS = [
@@ -52,9 +57,14 @@ export default function ScenarioPage({ params }: Props) {
 
   return (
     <>
+      {color && <PhaseColorSync color={color} />}
       <PageHero>
-        <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">{section.label}</p>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">{scenario.label}</h1>
+        <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">
+          {section.label}
+        </p>
+        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">
+          {scenario.label}
+        </h1>
       </PageHero>
 
       <PageLayout
@@ -83,61 +93,61 @@ export default function ScenarioPage({ params }: Props) {
           </>
         }
       >
-          <section className="space-y-8">
-            <div className="rounded-xl p-6 bg-[var(--bg-alt)] border border-[var(--border)]">
-              <p className="text-xs font-semibold uppercase mb-4 text-[var(--fg-gutter)] font-[ui-monospace,monospace] tracking-[0.08em]">
-                Requirements
-              </p>
-              <MarkdownRenderer
-                content={strippedBrief}
-                prompts={content.promptContent}
-                phase={phase?.number ?? 1}
-                storageKeyPrefix={`chat:${params.slug}`}
-              />
-            </div>
+        <section className="space-y-8">
+          <div className="rounded-xl p-6 bg-[var(--bg-alt)] border border-[var(--border)]">
+            <p className="text-xs font-semibold uppercase mb-4 text-[var(--fg-gutter)] font-[ui-monospace,monospace] tracking-[0.08em]">
+              Requirements
+            </p>
+            <MarkdownRenderer
+              content={strippedBrief}
+              prompts={content.promptContent}
+              phase={phase?.number ?? 1}
+              storageKeyPrefix={`chat:${params.slug}`}
+            />
+          </div>
 
-            {strippedWalkthrough && (
-              <MarkdownRenderer
-                content={strippedWalkthrough}
-                prompts={content.promptContent}
-                phase={phase.number}
-                storageKeyPrefix={`chat:${params.slug}`}
-              />
+          {strippedWalkthrough && (
+            <MarkdownRenderer
+              content={strippedWalkthrough}
+              prompts={content.promptContent}
+              phase={phase.number}
+              storageKeyPrefix={`chat:${params.slug}`}
+            />
+          )}
+
+          {/* Prev / Next */}
+          <div className="flex items-center justify-between pt-6 border-t border-t-[var(--border)]">
+            {prevScenario ? (
+              <Link
+                href={`/scenarios/${prevScenario.slug}`}
+                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
+              >
+                ← {prevScenario.label}
+              </Link>
+            ) : (
+              <Link
+                href={
+                  section.fundamentalsSlug
+                    ? `/fundamentals/${section.fundamentalsSlug}`
+                    : '/path'
+                }
+                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
+              >
+                ← {section.label} Fundamentals
+              </Link>
             )}
-
-            {/* Prev / Next */}
-            <div className="flex items-center justify-between pt-6 border-t border-t-[var(--border)]">
-              {prevScenario ? (
-                <Link
-                  href={`/scenarios/${prevScenario.slug}`}
-                  className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
-                >
-                  ← {prevScenario.label}
-                </Link>
-              ) : (
-                <Link
-                  href={
-                    section.fundamentalsSlug
-                      ? `/fundamentals/${section.fundamentalsSlug}`
-                      : '/path'
-                  }
-                  className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
-                >
-                  ← {section.label} Fundamentals
-                </Link>
-              )}
-              {nextScenario ? (
-                <Link
-                  href={`/scenarios/${nextScenario.slug}`}
-                  className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
-                >
-                  {nextScenario.label} →
-                </Link>
-              ) : (
-                <div />
-              )}
-            </div>
-          </section>
+            {nextScenario ? (
+              <Link
+                href={`/scenarios/${nextScenario.slug}`}
+                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
+              >
+                {nextScenario.label} →
+              </Link>
+            ) : (
+              <div />
+            )}
+          </div>
+        </section>
       </PageLayout>
     </>
   );

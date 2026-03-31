@@ -86,7 +86,9 @@ export default function PathPage() {
   return (
     <>
       <PageHero>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">The Path</h1>
+        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">
+          The Path
+        </h1>
         <p className="text-sm text-[var(--fg-gutter)] mt-2">
           {totalSections} mental models · {totalScenarios} scenarios
         </p>
@@ -98,7 +100,8 @@ export default function PathPage() {
         <aside
           className="hidden lg:block absolute top-0 left-0 h-full pl-10 pt-10 w-[calc(314px+2.5rem)]"
           style={{
-            background: 'color-mix(in srgb, var(--active-phase-color) 8%, var(--bg))',
+            background:
+              'color-mix(in srgb, var(--active-phase-color) 8%, var(--bg))',
             transition: 'background 300ms ease',
           }}
         >
@@ -128,7 +131,7 @@ export default function PathPage() {
               id={`phase-zone-${phase.number}`}
               style={{ background: zoneBg }}
             >
-              <div className="block lg:grid gap-12 px-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)]">
+              <div className="block lg:grid items-start gap-12 px-10 py-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)] xl:grid-cols-[0.3fr_1fr_0.2fr]">
                 <div className="hidden lg:block" /> {/* TOC column spacer */}
                 <div className="min-w-0">
                   <PhaseBannerContent
@@ -173,8 +176,12 @@ export default function PathPage() {
                         {/* RIGHT: Practice scenarios + revisit */}
                         <div className="pt-1">
                           {!hasAnyScenarios && (
-                            <p className="italic text-sm text-[var(--fg-gutter)] m-0"
-                              style={{ fontFamily: 'var(--font-display, inherit)' }}>
+                            <p
+                              className="italic text-sm text-[var(--fg-gutter)] m-0"
+                              style={{
+                                fontFamily: 'var(--font-display, inherit)',
+                              }}
+                            >
                               Scenarios coming soon.
                             </p>
                           )}
