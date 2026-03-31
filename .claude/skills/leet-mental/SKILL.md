@@ -6,25 +6,30 @@ description: Generate mental model study guides for LeetCode problems with stron
 # Mental Model Building for LeetCode Problems
 
 ## Purpose
+
 This skill creates mental model study guides that help understand algorithm concepts through **a single, powerful analogy**.
 
 **What this skill does:**
+
 - Builds deep understanding of the problem and solution approach
 - Explains the "why" behind algorithmic choices
 - Creates memorable mental models using real-world analogies
 - Generates paired step files (`step1-problem.ts` + `step1-solution.ts` … `stepM-problem.ts` + `stepM-solution.ts`) and `solution.ts` that teach the concepts progressively
 
 **What this skill does NOT do:**
+
 - Analyze or debug existing code
 - Fix bugs in implementations
 - Review or critique current solutions
 - Compare multiple solution approaches
 
 ## Study Guides Location
+
 - Always create study guide directories in `./app/problems/`
 - Use the format: `./app/problems/[problem-number]-[problem-name]/`
 
 ## Required Workflow
+
 1. Choose ONE powerful analogy and commit to it
 2. **Phase 1:** Write substantial analogy section explaining the mental model (NO CODE yet)
 3. **Phase 2:** Build the algorithm incrementally, translating analogy concepts to code
@@ -38,11 +43,13 @@ This skill creates mental model study guides that help understand algorithm conc
 11. **DO NOT create README.md or any other summary documents** - only create `mental-model.md`, step files, and `solution.ts`
 
 **Validation command:**
+
 ```bash
 ../../../.claude/skills/leet-mental/validate-mermaid.sh mental-model.md
 ```
 
 **Step files run command:**
+
 ```bash
 npx tsx step-1.ts   # Expected: TODO lines, no crashes
 npx tsx solution.ts # Expected: PASS lines only
@@ -70,6 +77,7 @@ Every mental model MUST have these seven sections in this order:
 The verbatim LeetCode problem statement followed by the provided examples. This section comes before the analogy — it anchors the reader so they know exactly what they are solving before any mental model is introduced.
 
 Format:
+
 - One paragraph with the exact problem description (copy it verbatim from LeetCode)
 - Each example as a labeled block: **Example 1**, **Example 2**, etc., with `Input:` and `Output:` lines
 - No commentary, no analysis, no analogy — just the raw problem
@@ -110,7 +118,7 @@ Each step = **concept** → **concrete example/trace** → **code sketch** → *
 
 > **Example split (Longest Consecutive Sequence):** Step 1 = build the catalog Set + for-loop with the `if (!catalog.has(volume - 1))` gate → tests pass for `[]` → 0 and `[10, 5, 100]` → 1. Step 2 = add the inner while-loop that expands each opener into its full chain → tests now cover `[100, 4, 200, 1, 3, 2]` → 4.
 
-The number of steps beyond the minimum is determined by how many independently verifiable pieces the algorithm has. The test: *can step N's solution pass all tests without step N+1?* If yes — it's a real step. If no — the operations are coupled and belong in the same step.
+The number of steps beyond the minimum is determined by how many independently verifiable pieces the algorithm has. The test: _can step N's solution pass all tests without step N+1?_ If yes — it's a real step. If no — the operations are coupled and belong in the same step.
 
 - ✅ **Split into a step** when the addition alone produces correct output. Example: initializing a dummy node (step 1 tests pass), then adding traversal logic (step 2 tests pass with more cases).
 - ❌ **Do NOT split** when two operations are coupled and neither works without the other. Example: the "check" and "insert" in Two Sum's HashMap scan — with only the check, the book is always empty and every test returns `[]` (FAIL). Only together do they produce correct output. Keep them in one step.
@@ -119,7 +127,7 @@ The number of steps beyond the minimum is determined by how many independently v
 
 > ⛔ **IRON RULE: Code blocks in mental-model.md NEVER contain working implementation.**
 >
-> The typescript block above each `:::stackblitz` directive is a **thinking scaffold** — it shows the *shape* of the logic (pseudocode, skeleton, key comment outline) to orient the learner before they open the editor. The complete, runnable implementation lives **only** inside `stepN-solution.ts` (the Solution tab). If someone could copy your code block, paste it into the problem file, and pass the tests — you've violated this rule.
+> The typescript block above each `:::stackblitz` directive is a **thinking scaffold** — it shows the _shape_ of the logic (pseudocode, skeleton, key comment outline) to orient the learner before they open the editor. The complete, runnable implementation lives **only** inside `stepN-solution.ts` (the Solution tab). If someone could copy your code block, paste it into the problem file, and pass the tests — you've violated this rule.
 >
 > ✅ Correct code block: shows structure, raises the right question, leaves the implementation blank
 > ❌ Wrong code block: shows working logic the learner just has to read and understand
@@ -127,7 +135,7 @@ The number of steps beyond the minimum is determined by how many independently v
 **What belongs in each Step:**
 
 1. **Analogy prose** — explain the concept through the analogy. What is this step doing in the real-world metaphor? What question should the learner be asking themselves before they start coding?
-2. **Trace component** *(when the step has visualizable execution)* — pick the right one for the data structure:
+2. **Trace component** _(when the step has visualizable execution)_ — pick the right one for the data structure:
    - `:::trace-map` — building a HashMap or Set (hash map / frequency counting problems)
    - `:::trace-lr` — one or two pointers scanning a string or array (two-pointer, sliding window)
    - `:::trace-ps` — two-pass prefix/suffix with a result array
@@ -141,18 +149,19 @@ The number of steps beyond the minimum is determined by how many independently v
 
 ```html
 <details>
-<summary>Hints & gotchas</summary>
+  <summary>Hints & gotchas</summary>
 
-- **[Pattern name]**: [hint in analogy vocabulary or a short code snippet if the concept is clearer in code]
-- **[Common trap]**: [why learners get stuck here — prose, analogy, or inline `code` as needed]
-
+  - **[Pattern name]**: [hint in analogy vocabulary or a short code snippet if
+  the concept is clearer in code] - **[Common trap]**: [why learners get stuck
+  here — prose, analogy, or inline `code` as needed]
 </details>
 ```
 
 Gotchas block rules:
+
 - 2–4 bullets mixing analogy-vocabulary prose and, where useful, inline code or short TypeScript snippets
 - Code is allowed here because the block is collapsed — the learner sees it only after trying; it cannot short-circuit their thinking
-- Describe *traps* and *non-obvious patterns*, not solution steps
+- Describe _traps_ and _non-obvious patterns_, not solution steps
 - Content that would make a stuck learner say "oh, that's why"
 - Place immediately after `:::stackblitz`, before the next `### Step` heading
 
@@ -172,11 +181,11 @@ Format: a markdown table with one row per loop iteration (or meaningful phase). 
 
 Example structure (two-pointer problems):
 
-| Step | Reading Hand (i) | nums[i] | Writing Hand (k) | Last Placed (nums[k-1]) | New Title? | Action | Clean Section |
-|------|---|---|---|---|---|---|---|
-| Start | 1 | ... | 1 | ... | — | initialize | [...] |
-| ... | | | | | | | |
-| Done | — | — | k | — | — | return k | [...] |
+| Step  | Reading Hand (i) | nums[i] | Writing Hand (k) | Last Placed (nums[k-1]) | New Title? | Action     | Clean Section |
+| ----- | ---------------- | ------- | ---------------- | ----------------------- | ---------- | ---------- | ------------- |
+| Start | 1                | ...     | 1                | ...                     | —          | initialize | [...]         |
+| ...   |                  |         |                  |                         |            |            |               |
+| Done  | —                | —       | k                | —                       | —          | return k   | [...]         |
 
 ### 6. Common Misconceptions
 
@@ -189,6 +198,7 @@ Example structure (two-pointer problems):
 Use the analogy vocabulary throughout — don't break to raw algorithm language.
 
 Example structure:
+
 ```
 **"[Wrong belief]"** — [Why it's wrong in 1-2 sentences using the analogy]. [Correct version.]
 ```
@@ -204,6 +214,7 @@ After the final step, the reader has a complete working solution. If one key tec
 ### The Wrong Way
 
 ❌ **Separating concepts from code:**
+
 ```
 ## Building from the Ground Up
 
@@ -224,7 +235,7 @@ This splits concept from code, forcing the reader to mentally reconnect them lat
 
 ✅ **Weave concept + code + embed at each step:**
 
-```markdown
+````markdown
 ## Building the Algorithm
 
 Each step introduces one concept from the analogy, then a StackBlitz embed to try it immediately.
@@ -238,6 +249,7 @@ motivates any scaffolding (e.g. the dummy node). Build the "why" before showing 
 // Code for step 1 only
 // Prior steps don't exist yet — this is the foundation
 ```
+````
 
 :::stackblitz{file="step1-problem.ts" step=1 total=N solution="step1-solution.ts"}
 
@@ -269,7 +281,8 @@ return result;
 [Deeper dives and alternatives follow here — they ANCHOR on the mental model above,
 not replace it. E.g. "Now that you have the working solution, here's why the
 insertion trick is cleverer than the classic two-pointer reversal..."]
-```
+
+````
 
 ### The Woven Pattern
 
@@ -287,16 +300,20 @@ By the end of the final embed, the reader has a complete working solution. The d
 [Verbatim LeetCode problem description — one paragraph, copy exactly as written.]
 
 **Example 1:**
-```
+````
+
 Input: [input values]
 Output: [expected output]
+
 ```
 
 **Example 2:**
 ```
+
 Input: [input values]
 Output: [expected output]
-```
+
+````
 
 ## The [Single Analogy Name] Analogy
 
@@ -380,7 +397,7 @@ NOT inside individual algorithm steps.
 
 ```mermaid
 [flowchart or stateDiagram showing overall algorithm flow]
-```
+````
 
 ---
 
@@ -408,11 +425,11 @@ This should be a SINGLE section — never multiple peer-level technique sections
 
 ## Tracing through an Example
 
-| Step | [Reading Hand var] | [value] | [Writing Hand var] | [Last Placed] | New Title? | Action | [State] |
-|------|---|---|---|---|---|---|---|
-| Start | 1 | ... | 1 | ... | — | initialize | [...] |
-| ... | | | | | | | |
-| Done | — | — | k | — | — | return k | [...] |
+| Step  | [Reading Hand var] | [value] | [Writing Hand var] | [Last Placed] | New Title? | Action     | [State] |
+| ----- | ------------------ | ------- | ------------------ | ------------- | ---------- | ---------- | ------- |
+| Start | 1                  | ...     | 1                  | ...           | —          | initialize | [...]   |
+| ...   |                    |         |                    |               |            |            |         |
+| Done  | —                  | —       | k                  | —             | —          | return k   | [...]   |
 
 ---
 
@@ -429,6 +446,7 @@ This should be a SINGLE section — never multiple peer-level technique sections
 ## Complete Solution
 
 :::stackblitz{file="solution.ts" step=N total=N solution="solution.ts"}
+
 ```
 
 ### Visualization Guidelines
@@ -446,12 +464,14 @@ Three components are available. Each is a fenced block: open with `:::trace`, `:
 Use when: one or two pointers move through a string or array (two-pointer, sliding window, cursor-based decode).
 
 ```
+
 :::trace-lr
 [
-  {"chars": ["a","b","c"], "L": 0, "R": 2, "action": "match", "label": "..."},
-  ...
+{"chars": ["a","b","c"], "L": 0, "R": 2, "action": "match", "label": "..."},
+...
 ]
 :::
+
 ```
 
 | Field | Type | Meaning |
@@ -469,12 +489,14 @@ Cell coloring: cells left of L or right of R → verified (grey). L cell → lef
 Use when: the algorithm makes two passes (forward then backward) building a result array, with a running accumulator.
 
 ```
+
 :::trace-ps
 [
-  {"nums": [1,2,3,4], "result": [1,0,0,0], "currentI": 0, "pass": "forward", "accumulator": 1, "accName": "prefix", "label": "..."},
-  ...
+{"nums": [1,2,3,4], "result": [1,0,0,0], "currentI": 0, "pass": "forward", "accumulator": 1, "accName": "prefix", "label": "..."},
+...
 ]
 :::
+
 ```
 
 | Field | Type | Meaning |
@@ -492,13 +514,15 @@ Use when: the algorithm makes two passes (forward then backward) building a resu
 Use when: the algorithm scans an array and builds a frequency map, complement map, or set as it goes.
 
 ```
+
 :::trace-map
 [
-  {"input": ["a","b","a"], "currentI": 0, "map": [], "highlight": null, "action": null, "label": "..."},
-  {"input": ["a","b","a"], "currentI": 0, "map": [["a",1]], "highlight": "a", "action": "insert", "label": "..."},
-  ...
+{"input": ["a","b","a"], "currentI": 0, "map": [], "highlight": null, "action": null, "label": "..."},
+{"input": ["a","b","a"], "currentI": 0, "map": [["a",1]], "highlight": "a", "action": "insert", "label": "..."},
+...
 ]
 :::
+
 ```
 
 | Field | Type | Meaning |
@@ -518,13 +542,15 @@ Actions: `insert` = new key added, `update` = existing key incremented, `found` 
 Use when: a reader pointer scans forward while a writer pointer lags behind, compacting an array in-place.
 
 ```
+
 :::trace
 [
-  {"array": [1,1,2,3], "reader": 1, "writer": 1, "action": "skip", "label": "..."},
-  ...
+{"array": [1,1,2,3], "reader": 1, "writer": 1, "action": "skip", "label": "..."},
+...
 ]
 :::
-```
+
+````
 
 | Field | Type | Meaning |
 |-------|------|---------|
@@ -559,9 +585,10 @@ graph TD
     A --> C["Right: 8<br/>Going up (+8)"]
     B --> D["Left: 1<br/>Peak! (+1)"]
     B --> E["Right: 4<br/>Still climbing (+4)"]
-```
+````
 
 **Backtracking/Decision Trees:**
+
 ```mermaid
 graph TD
     A["Start: []<br/>open=3, close=3"] --> B["Add (<br/>[(]<br/>open=2, close=3"]
@@ -572,6 +599,7 @@ graph TD
 ```
 
 **State Machine/Flow:**
+
 ```mermaid
 stateDiagram-v2
     [*] --> Driving: Start at Mile 0
@@ -584,6 +612,7 @@ stateDiagram-v2
 ```
 
 **Sequence/Timeline:**
+
 ```mermaid
 sequenceDiagram
     participant Array
@@ -610,12 +639,14 @@ After creating a mental model with mermaid charts, you MUST validate them:
 ```
 
 The script will:
+
 1. Extract all mermaid blocks from the markdown file
 2. Validate basic syntax (diagram type, structure, common errors)
 3. Report which charts pass syntax validation
 4. Exit with error code if any chart has syntax errors
 
 **Validation workflow:**
+
 1. Create mental-model.md with mermaid charts
 2. Run validation script
 3. If errors found: fix the mermaid syntax and re-run
@@ -626,12 +657,14 @@ The script will:
 ### Example: Good vs Bad Explanations
 
 **❌ BAD:**
+
 ```
 We check if (current_sum - k) exists in the hashmap.
 If it does, we found a subarray.
 ```
 
 **✅ GOOD:**
+
 ```
 Imagine your car's odometer shows 100 miles.
 If you want to find when you drove exactly 30 miles,
@@ -648,26 +681,31 @@ Don't mix analogies. Don't switch metaphors mid-explanation. The power comes fro
 #### Proven Analogies by Problem Type
 
 **Subarray Sum Problems:**
+
 - **Odometer journey** (running sums = cumulative distances traveled)
   - Why it works: Segments between checkpoints = subarrays
   - Natural fit for prefix sums, looking back at previous readings
 
 **Tree Problems:**
+
 - **Mountain climbing** (going up to children, down to parent)
   - Why it works: Height/altitude maps to depth, peaks = leaves
   - Natural fit for DFS, path concepts
 
 **Backtracking:**
+
 - **Maze exploration** (try paths, hit walls, backtrack)
   - Why it works: Dead ends = invalid states, retracing steps = backtracking
   - Natural fit for constraint checking, state restoration
 
 **Graph Problems:**
+
 - **City/road map** (cities = nodes, roads = edges)
   - Why it works: Distance, connectivity, paths all intuitive
   - Natural fit for BFS/DFS, shortest path
 
 **Selection criteria:**
+
 - Does every algorithm concept have a natural real-world parallel?
 - Do edge cases make sense in the analogy?
 - Will someone remember this analogy weeks later?
@@ -678,11 +716,13 @@ Don't mix analogies. Don't switch metaphors mid-explanation. The power comes fro
 ### Variable Naming in Solutions
 
 When implementing with the analogy:
+
 - Use analogy-based names: `odoLog`, `milesDriven`, `segmentsFound`
 - Avoid generic names: `map`, `sum`, `count`
 - Make the connection to mental model obvious
 
 **Example:**
+
 ```typescript
 // ✅ GOOD - Uses analogy
 const odoLog = new Map();
@@ -700,50 +740,30 @@ const target = sum - k;
 Before considering a mental model complete, verify all four required sections are present and correct:
 
 **Section 1 — The Analogy Intro**
+
 1. Does it establish the analogy in 2-4 paragraphs with no code?
 2. Are all key algorithm concepts mapped to analogy counterparts?
 
-**Section 2 — Understanding the Analogy**
-3. Does it have named subsections: The Setup, [Key Mechanism], Why This Approach?
-4. Is the Setup written purely in analogy terms — no variable names, no TypeScript?
-5. Does it cover the critical edge case (if any) within the analogy explanation?
+**Section 2 — Understanding the Analogy** 3. Does it have named subsections: The Setup, [Key Mechanism], Why This Approach? 4. Is the Setup written purely in analogy terms — no variable names, no TypeScript? 5. Does it cover the critical edge case (if any) within the analogy explanation?
 
-**Section 3 — How I Think Through This**
-8. Is Block 1 broken into one short paragraph per algorithmic phase (one pass = one paragraph)? No multi-phase walls of text.
-9. Does each paragraph in Block 1 name key variables inline, call out the core rule/invariant, and explain why — all in prose with no code blocks?
-10. Does Block 2 open with "Take `[...]`." and use a trace component — never prose narration of each step?
-11. Could you read both blocks, close your laptop, and reconstruct the algorithm on a whiteboard?
+**Section 3 — How I Think Through This** 8. Is Block 1 broken into one short paragraph per algorithmic phase (one pass = one paragraph)? No multi-phase walls of text. 9. Does each paragraph in Block 1 name key variables inline, call out the core rule/invariant, and explain why — all in prose with no code blocks? 10. Does Block 2 open with "Take `[...]`." and use a trace component — never prose narration of each step? 11. Could you read both blocks, close your laptop, and reconstruct the algorithm on a whiteboard?
 
-**Section 4 — Building the Algorithm (Woven Steps)**
-11. Does each step weave concept + trace component (where applicable) + StackBlitz embed together? No mermaid inside steps. Code sketch only if a structural question remains after prose + trace.
-12. Is the :::stackblitz directive placed immediately after the trace component or sketch (if any) for each step?
-13. By the final step, does the reader have a complete working solution?
-14. **Code sketch check (CRITICAL):** For every code block above a `:::stackblitz` — could a learner copy it, paste it into the problem file, and pass the tests? If yes, it's implementation code, not a sketch. Replace the working logic with comments or pseudocode that convey the *shape* without giving away the answer.
+**Section 4 — Building the Algorithm (Woven Steps)** 11. Does each step weave concept + trace component (where applicable) + StackBlitz embed together? No mermaid inside steps. Code sketch only if a structural question remains after prose + trace. 12. Is the :::stackblitz directive placed immediately after the trace component or sketch (if any) for each step? 13. By the final step, does the reader have a complete working solution? 14. **Code sketch check (CRITICAL):** For every code block above a `:::stackblitz` — could a learner copy it, paste it into the problem file, and pass the tests? If yes, it's implementation code, not a sketch. Replace the working logic with comments or pseudocode that convey the _shape_ without giving away the answer.
 
-**Section 5 — Tracing through an Example**
-14. Is there a markdown table with one row per loop iteration (or meaningful phase)?
-15. Does every column name include the variable AND its analogy role (e.g. `Reading Hand (i)` not just `i`)?
-16. Are all code paths represented — at least one duplicate hit and one new-title hit?
-17. Is there a "Start" row (initial state) and a "Done" row (return value)?
+**Section 5 — Tracing through an Example** 14. Is there a markdown table with one row per loop iteration (or meaningful phase)? 15. Does every column name include the variable AND its analogy role (e.g. `Reading Hand (i)` not just `i`)? 16. Are all code paths represented — at least one duplicate hit and one new-title hit? 17. Is there a "Start" row (initial state) and a "Done" row (return value)?
 
-**Section 6 — Common Misconceptions**
-18. Are there 3–5 misconceptions, each stated as a natural-sounding wrong belief?
-19. Is each explained using the analogy (not raw algorithm language)?
-20. Does each end with the correct mental model?
+**Section 6 — Common Misconceptions** 18. Are there 3–5 misconceptions, each stated as a natural-sounding wrong belief? 19. Is each explained using the analogy (not raw algorithm language)? 20. Does each end with the correct mental model?
 
-**Complete Solution**
-21. Does the Complete Solution use `:::stackblitz{file="solution.ts" step=M total=M solution="solution.ts"}` (same file and solution value so tabs are hidden)?
+**Complete Solution** 21. Does the Complete Solution use `:::stackblitz{file="solution.ts" step=M total=M solution="solution.ts"}` (same file and solution value so tabs are hidden)?
 
-**Overall**
-22. **Single analogy throughout:** No secondary metaphors, no "it's also like..."
-23. **Reinforcement:** Every example deepens comfort with the ONE analogy
-24. **No code analysis:** Avoid debugging or reviewing existing code
+**Overall** 22. **Single analogy throughout:** No secondary metaphors, no "it's also like..." 23. **Reinforcement:** Every example deepens comfort with the ONE analogy 24. **No code analysis:** Avoid debugging or reviewing existing code
 
 **The ultimate test:** Can someone read the analogy section, fully understand the approach without seeing any code, and then easily follow the code section because they already have the mental model?
 
 ### What to Avoid
 
 **Never do these:**
+
 - ❌ **Offering two solutions (brute force then optimized)** — Steps must build ONE algorithm from the start. Never implement a naive solution in step 1 and an optimized solution in step 2. Each step should add a piece to the single correct solution — the learner builds the optimal algorithm incrementally, not via replacement.
 - ❌ **Pre-building scaffolding in step 1** — The step 1 problem file must contain only the function signature and `throw new Error('not implemented')`. Never pre-populate the HashMap, loop structure, variable declarations, or any other setup — those are what the learner implements.
 - ❌ Analyzing or debugging existing code implementations
@@ -776,6 +796,7 @@ Before considering a mental model complete, verify all four required sections ar
 - ❌ **Checklists, "Ready for the Solution?" prompts, or "The Mental Model Checklist" sections** — these add no pedagogical value and dilute the analogy
 
 **Remember:**
+
 - First: Build the mental model through the analogy (NO CODE)
 - Then: Translate that mental model to code piece by piece
 
@@ -787,11 +808,11 @@ After completing `mental-model.md`, count the `### Step N:` subsections in the "
 
 ### File naming convention
 
-| File | Purpose |
-|------|---------|
-| `stepN-problem.ts` | Step N starter — function body throws `Error('not implemented')`, cumulative tests |
-| `stepN-solution.ts` | Step N solution — function body fully implemented, all tests pass |
-| `solution.ts` | Complete solution with all steps — every test passes |
+| File                | Purpose                                                                            |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| `stepN-problem.ts`  | Step N starter — function body throws `Error('not implemented')`, cumulative tests |
+| `stepN-solution.ts` | Step N solution — function body fully implemented, all tests pass                  |
+| `solution.ts`       | Complete solution with all steps — every test passes                               |
 
 Each file in a pair is **fully self-contained** (no imports, no top-level async).
 
@@ -880,19 +901,23 @@ reverseList(list);
 test('basic reverse', () => listToArray(list), [3, 2, 1]);
 
 // ✅ CORRECT — mutation inside thunk, throw is caught
-test('basic reverse', () => {
-  const list = createList([1, 2, 3]);
-  reverseList(list);
-  return listToArray(list);
-}, [3, 2, 1]);
+test(
+  'basic reverse',
+  () => {
+    const list = createList([1, 2, 3]);
+    reverseList(list);
+    return listToArray(list);
+  },
+  [3, 2, 1],
+);
 ```
 
 ```typescript
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 // (auto-folded in the editor — must be present for the file to run)
 
-class ListNode {  // or TreeNode, etc.
+class ListNode {
+  // or TreeNode, etc.
   val: number;
   next: ListNode | null;
   constructor(val = 0, next: ListNode | null = null) {
@@ -904,14 +929,20 @@ class ListNode {  // or TreeNode, etc.
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();
   let cur = dummy;
-  for (const v of values) { cur.next = new ListNode(v); cur = cur.next; }
+  for (const v of values) {
+    cur.next = new ListNode(v);
+    cur = cur.next;
+  }
   return dummy.next;
 }
 
 function listToArray(head: ListNode | null): number[] {
   const r: number[] = [];
   let cur = head;
-  while (cur) { r.push(cur.val); cur = cur.next; }
+  while (cur) {
+    r.push(cur.val);
+    cur = cur.next;
+  }
   return r;
 }
 
@@ -927,7 +958,9 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }
 ```
@@ -1050,6 +1083,7 @@ After the step files validate, verify the problem is wired into the learning pat
 ### Reference Examples
 
 **Excellent mental models (read these to match the tone):**
+
 - `./app/problems/022-generate-parentheses/mental-model.md`
   - Uses mountain climbing analogy
   - Builds from n=1 to n=3
