@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { ProgressToggle } from './ProgressToggle'
+import { useTransition } from 'react'
+import { useProgress } from './ProgressProvider'
 import type { ItemType } from '@/lib/progress/actions'
 
 interface Props {
@@ -11,32 +11,50 @@ interface Props {
 }
 
 export function ProgressToggleAsync({ itemType, itemId, label }: Props) {
-  const [initialCompleted, setInitialCompleted] = useState<boolean | null>(null)
+  const { isCompleted, toggle, isLoading } = useProgress()
+  const [isPending, startTransition] = useTransition()
 
-  useEffect(() => {
-    fetch(`/api/progress?itemType=${itemType}&itemId=${encodeURIComponent(itemId)}`)
-      .then((r) => r.json())
-      .then(({ completedIds }: { completedIds: string[] }) => {
-        setInitialCompleted(completedIds.includes(itemId))
-      })
-      .catch(() => setInitialCompleted(false))
-  }, [itemType, itemId])
+  const loading = isLoading(itemType)
+  const completed = isCompleted(itemType, itemId)
 
-  if (initialCompleted === null) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="shrink-0 w-5 h-5 rounded border border-[var(--border)] inline-block opacity-30" />
-        {label && (
-          <span className="text-sm text-[var(--fg-comment)] opacity-30">{label}</span>
-        )}
-      </div>
-    )
+  function handleToggle() {
+    startTransition(() => {
+      toggle(itemType, itemId)
+    })
   }
 
   return (
     <div className="flex items-center gap-2">
-      <ProgressToggle itemType={itemType} itemId={itemId} initialCompleted={initialCompleted} />
-      {label && <span className="text-sm text-[var(--fg-comment)]">{label}</span>}
+      <button
+        onClick={handleToggle}
+        disabled={isPending || loading}
+        aria-label={completed ? 'Mark incomplete' : 'Mark complete'}
+        className="shrink-0 w-5 h-5 rounded border transition-colors cursor-pointer bg-transparent flex items-center justify-center"
+        style={{
+          borderColor: completed ? 'var(--green)' : 'var(--border)',
+          background: completed
+            ? 'color-mix(in srgb, var(--green) 15%, transparent)'
+            : 'transparent',
+          opacity: isPending || loading ? 0.5 : 1,
+        }}
+      >
+        {completed && (
+          <span className="text-[10px] leading-none" style={{ color: 'var(--green)' }}>
+            ✓
+          </span>
+        )}
+      </button>
+      {label && (
+        <span
+          className="text-sm"
+          style={{
+            color: 'var(--fg-comment)',
+            opacity: loading ? 0.3 : 1,
+          }}
+        >
+          {label}
+        </span>
+      )}
     </div>
   )
 }

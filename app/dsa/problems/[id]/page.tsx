@@ -33,7 +33,7 @@ const DIFF_FG: Record<string, string> = {
 };
 import { extractHeadings } from '@/lib/dsa/headings';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer';
-import { TableOfContents, PhaseColorSync, PageHero, PageLayout, ProgressToggleAsync } from '@/components/ui';
+import { TableOfContents, PhaseColorSync, PageHero, PageLayout, ProgressToggleAsync, ProgressProvider } from '@/components/ui';
 
 interface Props {
   params: { id: string };
@@ -128,24 +128,34 @@ export default function ProblemPage({ params }: Props) {
       <PageLayout accentColor={color} aside={<TableOfContents headings={headings} title="Contents" />}>
         <section className="space-y-8">
             {/* Progress section */}
-            <div className="flex flex-col gap-2 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)]">
-              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--fg-gutter)] mb-1">
-                Your Progress
-              </p>
-              <ProgressToggleAsync
-                itemType="problem"
-                itemId={`dsa-${params.id}`}
-                label="Problem complete"
-              />
-              {stepNumbers.map((n) => (
+            <ProgressProvider
+              items={[
+                { itemType: 'problem', itemId: `dsa-${params.id}` },
+                ...stepNumbers.map((n) => ({
+                  itemType: 'step' as const,
+                  itemId: `dsa-${params.id}-step-${n}`,
+                })),
+              ]}
+            >
+              <div className="flex flex-col gap-2 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)]">
+                <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--fg-gutter)] mb-1">
+                  Your Progress
+                </p>
                 <ProgressToggleAsync
-                  key={n}
-                  itemType="step"
-                  itemId={`dsa-${params.id}-step-${n}`}
-                  label={`Step ${n} complete`}
+                  itemType="problem"
+                  itemId={`dsa-${params.id}`}
+                  label="Problem complete"
                 />
-              ))}
-            </div>
+                {stepNumbers.map((n) => (
+                  <ProgressToggleAsync
+                    key={n}
+                    itemType="step"
+                    itemId={`dsa-${params.id}-step-${n}`}
+                    label={`Step ${n} complete`}
+                  />
+                ))}
+              </div>
+            </ProgressProvider>
 
             {mentalModelContent ? (
               <MarkdownRenderer
