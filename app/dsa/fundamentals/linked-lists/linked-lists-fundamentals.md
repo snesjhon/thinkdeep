@@ -462,13 +462,13 @@ The critical pre-save: `segTail` must be captured before reversal begins, becaus
 
 ```mermaid
 graph LR
-    BS[beforeStart] -->|before| SH[m segHead becomes segTail]
-    SH --> Mid[...segment...] --> SE[n segEnd becomes new head]
-    SE --> AN[n+1 afterN]
+    BS["beforeStart"] -->|"before"| SH["m: segHead, becomes segTail"]
+    SH --> Mid["segment to reverse"] --> SE["n: segEnd, becomes new head"]
+    SE --> AN["n+1: afterN"]
 
-    BS2[beforeStart] -->|after| SE2[n new head]
-    SE2 --> Mid2[...reversed...] --> SH2[m segTail]
-    SH2 --> AN2[n+1 afterN]
+    BS2["beforeStart"] -->|"after"| SE2["n: new head"]
+    SE2 --> Mid2["reversed segment"] --> SH2["m: segTail"]
+    SH2 --> AN2["n+1: afterN"]
 ```
 
 **Complexity**: Time O(n), Space O(1)
@@ -481,20 +481,20 @@ graph LR
 
 ```mermaid
 graph TD
-    LL[Linked Lists] --> Nav[Navigation]
-    LL --> Rst[Restructuring]
-    LL --> Dll[Doubly Linked List Topology]
-    Nav --> SN[Sentinel Node]
-    Nav --> FSP[Fast and Slow Pointers]
-    SN --> SN1[dummy.next = head]
-    SN --> SN2[return dummy.next when done]
-    FSP --> FSP1[slow moves 1 step, fast moves 2 steps]
-    FSP --> FSP2[middle, cycle, Nth from end]
-    Dll --> Dll1[node knows prev and next]
-    Dll --> Dll2[detach or move known node in O(1)]
-    Rst --> IPR[In-Place Rewiring]
-    IPR --> IPR1[save next before rewiring curr.next]
-    IPR --> IPR2[prev tracks the new head]
+    LL["Linked Lists"] --> Nav["Navigation"]
+    LL --> Rst["Restructuring"]
+    LL --> Dll["Doubly Linked List Topology"]
+    Nav --> SN["Sentinel Node"]
+    Nav --> FSP["Fast and Slow Pointers"]
+    SN --> SN1["dummy.next = head"]
+    SN --> SN2["return dummy.next when done"]
+    FSP --> FSP1["slow moves 1 step, fast moves 2 steps"]
+    FSP --> FSP2["middle, cycle, Nth from end"]
+    Dll --> Dll1["node knows prev and next"]
+    Dll --> Dll2["detach or move known node in O(1)"]
+    Rst --> IPR["In-Place Rewiring"]
+    IPR --> IPR1["save next before rewiring curr.next"]
+    IPR --> IPR2["prev tracks the new head"]
     Rst --> SN
     Rst --> FSP
     Rst --> Dll
@@ -518,17 +518,17 @@ graph TD
 
 ```mermaid
 graph TD
-    Q[Linked list problem] --> Q1{Rearrange the structure?}
-    Q1 -->|Yes| Q2{Given a known node to detach or move?}
-    Q2 -->|Yes| DLL[Doubly linked list: local prev/next rewiring]
-    Q2 -->|No| Q4{Reverse a segment?}
-    Q4 -->|Yes| IPR[In-place rewiring: save, rewire, advance]
-    Q4 -->|No| SNR[Sentinel + pointer reattachment]
-    Q1 -->|No| Q3{Find position without knowing length?}
-    Q3 -->|Middle or median| FSM[Fast/slow: stop when fast ends]
-    Q3 -->|Nth from end| NAP[N-apart pointers in lockstep]
-    Q3 -->|Cycle detection| CYC[Fast/slow: meeting means cycle]
-    Q3 -->|No| TRV[Traversal with sentinel for insert and delete]
+    Q["Linked list problem"] --> Q1{"Rearrange the structure?"}
+    Q1 -->|Yes| Q2{"Given a known node to detach or move?"}
+    Q2 -->|Yes| DLL["Doubly linked list: local prev/next rewiring"]
+    Q2 -->|No| Q4{"Reverse a segment?"}
+    Q4 -->|Yes| IPR["In-place rewiring: save, rewire, advance"]
+    Q4 -->|No| SNR["Sentinel + pointer reattachment"]
+    Q1 -->|No| Q3{"Find position without knowing length?"}
+    Q3 -->|"Middle or median"| FSM["Fast/slow: stop when fast ends"]
+    Q3 -->|"Nth from end"| NAP["N-apart pointers in lockstep"]
+    Q3 -->|"Cycle detection"| CYC["Fast/slow: meeting means cycle"]
+    Q3 -->|No| TRV["Traversal with sentinel for insert and delete"]
 ```
 
 ### Recognition Signals
