@@ -58,6 +58,8 @@ function foldHelpers(view: EditorView) {
 // Strip ANSI escape codes from terminal output
 const stripAnsi = (s: string) => s.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
 
+const RUN_TIMEOUT_MS = 5000;
+
 // Singleton — one WebContainer per browsing context
 let wcInstance: WebContainer | null = null;
 let wcBootPromise: Promise<WebContainer> | null = null;
@@ -185,8 +187,10 @@ export default function WebContainerEmbed({
   const syncedSnippetRef = useRef<Record<string, string>>({});
   const dirtyFilesRef = useRef<Record<string, boolean>>({});
   const currentRequestRef = useRef(0);
+  const currentRunIdRef = useRef(0);
   const handleEditorEscapeRef = useRef<(() => void) | null>(null);
   const runCodeRef = useRef<() => void>(() => {});
+  const runTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Keep codeRef current on every render so Effect 1's async callback
   // always reads the latest value without a stale closure
@@ -562,6 +566,18 @@ export default function WebContainerEmbed({
     }
   }, [isExpanded]);
 
+  useEffect(() => () => {
+    if (runTimeoutRef.current) {
+      clearTimeout(runTimeoutRef.current);
+      runTimeoutRef.current = null;
+    }
+    if (processRef.current) {
+      try {
+        processRef.current.kill();
+      } catch {}
+    }
+  }, []);
+
   // Effect 2: Sync external code changes into the editor
   useEffect(() => {
     const view = viewRef.current;
@@ -581,6 +597,8 @@ export default function WebContainerEmbed({
     const currentCode = viewRef.current?.state.doc.toString() || code;
     const file = activeFileRef.current;
     if (!currentCode || !file) return;
+    const runId = currentRunIdRef.current + 1;
+    currentRunIdRef.current = runId;
     setOutput('');
     setStatus('booting');
     try {
@@ -595,12 +613,27 @@ export default function WebContainerEmbed({
           processRef.current.kill();
         } catch {}
       }
+      if (runTimeoutRef.current) {
+        clearTimeout(runTimeoutRef.current);
+      }
       await wc.fs.writeFile(file, currentCode);
       const proc = await wc.spawn('node', [
         'node_modules/tsx/dist/cli.mjs',
         file,
       ]);
       processRef.current = proc;
+      runTimeoutRef.current = setTimeout(() => {
+        if (currentRunIdRef.current !== runId || processRef.current !== proc) {
+          return;
+        }
+        setOutput((p) =>
+          `${p}${p ? '\n' : ''}Execution timed out after ${RUN_TIMEOUT_MS / 1000}s. It may be stuck in an infinite loop or deep recursion.`,
+        );
+        setStatus('error');
+        try {
+          proc.kill();
+        } catch {}
+      }, RUN_TIMEOUT_MS);
       proc.output.pipeTo(
         new WritableStream({
           write(data) {
@@ -609,8 +642,24 @@ export default function WebContainerEmbed({
         }),
       );
       const exit = await proc.exit;
+      if (runTimeoutRef.current) {
+        clearTimeout(runTimeoutRef.current);
+        runTimeoutRef.current = null;
+      }
+      if (currentRunIdRef.current !== runId || processRef.current !== proc) {
+        return;
+      }
+      processRef.current = null;
       setStatus(exit === 0 ? 'done' : 'error');
     } catch (err) {
+      if (runTimeoutRef.current) {
+        clearTimeout(runTimeoutRef.current);
+        runTimeoutRef.current = null;
+      }
+      if (currentRunIdRef.current !== runId) {
+        return;
+      }
+      processRef.current = null;
       setOutput((p) => (p ? p + '\n' : '') + String(err));
       setStatus('error');
     }

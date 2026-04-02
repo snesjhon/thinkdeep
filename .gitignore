@@ -14,3 +14,4 @@ docs/superpowers/
 tsconfig.tsbuildinfo
 .env.local
 .env
+.git

@@ -158,7 +158,46 @@ while (curr !== null) {
 
 Insertion is straightforward: whenever you move forward (insert or skip), advance both pointers.
 
-#### 4. Deletion Pattern — The Key Discipline
+#### 4. Counted Traversal — Move A Cursor Exactly K Steps
+
+Not every traversal is "walk until `null`." A common linked-list pattern is: start from a known anchor, then advance a pointer a fixed number of steps to reach the insertion point, split point, or predecessor you need.
+
+This is the linked-list version of array indexing. Since you cannot jump to index `k`, you simulate "go to position `k`" by physically moving a cursor forward `k` times.
+
+```typescript
+const dummy = new ListNode(0);
+dummy.next = head;
+let current = dummy;
+
+for (let i = 0; i < k; i++) {
+  if (current.next === null) break;
+  current = current.next;
+}
+```
+
+How to read this loop:
+
+- `current` starts at the sentinel, not at `head`, because sometimes you want position `0` to mean "before the first real node."
+- Each loop iteration moves `current` forward by one node.
+- After `k` successful moves, `current` is sitting on the predecessor of the place where you'll often insert or relink.
+- The null check protects you from walking past the end of the list.
+
+This is still traversal. The only difference is the stopping rule:
+
+- `while (curr !== null)` means "scan until the list ends."
+- `for (let i = 0; i < k; i++)` means "scan exactly `k` links forward."
+
+That makes the splice step straightforward:
+
+```typescript
+const newNode = new ListNode(val);
+newNode.next = current.next;
+current.next = newNode;
+```
+
+The mental model is simple: first **walk to the predecessor you need**, then **rewire once**.
+
+#### 5. Deletion Pattern — The Key Discipline
 
 Deletion is trickier. `prev` tracks the predecessor of the next candidate. After removal, do **not** advance `prev` — it must stay in place to be the predecessor of the next node you examine.
 
@@ -226,11 +265,11 @@ Traversal with a sentinel handles insertion and deletion cleanly. But some probl
 
 ### Level 2: Fast & Slow Pointers
 
-**Why this level matters**
+#### **Why this level matters**
 
 You cannot know the length of a linked list without a full traversal. Some problems need the middle node, the Nth node from the end, or whether a cycle exists — and they need the answer in a single pass with no extra memory. Fast and slow pointers (Floyd's technique) answer all three. Without it, you'd traverse once to count, then traverse again to position — double the work.
 
-**How to think about it**
+#### **How to think about it**
 
 Two conductors board the locomotive together. Slow moves one car per step. Fast moves two. After every step, the gap between them grows by one.
 
@@ -240,7 +279,7 @@ Two conductors board the locomotive together. Slow moves one car per step. Fast 
 
 **Cycle:** if the train loops, fast will eventually lap slow. They'll occupy the same car. If there's no loop, fast falls off the end without ever meeting slow.
 
-**Walking through it**
+#### **Walking through it**
 
 :::trace-ll
 [
