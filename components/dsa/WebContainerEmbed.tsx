@@ -676,10 +676,6 @@ export default function WebContainerEmbed({
         zIndex: 61,
       }
     : undefined;
-  const bodyStyle = isExpanded
-    ? { height: '100%', minHeight: expandedLayout?.height }
-    : undefined;
-
   return (
     <>
       {isExpanded && (
@@ -717,7 +713,7 @@ export default function WebContainerEmbed({
               </span>
             )}
           </div>
-          <div className="dfh-wc-body" style={bodyStyle}>
+          <div className="dfh-wc-body">
             <div ref={editorRef} className="dfh-wc-editor" />
             <div className="dfh-wc-toolbar">
               <button

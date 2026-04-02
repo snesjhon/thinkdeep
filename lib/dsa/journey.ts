@@ -168,6 +168,9 @@ export const JOURNEY: Phase[] = [
           'Ticket line (FIFO)',
           'Monotonic bouncer (daily temperatures)',
         ],
+        fundamentalsSlug: 'stack-queue',
+        fundamentalsBlurb:
+          'LIFO vs FIFO, shadow-state design, and monotonic watchlists — the three building blocks behind stacks, queues, and their most common interview variations.',
         firstPass: [
           { id: '232', isFirstPass: true, difficulty: 'easy' },
           { id: '020', isFirstPass: true, difficulty: 'easy' },
