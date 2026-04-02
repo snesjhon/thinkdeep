@@ -27,7 +27,7 @@ runCase('[3,1,3,4,2] returns duplicate 3', () => findDuplicate([3, 1, 3, 4, 2]),
 runCase('[3,3,3,3,3] returns duplicate 3', () => findDuplicate([3, 3, 3, 3, 3]), 3);
 runCase('[2,5,9,6,9,3,8,9,7,1] returns duplicate 9', () => findDuplicate([2, 5, 9, 6, 9, 3, 8, 9, 7, 1]), 9);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {

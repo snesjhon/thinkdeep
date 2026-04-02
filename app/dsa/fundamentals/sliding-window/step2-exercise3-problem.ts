@@ -26,7 +26,7 @@ test('first element qualifies',  () => shortestSufficient([10, 2, 3], 5),       
 test('last element qualifies',   () => shortestSufficient([1, 2, 10], 9),            1);
 test('tie between positions',    () => shortestSufficient([1, 4, 4], 4),             1);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

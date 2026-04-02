@@ -25,7 +25,7 @@ test('max at beginning',             () => maxWindowSum([9, 2, 1, 3], 2),       
 test('k larger than array',          () => maxWindowSum([1, 2], 5),                  0);
 test('single element window',        () => maxWindowSum([7, 3, 1], 1),               7);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

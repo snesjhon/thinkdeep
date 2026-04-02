@@ -16,7 +16,7 @@ test('all same color — no repaints needed', () => characterReplacement('AAAA',
 test('two colors, budget covers all minorities', () => characterReplacement('AABB', 2), 4);
 test('large budget, whole wall valid', () => characterReplacement('ABCD', 3), 4);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

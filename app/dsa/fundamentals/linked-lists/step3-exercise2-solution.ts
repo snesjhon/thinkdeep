@@ -9,6 +9,8 @@
 // The original first node of the segment becomes the tail (its .next was set to
 // null on the very first reversal step, so no extra reconnection needed).
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -17,6 +19,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function reverseFrom(head: ListNode | null, pos: number): ListNode | null {
   const dummy = new ListNode(0);
@@ -45,7 +49,7 @@ test('reverse from position 2', () => toArray(reverseFrom(buildList([1,2,3]), 2)
 test('reverse last car only',   () => toArray(reverseFrom(buildList([1,2,3,4,5]), 5)), [1,2,3,4,5]);
 test('single car pos 1',        () => toArray(reverseFrom(buildList([1]), 1)),         [1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

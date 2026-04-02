@@ -58,7 +58,7 @@ test('single char — no match', () => checkInclusion('a', 'bbb'), false);
 test('s1 equals s2', () => checkInclusion('abc', 'abc'), true);
 test('all same chars in s1', () => checkInclusion('aab', 'eidbaabooo'), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

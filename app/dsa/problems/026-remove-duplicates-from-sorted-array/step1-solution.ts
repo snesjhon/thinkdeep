@@ -15,7 +15,7 @@ function removeDuplicates(nums: number[]): number {
 test('single element stays', () => removeDuplicates([1]), 1);
 test('writing hand starts at 1', () => removeDuplicates([5]), 1);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

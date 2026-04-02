@@ -23,6 +23,7 @@ interface MarkdownRendererProps {
   className?: string;
   problemSlug?: string;
   fundamentalsSlug?: string;
+  codeFiles?: Record<string, string>;
 }
 
 // Segment types added by DSA
@@ -91,6 +92,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       continue;
     }
 
+    const text = 'text' in seg && typeof seg.text === 'string' ? seg.text : '';
+
     type RawMatch = {
       index: number;
       length: number;
@@ -101,13 +104,12 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
     for (const { fence, type } of configs) {
       fence.lastIndex = 0;
       let m: RegExpExecArray | null;
-      while ((m = fence.exec((seg as { text: string }).text)) !== null) {
+      while ((m = fence.exec(text)) !== null) {
         matches.push({ index: m.index, length: m[0].length, json: m[1], type });
       }
     }
     matches.sort((a, b) => a.index - b.index);
 
-    const text = (seg as { text: string }).text;
     let cursor = 0;
     for (const hit of matches) {
       if (hit.index > cursor)
@@ -131,7 +133,10 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
   }
   return result.filter(
     (s) =>
-      s.type !== 'markdown' || (s as { text: string }).text.trim().length > 0,
+      s.type !== 'markdown' ||
+      !('text' in s) ||
+      typeof s.text !== 'string' ||
+      s.text.trim().length > 0,
   );
 }
 
@@ -151,7 +156,7 @@ function splitStackBlitz(segments: BaseSegment[]): BaseSegment[] {
     // Build a combined list of all matches (single + multi) sorted by position
     type RawMatch = { index: number; length: number; seg: BaseSegment };
     const matches: RawMatch[] = [];
-    const text = (seg as { text: string }).text;
+    const text = 'text' in seg && typeof seg.text === 'string' ? seg.text : '';
 
     singleFence.lastIndex = 0;
     let m: RegExpExecArray | null;
@@ -203,7 +208,10 @@ function splitStackBlitz(segments: BaseSegment[]): BaseSegment[] {
   return result.filter((s) => {
     if (s.type === 'stackblitz' || s.type === 'stackblitz-multi') return true;
     return (
-      s.type !== 'markdown' || (s as { text: string }).text.trim().length > 0
+      s.type !== 'markdown' ||
+      !('text' in s) ||
+      typeof s.text !== 'string' ||
+      s.text.trim().length > 0
     );
   });
 }
@@ -213,6 +221,7 @@ export default function MarkdownRenderer({
   className,
   problemSlug,
   fundamentalsSlug,
+  codeFiles,
 }: MarkdownRendererProps) {
   return (
     <BaseMarkdownRenderer
@@ -262,6 +271,7 @@ export default function MarkdownRenderer({
               total={s.total}
               contentSlug={slug}
               base={fundamentalsSlug ? 'fundamentals' : undefined}
+              initialFiles={codeFiles}
             />
           );
         }
@@ -281,6 +291,7 @@ export default function MarkdownRenderer({
               total={s.total}
               contentSlug={slug}
               base={fundamentalsSlug ? 'fundamentals' : undefined}
+              initialFiles={codeFiles}
             />
           );
         }

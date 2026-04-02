@@ -32,7 +32,7 @@ test('aa vs bb — same length, no matching tiles', () => isAnagram('aa', 'bb'),
 test('empty vs empty — trivially equal', () => isAnagram('', ''), true);
 test('aab vs baa — repeated tiles', () => isAnagram('aab', 'baa'), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

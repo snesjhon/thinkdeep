@@ -31,7 +31,7 @@ test('single element', () => maxSlidingWindow([1], 1), [1]);
 test('front-cleaning required — old max scrolls out', () => maxSlidingWindow([3, 1, 2], 2), [3, 2]);
 test('main example', () => maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3), [3, 3, 5, 5, 6, 7]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

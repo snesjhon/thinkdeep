@@ -38,7 +38,7 @@ test('strictly decreasing', () => maxSlidingWindow([5, 4, 3, 2, 1], 3), [5, 4, 3
 test('strictly increasing', () => maxSlidingWindow([1, 2, 3, 4, 5], 3), [3, 4, 5]);
 test('k equals 1', () => maxSlidingWindow([4, 2, 7, 1], 1), [4, 2, 7, 1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

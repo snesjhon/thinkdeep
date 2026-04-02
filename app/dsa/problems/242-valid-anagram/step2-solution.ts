@@ -34,7 +34,7 @@ test('ab vs ba — two-letter swap', () => isAnagram('ab', 'ba'), true);
 test('aa vs bb — same length, no matching tiles', () => isAnagram('aa', 'bb'), false);
 test('empty vs empty — trivially equal', () => isAnagram('', ''), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -18,6 +18,8 @@
 //   middleValue(1 → 2 → 3 → 4)   → 3
 //   middleValue(1)                → 1
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -26,6 +28,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function middleValue(head: ListNode): number {
   throw new Error('not implemented');
@@ -37,7 +41,7 @@ test('even length 2',  () => middleValue(buildList([1,2])!),         2);
 test('even length 4',  () => middleValue(buildList([1,2,3,4])!),     3);
 test('single car',     () => middleValue(buildList([7])!),           7);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

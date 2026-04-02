@@ -816,9 +816,9 @@ Each file in a pair is **fully self-contained** (no imports, no top-level async)
 
 1. **Header comment** — states the step goal in one sentence from the analogy
 2. **Function + tests** — the function to implement (with prior steps locked inside the body), then tests immediately after
-3. **Helpers sentinel + boilerplate** — `// ─── Helpers ───` divider, then data structures (`ListNode`, etc.) and utility functions at the bottom
+3. **Helpers markers + boilerplate** — wrap every helper block with `// ---Helpers` and `// ---End Helpers`. That includes pre-function helper types/data structures (`ListNode`, etc.) and any utility block at the bottom.
 
-The editor auto-folds everything below `// ─── Helpers ───`, so the learner sees only the function and tests. The helpers must still be present for the file to run.
+The editor folds helper code based on those explicit markers, so the learner sees only the main implementation and tests. Helpers must still be present for the file to run.
 
 **Step 1 must always start from a blank function body.** Never pre-build scaffolding — no HashMap initialization, no loop structure, no variable declarations. The learner builds everything:
 
@@ -909,8 +909,8 @@ test(
 ```
 
 ```typescript
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-// (auto-folded in the editor — must be present for the file to run)
+// ---Helpers
+// auto-folded in the editor — must be present for the file to run
 
 class ListNode {
   // or TreeNode, etc.
@@ -959,6 +959,7 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
     }
   }
 }
+// ---End Helpers
 ```
 
 ### stepN-solution.ts template
@@ -983,12 +984,13 @@ function solveProblem(...): ReturnType {
 test('{desc}', () => solveProblem(input), expected);
 test('{desc}', () => solveProblem(input), expected);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-// (identical to problem file)
+// ---Helpers
+// identical to problem file
 class ListNode { ... }
 function createList(...) { ... }
 function listToArray(...) { ... }
 function test(...) { ... }
+// ---End Helpers
 ```
 
 ### solution.ts file structure
@@ -1007,11 +1009,12 @@ function solveProblem(...): ReturnType {
 // Tests — all must print PASS
 test('{desc}', () => ..., expected);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 class ListNode { ... }
 function createList(...) { ... }
 function listToArray(...) { ... }
 function test(...) { ... }
+// ---End Helpers
 ```
 
 ### Insert :::stackblitz directives in mental-model.md

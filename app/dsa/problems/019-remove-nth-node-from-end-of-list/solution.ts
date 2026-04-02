@@ -2,6 +2,8 @@
 // Remove Nth Node From End of List — Complete Solution
 // =============================================================================
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -10,6 +12,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function removeNthFromEnd(head: ListNode | null, n: number): ListNode | null {
   // Platform marker — gives the remover a safe spot before the first real car
@@ -42,7 +46,7 @@ runCase('remove middle car', () => listToArray(removeNthFromEnd(createList([1, 2
 runCase('remove head from five-car train', () => listToArray(removeNthFromEnd(createList([1, 2, 3, 4, 5]), 5)), [2, 3, 4, 5]);
 runCase('remove near tail', () => listToArray(removeNthFromEnd(createList([1, 2, 3, 4]), 2)), [1, 2, 4]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

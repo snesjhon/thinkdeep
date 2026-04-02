@@ -27,7 +27,7 @@ test('decode: empty string', () => decode('0#'), ['']);
 test('decode: empty belt', () => decode(''), []);
 test('decode: single-char strings', () => decode('1#a1#b1#c'), ['a', 'b', 'c']);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

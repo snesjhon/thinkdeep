@@ -25,7 +25,7 @@ test('empty string',             () => isPalindrome(''),        true);
 test('even-length palindrome',   () => isPalindrome('abba'),    true);
 test('even-length non-palindrome', () => isPalindrome('abcd'), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

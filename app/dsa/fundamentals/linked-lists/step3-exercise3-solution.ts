@@ -8,6 +8,8 @@
 // Step 3: Walk left from head and right from prev simultaneously.
 //         Any mismatch → return false. Exhaust right → return true.
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -16,6 +18,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function isPalindrome(head: ListNode | null): boolean {
   if (head === null || head.next === null) return true;
@@ -56,7 +60,7 @@ test('identical pair',      () => isPalindrome(buildList([3,3])),           true
 test('two different',       () => isPalindrome(buildList([1,2])),           false);
 test('odd non-palindrome',  () => isPalindrome(buildList([1,2,3])),         false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

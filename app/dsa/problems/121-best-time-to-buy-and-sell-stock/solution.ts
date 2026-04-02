@@ -27,7 +27,7 @@ test('buy low sell high', () => maxProfit([7, 1, 5, 3, 6, 4]), 5);
 test('only one upward move', () => maxProfit([7, 6, 4, 1, 2]), 1);
 test('prices only rise', () => maxProfit([1, 2, 3, 4, 5]), 4);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

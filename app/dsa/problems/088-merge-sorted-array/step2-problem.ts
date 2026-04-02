@@ -36,7 +36,7 @@ test('duplicates across teams', () => {
   const n1 = [1, 2, 2, 0, 0, 0]; merge(n1, 3, [2, 3, 5], 3); return n1;
 }, [1, 2, 2, 2, 3, 5]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

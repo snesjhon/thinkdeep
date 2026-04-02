@@ -5,6 +5,8 @@
 //
 // Walk from head to null, incrementing a counter at each car.
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -13,6 +15,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function countNodes(head: ListNode | null): number {
   let count = 0;
@@ -30,7 +34,7 @@ test('three cars', () => countNodes(buildList([1, 2, 3])), 3);
 test('five cars', () => countNodes(buildList([1, 2, 3, 4, 5])), 5);
 test('two cars', () => countNodes(buildList([7, 8])), 2);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

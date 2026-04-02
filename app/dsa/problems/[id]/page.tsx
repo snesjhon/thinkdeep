@@ -32,6 +32,7 @@ const DIFF_FG: Record<string, string> = {
   hard: 'var(--red)',
 };
 import { extractHeadings } from '@/lib/dsa/headings';
+import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer';
 import { TableOfContents, PhaseColorSync, PageHero, PageLayout, ProgressToggleAsync, ProgressProvider } from '@/components/ui';
 
@@ -55,6 +56,9 @@ export default function ProblemPage({ params }: Props) {
   const mentalModelContent = rawContent
     ? rawContent.replace(/^#[^\n]*\n+/, '')
     : null;
+  const codeFiles = mentalModelContent
+    ? loadReferencedDsaCodeFiles(mentalModelContent, problem.slug, 'problems')
+    : undefined;
 
   const headings = mentalModelContent
     ? extractHeadings(mentalModelContent)
@@ -161,6 +165,7 @@ export default function ProblemPage({ params }: Props) {
               <MarkdownRenderer
                 content={mentalModelContent}
                 problemSlug={problem.slug}
+                codeFiles={codeFiles}
               />
             ) : (
               <p className="text-base text-[var(--fg-gutter)]">

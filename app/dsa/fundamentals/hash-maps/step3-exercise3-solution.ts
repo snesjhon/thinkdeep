@@ -28,7 +28,7 @@ test('three subarrays', () => countDivisibleSubarrays([1, 2, 3], 3), 3);
 test('classic example', () => countDivisibleSubarrays([4, 5, 0, -2, -3, 1], 5), 7);
 test('all zeros', () => countDivisibleSubarrays([0, 0, 0], 1), 6);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -4,6 +4,8 @@
 // Goal: After the scout gap is set, walk both workers together until the remover
 // stands right before the target car, then skip it.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function removeNthFromEnd(head: ListNode | null, n: number): ListNode | null {
   // ✓ Step 1: Platform marker — safe standing spot before the first real car
@@ -42,7 +46,7 @@ runCase('example 1', () => listToArray(removeNthFromEnd(createList([1, 2, 3, 4, 
 runCase('remove tail', () => listToArray(removeNthFromEnd(createList([1, 2]), 1)), [1]);
 runCase('remove middle car', () => listToArray(removeNthFromEnd(createList([1, 2, 3]), 2)), [1, 3]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

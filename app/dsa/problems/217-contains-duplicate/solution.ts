@@ -24,7 +24,7 @@ test('single stamp', () => containsDuplicate([7]), false);
 test('duplicate in middle', () => containsDuplicate([1, 1, 1, 3, 3, 4, 3, 2, 4, 2]), true);
 test('large no duplicates', () => containsDuplicate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

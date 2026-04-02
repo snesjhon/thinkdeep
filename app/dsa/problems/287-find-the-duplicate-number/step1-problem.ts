@@ -12,7 +12,7 @@ function findDuplicate(nums: number[]): number {
 runCase('two-room hallway [1,1] meets at duplicate room 1', () => findDuplicate([1, 1]), 1);
 runCase('all hallways funnel straight into room 2', () => findDuplicate([2, 2, 2, 2, 2]), 2);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {

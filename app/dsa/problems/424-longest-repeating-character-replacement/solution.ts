@@ -41,7 +41,7 @@ test('LeetCode example 2: AABABBA k=1', () => characterReplacement('AABABBA', 1)
 test('single char string', () => characterReplacement('Z', 0), 1);
 test('all different, large k', () => characterReplacement('ABCDE', 4), 5);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

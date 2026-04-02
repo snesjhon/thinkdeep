@@ -21,7 +21,7 @@ function reverseList(head: ListNode | null): ListNode | null {
 // Tests — all must print PASS
 test('empty list returns null', () => reverseList(null), null);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 class ListNode {
   val: number;

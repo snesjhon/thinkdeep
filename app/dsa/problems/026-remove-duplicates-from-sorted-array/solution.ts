@@ -35,7 +35,7 @@ test('array mutated correctly [0,0,1,1,1,2,2,3,3,4]', () => {
   return a.slice(0, k);
 }, [0, 1, 2, 3, 4]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -25,7 +25,7 @@ test('pattern longer than s',   () => countAnagramWindows('ab', 'abc'),         
 test('single match at start',   () => countAnagramWindows('bac', 'abc'),          1);
 test('repeated chars in pattern', () => countAnagramWindows('aabab', 'aab'),      2);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -16,7 +16,7 @@ test('empty string in list', () => encode(['']), '0#');
 test('empty list', () => encode([]), '');
 test('single-char strings', () => encode(['a', 'b', 'c']), '1#a1#b1#c');
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

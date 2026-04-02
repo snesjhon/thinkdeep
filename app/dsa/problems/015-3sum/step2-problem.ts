@@ -27,7 +27,7 @@ test('all zeros', () => threeSum([0, 0, 0]), [[0, 0, 0]]);
 test('no valid triplet', () => threeSum([0, 1, 1]), []);
 test('duplicate values need dedup', () => threeSum([-2, 0, 0, 2, 2]), [[-2, 0, 2]]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

@@ -16,6 +16,7 @@ import {
   getPrecedingSection,
 } from '@/lib/dsa/fundamentals';
 import { extractHeadings } from '@/lib/dsa/headings';
+import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer';
 import { TableOfContents, PhaseColorSync, PageHero, PageLayout } from '@/components/ui';
 
@@ -37,6 +38,11 @@ export default function FundamentalsPage({ params }: Props) {
   const prereq = getPrecedingSection(params.slug);
   const color = phase ? phaseColor(phase.number) : null;
   const headings = extractHeadings(guide.content);
+  const codeFiles = loadReferencedDsaCodeFiles(
+    guide.content,
+    params.slug,
+    'fundamentals',
+  );
 
   return (
     <>
@@ -94,6 +100,7 @@ export default function FundamentalsPage({ params }: Props) {
             <MarkdownRenderer
               content={guide.content}
               fundamentalsSlug={params.slug}
+              codeFiles={codeFiles}
             />
             <div className="flex items-center justify-between pt-8 border-t border-t-[var(--border)]">
               <Link

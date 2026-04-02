@@ -33,7 +33,7 @@ test('all same chars',            () => countExactK('aaaa', 1),     10);
 test('k equals 0',                () => countExactK('abc', 0),      0);
 test('k larger than distinct',    () => countExactK('ab', 3),       0);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

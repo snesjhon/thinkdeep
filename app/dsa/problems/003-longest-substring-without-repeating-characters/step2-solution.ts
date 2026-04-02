@@ -35,7 +35,7 @@ test('classic — abcabcbb', () => lengthOfLongestSubstring('abcabcbb'), 3);
 test('classic — pwwkew', () => lengthOfLongestSubstring('pwwkew'), 3);
 test('stale log check — dvdf', () => lengthOfLongestSubstring('dvdf'), 3);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

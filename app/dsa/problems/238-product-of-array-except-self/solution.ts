@@ -32,7 +32,7 @@ test('zeros [0,1,2]', () => productExceptSelf([0, 1, 2]), [2, 0, 0]);
 test('single element', () => productExceptSelf([42]), [1]);
 test('negatives [2,-3,4]', () => productExceptSelf([2, -3, 4]), [-12, 8, -6]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

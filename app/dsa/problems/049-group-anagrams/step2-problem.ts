@@ -43,7 +43,7 @@ test('multiple empty strings in one group',
   normalizeGroups([['','','']])
 );
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function normalizeGroups(groups: string[][]): string[][] {
   return groups
     .map(g => [...g].sort())

@@ -28,7 +28,7 @@ test('empty pile', () => containsDuplicate([]), false);
 test('single stamp', () => containsDuplicate([7]), false);
 test('duplicate in middle', () => containsDuplicate([1, 1, 1, 3, 3, 4, 3, 2, 4, 2]), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

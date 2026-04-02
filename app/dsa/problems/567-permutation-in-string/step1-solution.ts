@@ -34,7 +34,7 @@ test('initial window is exact match — same order', () => checkInclusion('ab', 
 test('initial window is exact match — reversed', () => checkInclusion('ab', 'ba'), true);
 test('single char match at start', () => checkInclusion('a', 'a'), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -29,7 +29,7 @@ test('two walls exact',        () => largestWindowWidth([3, 3], 3),             
 test('two walls insufficient', () => largestWindowWidth([1, 2], 3),                        -1);
 test('inner pair is widest',   () => largestWindowWidth([2, 5, 5, 5, 5, 2], 15),           3);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

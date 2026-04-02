@@ -15,6 +15,8 @@
 //   reverseFirstK(1 → 2 → 3, 3)           → 3 → 2 → 1
 //   reverseFirstK(1 → 2 → 3, 1)           → 1 → 2 → 3
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -23,6 +25,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function reverseFirstK(head: ListNode | null, k: number): ListNode | null {
   throw new Error('not implemented');
@@ -34,7 +38,7 @@ test('reverse just 1 (noop)', () => toArray(reverseFirstK(buildList([1,2,3,4,5])
 test('reverse first 2',       () => toArray(reverseFirstK(buildList([1,2,3,4,5]), 2)), [2,1,3,4,5]);
 test('single car k=1',        () => toArray(reverseFirstK(buildList([7]), 1)),         [7]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

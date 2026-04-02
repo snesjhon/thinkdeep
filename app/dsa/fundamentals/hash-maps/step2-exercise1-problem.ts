@@ -23,7 +23,7 @@ test('all different', () => countUnique([1, 2, 3]), 3);
 test('mixed', () => countUnique([1, 2, 2, 3, 3, 3]), 3);
 test('negatives', () => countUnique([-1, -1, 0, 1, 1]), 3);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

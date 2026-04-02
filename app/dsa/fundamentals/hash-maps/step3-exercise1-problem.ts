@@ -27,7 +27,7 @@ test('true: triple sums to zero', () => hasZeroSumSubarray([3, 1, -4, 2]), true)
 test('true: whole array', () => hasZeroSumSubarray([1, 2, -3]), true);
 test('false: partial negatives', () => hasZeroSumSubarray([4, -1, 3]), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

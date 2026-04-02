@@ -14,7 +14,7 @@ test('[-1, 0] target=-1 → [1,2]', () => twoSum([-1, 0], -1), [1, 2]);
 test('[1, 3] target=4 → [1,2]', () => twoSum([1, 3], 4), [1, 2]);
 test('[2, 7] target=9 → [1,2]', () => twoSum([2, 7], 9), [1, 2]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

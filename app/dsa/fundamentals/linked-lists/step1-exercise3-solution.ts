@@ -8,6 +8,8 @@
 // Splice the new node in: newNode.next = curr.next; curr.next = newNode.
 // Return dummy.next.
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -16,6 +18,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function insertAt(head: ListNode | null, k: number, val: number): ListNode | null {
   const dummy = new ListNode(0);
@@ -38,7 +42,7 @@ test('insert beyond length', () => toArray(insertAt(buildList([1,2,3]), 10, 99))
 test('insert into empty',    () => toArray(insertAt(null, 0, 5)),                 [5]);
 test('insert single at end', () => toArray(insertAt(buildList([1]), 1, 2)),       [1,2]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

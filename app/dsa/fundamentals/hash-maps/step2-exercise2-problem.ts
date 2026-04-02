@@ -24,7 +24,7 @@ test('empty a', () => intersection([], [1, 2]), []);
 test('empty b', () => intersection([1, 2], []), []);
 test('subset', () => intersection([1, 2, 3, 4], [2, 4]), [2, 4]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

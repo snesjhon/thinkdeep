@@ -35,7 +35,7 @@ test('right wall tallest', () => trap([2, 0, 1, 0, 3]), 5);
 test('LeetCode example 1', () => trap([0,1,0,2,1,0,1,3,2,1,2,1]), 6);
 test('LeetCode example 2', () => trap([4,2,0,3,2,5]), 9);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

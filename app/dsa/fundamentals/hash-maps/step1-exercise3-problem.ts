@@ -24,7 +24,7 @@ test('single element', () => hasPairWithSum([5], 10), false);
 test('empty', () => hasPairWithSum([], 0), false);
 test('pair at end', () => hasPairWithSum([4, 1, 9, 6], 10), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

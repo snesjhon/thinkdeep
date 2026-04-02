@@ -38,7 +38,7 @@ test('no permutation exists', () => checkInclusion('ab', 'eidboaoo'), false);
 test('single char — match exists', () => checkInclusion('a', 'bba'), true);
 test('single char — no match', () => checkInclusion('a', 'bbb'), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

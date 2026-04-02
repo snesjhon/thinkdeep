@@ -34,7 +34,7 @@ test('stale log check — dvdf', () => lengthOfLongestSubstring('dvdf'), 3);
 test('two chars — au', () => lengthOfLongestSubstring('au'), 2);
 test('repeat at start — aab', () => lengthOfLongestSubstring('aab'), 2);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

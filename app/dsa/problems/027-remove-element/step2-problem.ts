@@ -32,7 +32,7 @@ test('example 2 — packed correctly', () => {
   return [k, nums.slice(0, k)];
 }, [5, [0, 1, 3, 0, 4]]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

@@ -297,7 +297,7 @@ test('{description}', () => {functionName}({input}), {expected});
 test('{description}', () => {functionName}({input2}), {expected2});
 // ... 4-6 tests covering normal cases, edge cases, and boundary conditions
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
@@ -315,6 +315,7 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
     }
   }
 }
+// ---End Helpers
 ```
 
 **Rules for problem files**:
@@ -323,7 +324,7 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
 - Tests use the **thunk form** `() => functionName(input)` so `Error('not implemented')` is caught and prints `TODO`
 - For void/in-place functions, put the mutation call inside the thunk: `() => { const a = [...]; fn(a); return a; }`
 - Test cases: 4-6 per file, covering normal, edge (empty, single), and boundary conditions
-- The `test()` helper goes under `// ─── Helpers ───` at the bottom (auto-folded in the editor)
+- Wrap helper blocks with `// ---Helpers` and `// ---End Helpers` so the editor can fold them without rewriting the file
 - Exercises within a level progress: basic → variation → combined/harder
 - **No LeetCode duplicates**: Before finalizing any exercise, check whether the same problem already exists in `app/problems/`. If a problem page covers it, replace that exercise with a novel variant — the exercises exist to build the mental model, not re-do problems the user will encounter later on the path.
 - **Use the level's analogy vocabulary**: Comments in the exercise header must use the same language as the corresponding Building Block level in the guide (e.g. "scanner/stamper" for write-cursor levels, "left inspector/right inspector" for two-pointer levels, "left messenger/right messenger" for prefix-suffix levels). Technical names like `r`, `w`, `L`, `R` belong in code — not in the description prose. The exercise title should also reflect the analogy (e.g. "Stamp the Keepers", "Swap the Inspectors") not just the function name.
@@ -347,8 +348,9 @@ function {functionName}({params}): {returnType} {
 test('{description}', () => {functionName}({input}), {expected});
 // ... all tests
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(...) { /* identical to problem file */ }
+// ---End Helpers
 ```
 
 ---

@@ -13,7 +13,7 @@ function reverseList(head: ListNode | null): ListNode | null {
 // Tests — step 1: empty list passes; all others are TODO until step 2
 test('empty list returns null', () => reverseList(null), null);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 class ListNode {
   val: number;

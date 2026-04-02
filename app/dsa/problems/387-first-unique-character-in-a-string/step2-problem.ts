@@ -26,7 +26,7 @@ test('single character string — only one ballot', () => firstUniqChar('z'), 0)
 test('all characters repeat — no sole nominee', () => firstUniqChar('aabb'), -1);
 test('no unique character anywhere', () => firstUniqChar('aabbcc'), -1);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

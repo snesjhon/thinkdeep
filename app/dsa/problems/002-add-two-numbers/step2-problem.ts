@@ -4,6 +4,8 @@
 // Goal: Add the overflow satchel so each column can stamp the ones digit now
 // and carry any extra 1 into the next column.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | null {
   // ✓ Step 1: Blank starter stub and answer clip point (locked)
@@ -36,7 +40,7 @@ runTest('example 1', () => listToArray(addTwoNumbers(createList([2, 4, 3]), crea
 runTest('carry extends answer by one digit', () => listToArray(addTwoNumbers(createList([9, 9, 9]), createList([1]))), [0, 0, 0, 1]);
 runTest('one roll ends early but carry continues', () => listToArray(addTwoNumbers(createList([9, 9]), createList([1]))), [0, 0, 1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

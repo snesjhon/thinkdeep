@@ -15,6 +15,8 @@
 //   thirdFromEnd(1 → 2 → 3)           → 1    (3 is 1st, 2 is 2nd, 1 is 3rd)
 //   thirdFromEnd(1 → 2)               → -1
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -23,6 +25,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function thirdFromEnd(head: ListNode | null): number {
   throw new Error('not implemented');
@@ -35,7 +39,7 @@ test('two cars',        () => thirdFromEnd(buildList([1,2])),         -1);
 test('one car',         () => thirdFromEnd(buildList([1])),           -1);
 test('empty train',     () => thirdFromEnd(null),                    -1);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

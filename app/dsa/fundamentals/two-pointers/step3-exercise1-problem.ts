@@ -27,7 +27,7 @@ test('empty array',      () => threeSumZero([]),                      []);
 test('with duplicates',  () => threeSumZero([-2, 0, 0, 2, 2]),       [[-2,0,2]]);
 test('two elements',     () => threeSumZero([0, 0]),                  []);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

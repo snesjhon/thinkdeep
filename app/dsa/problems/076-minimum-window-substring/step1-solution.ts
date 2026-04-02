@@ -41,7 +41,7 @@ test('exact match: stage is exactly the casting sheet', () => minWindow('ABC', '
 test('casting sheet is one actor, appears first on stage', () => minWindow('CADOBEBAN', 'C'), 'C');
 test('empty stage', () => minWindow('', 'A'), '');
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

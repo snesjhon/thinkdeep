@@ -29,7 +29,7 @@ test('empty array',    () => { const a: string[] = []; sortTrafficLights(a); ret
 test('single light',   () => { const a = ['G']; sortTrafficLights(a); return a; }, ['G']);
 test('reverse order',  () => { const a = ['B','G','R']; sortTrafficLights(a); return a; }, ['R','G','B']);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

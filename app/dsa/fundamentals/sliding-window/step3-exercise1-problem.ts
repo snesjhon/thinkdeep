@@ -26,7 +26,7 @@ test('k equals 0',                () => longestKDistinct('abc', 0),          0);
 test('empty string',              () => longestKDistinct('', 2),             0);
 test('all same characters',       () => longestKDistinct('aaaa', 2),         4);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

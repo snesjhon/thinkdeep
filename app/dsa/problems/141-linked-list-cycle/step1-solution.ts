@@ -4,6 +4,8 @@
 // Goal: Place both runners at the starting line and define when the race ends —
 //       the sprinter must have at least two steps of road ahead to keep going.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function hasCycle(head: ListNode | null): boolean {
   let slow = head; // jogger: starts at the starting line
@@ -26,7 +30,7 @@ function hasCycle(head: ListNode | null): boolean {
 test('empty list has no cycle', () => hasCycle(null), false);
 test('single node with no self-link has no cycle', () => hasCycle(createCycle([1], -1)), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createCycle(values: number[], pos: number): ListNode | null {
   if (values.length === 0) return null;

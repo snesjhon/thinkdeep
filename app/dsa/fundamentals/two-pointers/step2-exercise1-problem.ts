@@ -26,7 +26,7 @@ test('symmetric equal',      () => maxContainerArea([4, 3, 2, 1, 4]),           
 test('tall single middle',   () => maxContainerArea([1, 2, 4, 3, 1]),              4);
 test('ascending heights',    () => maxContainerArea([1, 2, 3, 4, 5]),              6);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

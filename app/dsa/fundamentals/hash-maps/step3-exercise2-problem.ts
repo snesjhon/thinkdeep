@@ -25,7 +25,7 @@ test('first match of two', () => longestSubarrayWithSum([1, 2, 3], 3), 2);
 test('single element', () => longestSubarrayWithSum([5], 5), 1);
 test('negative target', () => longestSubarrayWithSum([1, 2, -3, 1], -2), 2);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

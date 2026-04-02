@@ -2,6 +2,8 @@
 // Linked List Cycle — Complete Solution
 // =============================================================================
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -10,6 +12,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function hasCycle(head: ListNode | null): boolean {
   let slow = head; // jogger: one step per lap
@@ -30,7 +34,7 @@ test('[3,2,0,-4] with tail to index 1 has a cycle', () => hasCycle(createCycle([
 test('[1,2] with tail to index 0 has a cycle', () => hasCycle(createCycle([1, 2], 0)), true);
 test('longer list with tail to head has a cycle', () => hasCycle(createCycle([1, 2, 3, 4, 5], 0)), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createCycle(values: number[], pos: number): ListNode | null {
   if (values.length === 0) return null;

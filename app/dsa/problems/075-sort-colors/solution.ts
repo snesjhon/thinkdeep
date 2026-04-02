@@ -118,7 +118,7 @@ test('blue then red', () => {
   return nums;
 }, [0, 2]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function swap(arr: number[], i: number, j: number): void {
   [arr[i], arr[j]] = [arr[j], arr[i]];

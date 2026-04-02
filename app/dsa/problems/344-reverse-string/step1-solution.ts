@@ -24,7 +24,7 @@ test('single element stays unchanged', () => {
   return arr;
 }, [1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

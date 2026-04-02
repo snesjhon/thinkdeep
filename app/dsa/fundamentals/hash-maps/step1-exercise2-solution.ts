@@ -24,7 +24,7 @@ test('dominant front', () => mostFrequent([5, 5, 5, 1, 1]), 5);
 test('dominant back', () => mostFrequent([1, 2, 3, 3, 3]), 3);
 test('two-way tie picks smaller', () => mostFrequent([4, 4, 9, 9]), 4);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

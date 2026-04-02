@@ -2,6 +2,8 @@
 // Reorder List — Complete Solution
 // =============================================================================
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -10,6 +12,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function reorderList(head: ListNode | null): void {
   if (head === null || head.next === null || head.next.next === null) {
@@ -90,7 +94,7 @@ runCase('six tags alternate from both ends', () => {
   return listToArray(head);
 }, [1, 6, 2, 5, 3, 4]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

@@ -31,7 +31,7 @@ test('single element', () => maxSlidingWindow([5], 1), [5]);
 test('increasing single window — back-cleaning fires repeatedly', () => maxSlidingWindow([1, 3, 2], 3), [3]);
 test('decreasing single window — nothing cleaned from back', () => maxSlidingWindow([3, 1, 2], 3), [3]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

@@ -23,7 +23,7 @@ test('[2,3]', () => productExceptSelf([2, 3]), [3, 2]);
 test('[-1,1,0,-3,3]', () => productExceptSelf([-1, 1, 0, -3, 3]), [0, 0, 9, 0, 0]);
 test('zeros [0,1,2]', () => productExceptSelf([0, 1, 2]), [2, 0, 0]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

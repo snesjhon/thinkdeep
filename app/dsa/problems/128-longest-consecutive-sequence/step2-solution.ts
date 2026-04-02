@@ -37,7 +37,7 @@ test('finds 9-volume series', () => longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 
 test('two equal-length runs', () => longestConsecutive([1, 2, 3, 10, 11, 12]), 3);
 test('negative numbers', () => longestConsecutive([-3, -2, -1, 0, 1]), 5);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

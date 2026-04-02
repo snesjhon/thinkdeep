@@ -4,6 +4,8 @@
 // Goal: Find where the ribbon folds so short ribbons stay unchanged and longer
 // ribbons can be split into a front strand and a tail strand.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function reorderList(head: ListNode | null): void {
   throw new Error('not implemented');
@@ -36,7 +40,7 @@ runCase('two tags stay in the same order', () => {
   return listToArray(head);
 }, [1, 2]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

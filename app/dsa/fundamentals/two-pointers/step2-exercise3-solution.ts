@@ -26,7 +26,7 @@ test('exactly at min distance', () => maxContainerAtDistance([3, 1, 2], 2), 4);
 test('uniform heights',         () => maxContainerAtDistance([1, 1, 1], 1), 2);
 test('ascending with gap',      () => maxContainerAtDistance([1, 2, 3, 4, 5], 3), 6);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

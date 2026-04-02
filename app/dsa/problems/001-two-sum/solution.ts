@@ -24,7 +24,7 @@ test('finds pair in middle', () => twoSum([3, 2, 4], 6), [1, 2]);
 test('finds duplicate pair', () => twoSum([3, 3], 6), [0, 1]);
 test('finds pair near end', () => twoSum([1, 2, 3, 7], 9), [1, 3]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

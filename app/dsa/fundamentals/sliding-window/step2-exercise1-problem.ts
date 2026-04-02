@@ -25,7 +25,7 @@ test('only singles fit',         () => longestAffordable([5, 6, 7], 5),         
 test('nothing fits',             () => longestAffordable([10, 20, 30], 5),          0);
 test('budget exactly met',       () => longestAffordable([2, 1, 2, 1, 2], 5),     3);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -15,6 +15,8 @@
 //   isPalindrome(1 → 2)                 → false
 //   isPalindrome(1 → 2 → 3)             → false
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -23,6 +25,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function isPalindrome(head: ListNode | null): boolean {
   throw new Error('not implemented');
@@ -35,7 +39,7 @@ test('identical pair',      () => isPalindrome(buildList([3,3])),           true
 test('two different',       () => isPalindrome(buildList([1,2])),           false);
 test('odd non-palindrome',  () => isPalindrome(buildList([1,2,3])),         false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

@@ -59,7 +59,7 @@ test('t is a single repeated character', () => minWindow('AAAB', 'AA'), 'AA');
 test('empty stage', () => minWindow('', 'A'), '');
 test('s equals t exactly', () => minWindow('a', 'a'), 'a');
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

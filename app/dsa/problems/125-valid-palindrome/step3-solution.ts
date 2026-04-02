@@ -43,7 +43,7 @@ test('"race a car" is not a palindrome', () => isPalindrome('race a car'), false
 test('digits palindrome "12321"', () => isPalindrome('12321'), true);
 test('mixed case "Aba" is a palindrome', () => isPalindrome('Aba'), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function isAlphanumeric(c: string): boolean {
   return /[a-zA-Z0-9]/.test(c);

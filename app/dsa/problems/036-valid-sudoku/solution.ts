@@ -60,7 +60,7 @@ test('invalid: duplicate in row', () => isValidSudoku(makeBoard([[0,0,'1'],[0,1,
 test('invalid: duplicate in column', () => isValidSudoku(makeBoard([[0,0,'1'],[1,0,'1']])), false);
 test('invalid: duplicate in box', () => isValidSudoku(makeBoard([[0,0,'1'],[2,2,'1']])), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

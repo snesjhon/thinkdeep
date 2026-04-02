@@ -26,7 +26,7 @@ test('two elements',             () => closestPairSum([3, 7],             8),  1
 test('negative numbers',         () => closestPairSum([-10, -3, 0, 5, 9], 0), -1);
 test('all same value',           () => closestPairSum([5, 5, 5],          9),  10);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

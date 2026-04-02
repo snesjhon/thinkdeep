@@ -8,6 +8,8 @@
 // On a keep: advance prev to curr, then advance curr.
 // Return dummy.next.
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -16,6 +18,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function removeAll(head: ListNode | null, target: number): ListNode | null {
   const dummy = new ListNode(0);
@@ -40,7 +44,7 @@ test('remove all cars',       () => toArray(removeAll(buildList([3,3,3]), 3)),  
 test('target not in train',   () => toArray(removeAll(buildList([1,2,3]), 9)),     [1,2,3]);
 test('empty train',           () => toArray(removeAll(null, 1)),                  []);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

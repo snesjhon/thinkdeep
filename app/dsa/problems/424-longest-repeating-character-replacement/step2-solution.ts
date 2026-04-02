@@ -39,7 +39,7 @@ test('slide needed — alternating', () => characterReplacement('ABAB', 1), 3);
 test('LeetCode example 1', () => characterReplacement('ABAB', 2), 4);
 test('LeetCode example 2', () => characterReplacement('AABABBA', 1), 4);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

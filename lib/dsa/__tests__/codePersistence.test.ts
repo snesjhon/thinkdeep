@@ -19,6 +19,7 @@ test('finds pair', () => twoSum([2, 7], 9), [0, 1]);
 const linkedListProblemFile = `// =============================================================================
 // Linked Lists — Level 1, Exercise 1
 // =============================================================================
+// ---Helpers
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -27,6 +28,7 @@ class ListNode {
     this.next = next;
   }
 }
+// ---End Helpers
 
 function countNodes(head: ListNode | null): number {
   throw new Error('not implemented');
@@ -34,7 +36,7 @@ function countNodes(head: ListNode | null): number {
 
 test('empty train', () => countNodes(null), 0);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   return null;
 }
@@ -66,15 +68,11 @@ describe('dsa code persistence', () => {
     })
   })
 
-  it('wraps prelude ListNode helpers and excludes them from the saved snippet', () => {
+  it('uses explicit helper markers to exclude prelude helpers from the saved snippet', () => {
     const normalized = normalizeDsaEditorContent(linkedListProblemFile)
 
-    expect(normalized).toContain(
-      `// ─── Helpers ──────────────────────────────────────────────────────────────────\n\nclass ListNode`,
-    )
-    expect(normalized).toContain(
-      `}\n\n// ─── End Helpers ──────────────────────────────────────────────────────────────\n\nfunction countNodes`,
-    )
+    expect(normalized).toContain('// ---Helpers')
+    expect(normalized).toContain('// ---End Helpers')
     expect(extractEditableSnippet(normalized)).toBe(
       "function countNodes(head: ListNode | null): number {\n  throw new Error('not implemented');\n}",
     )

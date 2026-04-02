@@ -3,6 +3,8 @@
 // =============================================================================
 // Goal: Compare the two front cars and couple the lighter one each iteration.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -11,6 +13,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {
   // ✓ Step 1: Sentinel engine — gives tail a valid attachment point
@@ -42,7 +46,7 @@ test('example 1', () => listToArray(mergeTwoLists(createList([1, 2, 4]), createL
 test('equal single nodes', () => listToArray(mergeTwoLists(createList([1]), createList([1]))), [1, 1]);
 test('list2 entirely smaller', () => listToArray(mergeTwoLists(createList([5]), createList([1, 2, 3]))), [1, 2, 3, 5]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

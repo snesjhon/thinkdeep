@@ -2,6 +2,8 @@
 // Merge Two Sorted Lists — Complete Solution
 // =============================================================================
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -10,6 +12,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {
   // Sentinel engine — gives tail a valid attachment point before the first real car
@@ -44,7 +48,7 @@ test('list1 entirely smaller', () => listToArray(mergeTwoLists(createList([1, 2,
 test('already interleaved', () => listToArray(mergeTwoLists(createList([1, 3, 5]), createList([2, 4, 6]))), [1, 2, 3, 4, 5, 6]);
 test('single equal elements', () => listToArray(mergeTwoLists(createList([2]), createList([2]))), [2, 2]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

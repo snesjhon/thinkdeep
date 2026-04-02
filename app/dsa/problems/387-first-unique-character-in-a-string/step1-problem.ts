@@ -20,7 +20,7 @@ test('all characters repeat — no sole nominee', () => firstUniqChar('aabb'), -
 test('single character repeated — no sole nominee', () => firstUniqChar('cccc'), -1);
 test('two alternating characters — no sole nominee', () => firstUniqChar('abab'), -1);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

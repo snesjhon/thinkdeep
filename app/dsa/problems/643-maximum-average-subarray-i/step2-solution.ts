@@ -31,7 +31,7 @@ test('LeetCode example 1', () => findMaxAverage([1,12,-5,-6,50,3], 4), 12.75);
 test('best window at the end', () => findMaxAverage([1, 2, 3, 4, 5], 2), 4.5);
 test('all same score', () => findMaxAverage([3, 3, 3, 3], 2), 3);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

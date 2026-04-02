@@ -35,7 +35,7 @@ test('single bar — no water possible', () => trap([5]), 0);
 test('two bars — no valley between them', () => trap([3, 4]), 0);
 test('plateau — all same height', () => trap([2, 2, 2]), 0);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

@@ -16,7 +16,7 @@ test('all unique — abc', () => lengthOfLongestSubstring('abc'), 3);
 test('all unique — abcde', () => lengthOfLongestSubstring('abcde'), 5);
 test('all unique — abcdef', () => lengthOfLongestSubstring('abcdef'), 6);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

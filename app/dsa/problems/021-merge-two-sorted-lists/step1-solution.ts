@@ -3,6 +3,8 @@
 // =============================================================================
 // Goal: Place the sentinel engine and coupling hook, build the structural frame.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -11,6 +13,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {
   // ✓ Step 1: Sentinel engine — gives tail a valid starting point before the first real car
@@ -32,7 +36,7 @@ test('both lists empty', () => listToArray(mergeTwoLists(null, null)), []);
 test('first list empty', () => listToArray(mergeTwoLists(null, createList([1]))), [1]);
 test('second list empty', () => listToArray(mergeTwoLists(createList([1]), null)), [1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

@@ -29,7 +29,7 @@ test('two zeros',     () => productExceptSelf([0, 0]),           [0, 0]);
 test('with negative', () => productExceptSelf([-1, 2, -3, 4]), [-24, 12, -8, 6]);
 test('all ones',      () => productExceptSelf([1, 1, 1]),        [1, 1, 1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

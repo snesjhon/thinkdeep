@@ -4,6 +4,8 @@
 // Goal: Build the answer-roll scaffolding and stamp one digit per column for
 // cases where no column total ever reaches 10.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | null {
   throw new Error('not implemented');
@@ -22,7 +26,7 @@ runTest('both single zero digits', () => listToArray(addTwoNumbers(createList([0
 runTest('same length without carry', () => listToArray(addTwoNumbers(createList([2, 4, 3]), createList([5, 4, 1]))), [7, 8, 4]);
 runTest('different lengths without carry', () => listToArray(addTwoNumbers(createList([1, 2]), createList([3]))), [4, 2]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

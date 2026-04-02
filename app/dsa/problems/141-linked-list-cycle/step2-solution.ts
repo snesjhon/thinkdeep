@@ -4,6 +4,8 @@
 // Goal: Each lap, advance the jogger one step and the sprinter two steps.
 //       If they ever land on the same node, the track loops — return true.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function hasCycle(head: ListNode | null): boolean {
   // ✓ Step 1: Place runners at the starting line (locked)
@@ -33,7 +37,7 @@ test('two-node list with no cycle', () => hasCycle(createCycle([1, 2], -1)), fal
 test('[3,2,0,-4] with tail to index 1 has a cycle', () => hasCycle(createCycle([3, 2, 0, -4], 1)), true);
 test('[1,2] with tail to index 0 has a cycle', () => hasCycle(createCycle([1, 2], 0)), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createCycle(values: number[], pos: number): ListNode | null {
   if (values.length === 0) return null;

@@ -34,7 +34,7 @@ test('single character is a palindrome', () => isPalindrome('a'), true);
 test('spaces only is a palindrome', () => isPalindrome('   '), true);
 test('punctuation only is a palindrome', () => isPalindrome(',.!'), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function isAlphanumeric(c: string): boolean {
   return /[a-zA-Z0-9]/.test(c);

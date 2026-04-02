@@ -30,7 +30,7 @@ function makeBoard(overrides: [number, number, string][]): string[][] {
 
 test('empty board (all dots) is valid', () => isValidSudoku(makeBoard([])), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

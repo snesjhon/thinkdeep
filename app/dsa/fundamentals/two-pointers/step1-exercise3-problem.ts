@@ -26,7 +26,7 @@ test('empty array',         () => countPairsLessThan([],               5),  0);
 test('two elements',        () => countPairsLessThan([1, 4],           6),  1);
 test('negative numbers',    () => countPairsLessThan([-3, 0, 2, 5],   4),  4);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

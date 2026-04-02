@@ -23,7 +23,7 @@ test('two chars', () => countChars('aabbc'), { a: 2, b: 2, c: 1 });
 test('hello', () => countChars('hello'), { h: 1, e: 1, l: 2, o: 1 });
 test('mixed', () => countChars('abcabc'), { a: 2, b: 2, c: 2 });
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -32,7 +32,7 @@ test('all same score', () => findMaxAverage([3, 3, 3, 3], 2), 3);
 test('negative scores, best is least negative', () => findMaxAverage([-1, -2, -3, -4], 2), -1.5);
 test('k equals array length', () => findMaxAverage([1, 2, 3], 3), 2);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

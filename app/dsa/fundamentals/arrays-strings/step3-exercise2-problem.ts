@@ -24,7 +24,7 @@ test('first element',   () => rangeSum([1, 2, 3, 4], 0, 0),  1);
 test('with negatives',  () => rangeSum([-1, 2, -3, 4], 1, 3), 3);
 test('single-elem arr', () => rangeSum([7], 0, 0),            7);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

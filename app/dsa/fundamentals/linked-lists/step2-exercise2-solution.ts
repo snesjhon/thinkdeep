@@ -7,6 +7,8 @@
 //   fast === null  → even length (fast stepped off the end)
 //   fast !== null  → odd length  (fast is on the last car)
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -15,6 +17,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function isEvenLength(head: ListNode | null): boolean {
   let fast: ListNode | null = head;
@@ -31,7 +35,7 @@ test('three cars',     () => isEvenLength(buildList([1,2,3])),      false);
 test('four cars',      () => isEvenLength(buildList([1,2,3,4])),    true);
 test('five cars',      () => isEvenLength(buildList([1,2,3,4,5])), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

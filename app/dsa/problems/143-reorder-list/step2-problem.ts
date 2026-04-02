@@ -4,6 +4,8 @@
 // Goal: Flip the tail into a returning strand, then lace it into the front
 // strand one tag at a time.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function reorderList(head: ListNode | null): void {
   // ✓ Step 1: Short ribbons already match the target pattern
@@ -67,7 +71,7 @@ runCase('three tags reorder around the middle', () => {
   return listToArray(head);
 }, [1, 3, 2]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

@@ -31,7 +31,7 @@ test('empty terrain — no walls, no water', () => trap([]), 0);
 test('symmetric valley — left side bottleneck', () => trap([3, 0, 3]), 3);
 test('right wall tallest — left surveyor measures all', () => trap([2, 0, 1, 0, 3]), 5);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

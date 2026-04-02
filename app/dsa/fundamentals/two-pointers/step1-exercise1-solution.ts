@@ -25,7 +25,7 @@ test('empty array',             () => hasPairWithSum([], 5),                fals
 test('single element',          () => hasPairWithSum([5], 10),              false);
 test('negative numbers',        () => hasPairWithSum([-3, 0, 3, 7], 0),    true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -12,7 +12,7 @@ function threeSum(nums: number[]): number[][] {
 test('empty ledger returns no triplets', () => threeSum([]), []);
 test('all-positive entries — break immediately', () => threeSum([1, 2, 3]), []);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

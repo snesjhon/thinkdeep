@@ -29,7 +29,7 @@ test('no unique character anywhere', () => firstUniqChar('aabbcc'), -1);
 test('unique character at the end', () => firstUniqChar('aabbc'), 4);
 test('entire string is one character', () => firstUniqChar('aaaa'), -1);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

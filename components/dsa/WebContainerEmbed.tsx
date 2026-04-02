@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { EditorView } from '@codemirror/view';
 import type { Transaction } from '@codemirror/state';
 import type { WebContainer } from '@webcontainer/api';
+import useSWRImmutable from 'swr/immutable';
+import { useSWRConfig } from 'swr';
 import {
   applyEditableSnippet,
   buildDsaCodeStorageKey,
@@ -20,7 +22,7 @@ let _Transaction: typeof Transaction | null = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let _foldEffect: any = null;
 
-// Auto-fold everything below the helpers sentinel comment
+// Auto-fold helper blocks marked in the source file
 function foldHelpers(view: EditorView) {
   if (!_foldEffect) return;
   const doc = view.state.doc;
@@ -29,6 +31,8 @@ function foldHelpers(view: EditorView) {
   for (let n = 1; n <= doc.lines; n += 1) {
     const line = doc.line(n);
     if (
+      line.text.includes('---Helpers') ||
+      line.text.includes('---End Helpers') ||
       line.text.includes('─── Helpers') ||
       line.text.includes('─── End Helpers')
     ) {
@@ -57,6 +61,38 @@ const stripAnsi = (s: string) => s.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
 // Singleton — one WebContainer per browsing context
 let wcInstance: WebContainer | null = null;
 let wcBootPromise: Promise<WebContainer> | null = null;
+
+interface CodeSyncRecord {
+  snippet: string;
+  updatedAt: string;
+}
+
+function buildCodeSyncKey(base: DsaCodeBase, slug: string, file: string) {
+  const params = new URLSearchParams({
+    slug,
+    file,
+    base,
+  });
+
+  return `/api/dsa/code-sync?${params.toString()}`;
+}
+
+async function fetchCodeSyncRecord(url: string): Promise<CodeSyncRecord | null> {
+  const response = await fetch(url, { cache: 'no-store' });
+  if (!response.ok) return null;
+
+  const data = (await response.json()) as {
+    snippet: string | null;
+    updatedAt?: string | null;
+  };
+
+  if (!data.snippet || !data.updatedAt) return null;
+
+  return {
+    snippet: data.snippet,
+    updatedAt: data.updatedAt,
+  };
+}
 
 async function getWebContainer(): Promise<WebContainer> {
   if (wcInstance) return wcInstance;
@@ -107,6 +143,7 @@ interface Props {
   total: number;
   contentSlug: string;
   base?: DsaCodeBase;
+  initialFiles?: Record<string, string>;
 }
 
 interface ExpandedLayout {
@@ -122,7 +159,9 @@ export default function WebContainerEmbed({
   total,
   contentSlug,
   base = 'problems',
+  initialFiles = {},
 }: Props) {
+  const { mutate } = useSWRConfig();
   const [tabIdx, setTabIdx] = useState(0);
   const [code, setCode] = useState('');
   const [output, setOutput] = useState('');
@@ -143,9 +182,8 @@ export default function WebContainerEmbed({
   const activeFileRef = useRef('');
   const isResettingRef = useRef(false);
   const baseContentRef = useRef<Record<string, string>>({});
-  const saveTimeoutRef = useRef<Record<string, ReturnType<typeof setTimeout>>>(
-    {},
-  );
+  const syncedSnippetRef = useRef<Record<string, string>>({});
+  const dirtyFilesRef = useRef<Record<string, boolean>>({});
   const currentRequestRef = useRef(0);
   const handleEditorEscapeRef = useRef<(() => void) | null>(null);
   const runCodeRef = useRef<() => void>(() => {});
@@ -157,19 +195,19 @@ export default function WebContainerEmbed({
 
   const activeFile = tabs[tabIdx]?.file ?? '';
   activeFileRef.current = activeFile;
+  const codeSyncKey = activeFile
+    ? buildCodeSyncKey(base, contentSlug, activeFile)
+    : null;
+  const { data: remoteRecord, isLoading: isCodeSyncLoading } =
+    useSWRImmutable<CodeSyncRecord | null>(codeSyncKey, fetchCodeSyncRecord);
 
   function storageKey(file: string) {
     return buildDsaCodeStorageKey(base, contentSlug, file);
   }
 
   async function syncSnippetToServer(file: string, snippet: string) {
-    const params = new URLSearchParams({
-      slug: contentSlug,
-      file,
-      base,
-    });
-
-    const response = await fetch(`/api/dsa/code-sync?${params.toString()}`, {
+    const key = buildCodeSyncKey(base, contentSlug, file);
+    const response = await fetch(key, {
       method: snippet.trim() ? 'PUT' : 'DELETE',
       headers: snippet.trim()
         ? { 'Content-Type': 'application/json' }
@@ -180,6 +218,37 @@ export default function WebContainerEmbed({
     if (!response.ok && response.status !== 401) {
       throw new Error(`Code sync failed (${response.status})`);
     }
+
+    if (response.ok) {
+      await mutate(
+        key,
+        snippet.trim()
+          ? {
+              snippet,
+              updatedAt: new Date().toISOString(),
+            }
+          : null,
+        false,
+      );
+    }
+  }
+
+  async function syncActiveFileIfDirty(file: string, text: string) {
+    const baseContent = baseContentRef.current[file];
+    if (!baseContent) return;
+
+    const snippet = extractEditableSnippet(text);
+    const baseSnippet = extractEditableSnippet(baseContent);
+    const syncedSnippet = syncedSnippetRef.current[file] ?? baseSnippet;
+
+    if (snippet === syncedSnippet) {
+      dirtyFilesRef.current[file] = false;
+      return;
+    }
+
+    await syncSnippetToServer(file, snippet !== baseSnippet ? snippet : '');
+    syncedSnippetRef.current[file] = snippet !== baseSnippet ? snippet : baseSnippet;
+    dirtyFilesRef.current[file] = false;
   }
 
   function measureExpandedLayout() {
@@ -235,87 +304,64 @@ export default function WebContainerEmbed({
     setCode('');
     setOutput('');
     setStatus('idle');
-    fetch(
-      `/dsa/api/step-file?slug=${encodeURIComponent(contentSlug)}&file=${encodeURIComponent(activeFile)}&base=${encodeURIComponent(base)}`,
-    )
-      .then((r) => r.json())
-      .then(async ({ content }) => {
-        if (!content || currentRequestRef.current !== requestId) return;
+    const content = initialFiles[activeFile];
 
-        const normalizedContent = normalizeDsaEditorContent(content);
+    if (!content) {
+      isResettingRef.current = false;
+      return;
+    }
 
-        baseContentRef.current[activeFile] = normalizedContent;
-        const localRecord = parseStoredSnippet(
-          localStorage.getItem(storageKey(activeFile)),
+    if (isCodeSyncLoading) {
+      return;
+    }
+
+    const normalizedContent = normalizeDsaEditorContent(content);
+
+    baseContentRef.current[activeFile] = normalizedContent;
+    const localRecord = parseStoredSnippet(
+      localStorage.getItem(storageKey(activeFile)),
+    );
+
+    if (currentRequestRef.current !== requestId) return;
+
+    const preferredRecord =
+      localRecord && remoteRecord
+        ? new Date(localRecord.updatedAt).getTime() >=
+          new Date(remoteRecord.updatedAt).getTime()
+          ? localRecord
+          : remoteRecord
+        : localRecord ?? remoteRecord;
+    const baseSnippet = extractEditableSnippet(normalizedContent);
+    const syncedSnippet = remoteRecord?.snippet ?? baseSnippet;
+    const currentSnippet = preferredRecord?.snippet ?? baseSnippet;
+
+    syncedSnippetRef.current[activeFile] = syncedSnippet;
+    dirtyFilesRef.current[activeFile] = currentSnippet !== syncedSnippet;
+    setCode(
+      preferredRecord
+        ? applyEditableSnippet(normalizedContent, preferredRecord.snippet)
+        : normalizedContent,
+    );
+
+    try {
+      if (preferredRecord) {
+        localStorage.setItem(
+          storageKey(activeFile),
+          serializeStoredSnippet(preferredRecord),
         );
+      } else {
+        localStorage.removeItem(storageKey(activeFile));
+      }
+    } catch {}
 
-        let remoteRecord: { snippet: string; updatedAt: string } | null = null;
-
-        try {
-          const params = new URLSearchParams({
-            slug: contentSlug,
-            file: activeFile,
-            base,
-          });
-          const response = await fetch(
-            `/api/dsa/code-sync?${params.toString()}`,
-            { cache: 'no-store' },
-          );
-          if (response.ok) {
-            const data = (await response.json()) as {
-              snippet: string | null;
-              updatedAt: string | null;
-            };
-            if (data.snippet && data.updatedAt) {
-              remoteRecord = {
-                snippet: data.snippet,
-                updatedAt: data.updatedAt,
-              };
-            }
-          }
-        } catch {}
-
-        const preferredRecord =
-          localRecord && remoteRecord
-            ? new Date(localRecord.updatedAt).getTime() >=
-              new Date(remoteRecord.updatedAt).getTime()
-              ? localRecord
-              : remoteRecord
-            : localRecord ?? remoteRecord;
-        setCode(
-          preferredRecord
-            ? applyEditableSnippet(normalizedContent, preferredRecord.snippet)
-            : normalizedContent,
-        );
-
-        try {
-          if (preferredRecord) {
-            localStorage.setItem(
-              storageKey(activeFile),
-              serializeStoredSnippet(preferredRecord),
-            );
-          } else {
-            localStorage.removeItem(storageKey(activeFile));
-          }
-        } catch {}
-
-        if (
-          localRecord &&
-          (!remoteRecord ||
-            (preferredRecord === localRecord &&
-              remoteRecord.snippet !== localRecord.snippet))
-        ) {
-          void syncSnippetToServer(activeFile, localRecord.snippet).catch(
-            () => {},
-          );
-        }
-      })
-      .finally(() => {
-        if (currentRequestRef.current === requestId) {
-          isResettingRef.current = false;
-        }
-      });
-  }, [activeFile, base, contentSlug]);
+    isResettingRef.current = false;
+  }, [
+    activeFile,
+    base,
+    contentSlug,
+    initialFiles,
+    isCodeSyncLoading,
+  ]);
 
   // Effect 1: Mount CodeMirror once
   useEffect(() => {
@@ -431,13 +477,8 @@ export default function WebContainerEmbed({
           const text = update.state.doc.toString();
           const snippet = extractEditableSnippet(text);
           const baseSnippet = extractEditableSnippet(baseContent);
+          const syncedSnippet = syncedSnippetRef.current[file] ?? baseSnippet;
           const key = storageKey(file);
-          const existingTimeout = saveTimeoutRef.current[file];
-
-          if (existingTimeout) {
-            clearTimeout(existingTimeout);
-            delete saveTimeoutRef.current[file];
-          }
 
           try {
             if (snippet.trim() && snippet !== baseSnippet) {
@@ -452,14 +493,7 @@ export default function WebContainerEmbed({
               localStorage.removeItem(key);
             }
           } catch {}
-
-          saveTimeoutRef.current[file] = setTimeout(() => {
-            void syncSnippetToServer(
-              file,
-              snippet !== baseSnippet ? snippet : '',
-            ).catch(() => {});
-            delete saveTimeoutRef.current[file];
-          }, 500);
+          dirtyFilesRef.current[file] = snippet !== syncedSnippet;
         }
       });
 
@@ -492,10 +526,6 @@ export default function WebContainerEmbed({
 
     return () => {
       cancelled = true;
-      Object.values(saveTimeoutRef.current).forEach((timeoutId) =>
-        clearTimeout(timeoutId),
-      );
-      saveTimeoutRef.current = {};
       handleEditorEscapeRef.current = null;
       viewRef.current?.destroy();
       viewRef.current = null;
@@ -549,10 +579,15 @@ export default function WebContainerEmbed({
   async function runCode() {
     // Read directly from editor — not from stale React state
     const currentCode = viewRef.current?.state.doc.toString() || code;
-    if (!currentCode) return;
+    const file = activeFileRef.current;
+    if (!currentCode || !file) return;
     setOutput('');
     setStatus('booting');
     try {
+      if (dirtyFilesRef.current[file]) {
+        await syncActiveFileIfDirty(file, currentCode);
+      }
+
       const wc = await getWebContainer();
       setStatus('running');
       if (processRef.current) {
@@ -560,10 +595,10 @@ export default function WebContainerEmbed({
           processRef.current.kill();
         } catch {}
       }
-      await wc.fs.writeFile(activeFile, currentCode);
+      await wc.fs.writeFile(file, currentCode);
       const proc = await wc.spawn('node', [
         'node_modules/tsx/dist/cli.mjs',
-        activeFile,
+        file,
       ]);
       processRef.current = proc;
       proc.output.pipeTo(

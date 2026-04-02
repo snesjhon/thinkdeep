@@ -16,7 +16,7 @@ test('two equal walls', () => maxArea([2, 2]), 2);
 test('left wall taller', () => maxArea([3, 1]), 1);
 test('right wall taller', () => maxArea([5, 8]), 5);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

@@ -29,7 +29,7 @@ test('all same elements',      () => minWindowAverage([4, 4, 4, 4], 2),         
 test('k equals array length',  () => minWindowAverage([2, 3, 1], 3),            2.0);
 test('k larger than array',    () => minWindowAverage([1, 2], 5),               0);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

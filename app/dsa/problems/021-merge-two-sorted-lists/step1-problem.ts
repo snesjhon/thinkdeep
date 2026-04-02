@@ -7,6 +7,8 @@
 // Step 1 handles the cases where at least one train arrives empty — the loop
 // never enters, and the tail attachment correctly chains whatever remains.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -15,6 +17,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode | null {
   throw new Error('not implemented');
@@ -25,7 +29,7 @@ test('both lists empty', () => listToArray(mergeTwoLists(null, null)), []);
 test('first list empty', () => listToArray(mergeTwoLists(null, createList([1]))), [1]);
 test('second list empty', () => listToArray(mergeTwoLists(createList([1]), null)), [1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

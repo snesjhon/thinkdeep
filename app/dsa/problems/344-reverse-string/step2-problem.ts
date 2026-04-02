@@ -44,7 +44,7 @@ test('reverses odd-length array', () => {
   return arr;
 }, [2, 5, 4]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

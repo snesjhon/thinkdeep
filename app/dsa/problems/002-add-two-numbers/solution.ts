@@ -2,6 +2,8 @@
 // Add Two Numbers — Complete Solution
 // =============================================================================
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -10,6 +12,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | null {
   // Blank starter stub — gives the answer roll a safe place to clip the first stamped box
@@ -49,7 +53,7 @@ runTest('one roll ends early but carry continues', () => listToArray(addTwoNumbe
 runTest('leetcode example 3', () => listToArray(addTwoNumbers(createList([9, 9, 9, 9, 9, 9, 9]), createList([9, 9, 9, 9]))), [8, 9, 9, 9, 0, 0, 0, 1]);
 runTest('uneven lengths without final carry', () => listToArray(addTwoNumbers(createList([1, 8]), createList([0]))), [1, 8]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

@@ -4,6 +4,8 @@
 // Goal: Inside the loop, execute the three operations in strict order:
 //       save the notebook, flip the sign, advance both markers.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function reverseList(head: ListNode | null): ListNode | null {
   // ✓ Step 1: Road markers — edge of town and first intersection
@@ -34,7 +38,7 @@ test('single node', () => listToArray(reverseList(createList([1]))), [1]);
 test('two nodes', () => listToArray(reverseList(createList([1, 2]))), [2, 1]);
 test('five nodes', () => listToArray(reverseList(createList([1, 2, 3, 4, 5]))), [5, 4, 3, 2, 1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

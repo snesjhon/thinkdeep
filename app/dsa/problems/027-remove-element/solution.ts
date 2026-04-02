@@ -44,7 +44,7 @@ test('single element not matching', () => {
   return [k, nums.slice(0, k)];
 }, [1, [5]]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

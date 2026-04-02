@@ -6,16 +6,14 @@ export interface DsaCodeSnippetRecord {
 }
 
 const STORAGE_VERSION = 2
-const HELPERS_SENTINEL =
-  '// ─── Helpers ──────────────────────────────────────────────────────────────────'
-const HELPERS_END_SENTINEL =
-  '// ─── End Helpers ──────────────────────────────────────────────────────────────'
 const HARNESS_LINE_PATTERNS = [
   /^\/\/\s*Tests\b/,
   /^test\(/,
   /^runTest\(/,
   /^runCase\(/,
 ]
+const HELPER_START_PATTERNS = ['---Helpers', '─── Helpers']
+const HELPER_END_PATTERNS = ['---End Helpers', '─── End Helpers']
 
 type LineRange = { start: number; end: number }
 
@@ -63,7 +61,7 @@ function getHelperRanges(lines: string[]): LineRange[] {
 
   for (let i = 0; i < lines.length; i += 1) {
     const line = lines[i]
-    if (line.includes('─── End Helpers')) {
+    if (HELPER_END_PATTERNS.some((pattern) => line.includes(pattern))) {
       if (openStart !== null) {
         ranges.push({ start: openStart, end: i + 1 })
         openStart = null
@@ -71,7 +69,7 @@ function getHelperRanges(lines: string[]): LineRange[] {
       continue
     }
 
-    if (line.includes('─── Helpers')) {
+    if (HELPER_START_PATTERNS.some((pattern) => line.includes(pattern))) {
       if (openStart !== null) {
         ranges.push({ start: openStart, end: i })
       }
@@ -82,62 +80,11 @@ function getHelperRanges(lines: string[]): LineRange[] {
   if (openStart !== null) {
     ranges.push({ start: openStart, end: lines.length })
   }
-
-  const firstCodeLine = lines.findIndex((line) => {
-    const trimmed = line.trim()
-    return trimmed && !trimmed.startsWith('//')
-  })
-  const firstFunctionLine = lines.findIndex((line) =>
-    /^function\s+\w+\(/.test(line.trim()),
-  )
-  const hasPreludeHelper =
-    firstCodeLine >= 0 &&
-    firstFunctionLine > firstCodeLine &&
-    /^class\s+ListNode\b/.test(lines[firstCodeLine].trim()) &&
-    !ranges.some(
-      (range) => firstCodeLine >= range.start && firstCodeLine < range.end,
-    )
-
-  if (hasPreludeHelper) {
-    ranges.unshift({ start: firstCodeLine, end: firstFunctionLine })
-  }
-
   return ranges.sort((a, b) => a.start - b.start)
 }
 
 export function normalizeDsaEditorContent(content: string): string {
-  const lines = content.match(/[^\n]*\n|[^\n]+$/g) ?? []
-  const firstCodeLine = lines.findIndex((line) => {
-    const trimmed = line.trim()
-    return trimmed && !trimmed.startsWith('//')
-  })
-  const firstFunctionLine = lines.findIndex((line) =>
-    /^function\s+\w+\(/.test(line.trim()),
-  )
-
-  if (
-    firstCodeLine < 0 ||
-    firstFunctionLine <= firstCodeLine ||
-    !/^class\s+ListNode\b/.test(lines[firstCodeLine].trim())
-  ) {
-    return content
-  }
-
-  const alreadyWrapped =
-    lines[firstCodeLine - 1]?.includes('─── Helpers') &&
-    lines[firstFunctionLine]?.includes('─── End Helpers')
-
-  if (alreadyWrapped) return content
-
-  return [
-    ...lines.slice(0, firstCodeLine),
-    `${HELPERS_SENTINEL}\n`,
-    `\n`,
-    ...lines.slice(firstCodeLine, firstFunctionLine),
-    `${HELPERS_END_SENTINEL}\n`,
-    `\n`,
-    ...lines.slice(firstFunctionLine),
-  ].join('')
+  return content
 }
 
 export function extractEditableSnippet(content: string): string {

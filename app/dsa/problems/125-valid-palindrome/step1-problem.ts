@@ -12,7 +12,7 @@ function isPalindrome(s: string): boolean {
 test('empty string is a palindrome', () => isPalindrome(''), true);
 test('single character is a palindrome', () => isPalindrome('a'), true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function isAlphanumeric(c: string): boolean {
   return /[a-zA-Z0-9]/.test(c);

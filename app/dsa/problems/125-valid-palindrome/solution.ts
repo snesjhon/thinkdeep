@@ -45,7 +45,7 @@ test('mixed case "Aba" is a palindrome', () => isPalindrome('Aba'), true);
 test('punctuation only is a palindrome', () => isPalindrome(',.!'), true);
 test('"0P" is not a palindrome', () => isPalindrome('0P'), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function isAlphanumeric(c: string): boolean {
   return /[a-zA-Z0-9]/.test(c);

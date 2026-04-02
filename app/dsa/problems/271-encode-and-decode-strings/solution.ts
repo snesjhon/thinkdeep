@@ -43,7 +43,7 @@ test('round-trip: empty string', () => decode(encode([''])), ['']);
 test('round-trip: empty list', () => decode(encode([])), []);
 test('round-trip: mixed content', () => decode(encode(['3#abc', '0#', ''])), ['3#abc', '0#', '']);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

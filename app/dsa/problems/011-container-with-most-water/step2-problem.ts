@@ -20,7 +20,7 @@ test('LeetCode example 2', () => maxArea([1, 1]), 1);
 test('symmetric equal ends', () => maxArea([4, 3, 2, 1, 4]), 16);
 test('ascending walls', () => maxArea([1, 2, 3, 4, 5]), 6);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

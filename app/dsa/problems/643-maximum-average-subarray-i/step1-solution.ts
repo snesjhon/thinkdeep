@@ -19,7 +19,7 @@ test('two performers, equal', () => findMaxAverage([3, 3], 2), 3);
 test('two performers, unequal', () => findMaxAverage([2, 4], 2), 3);
 test('three performers', () => findMaxAverage([2, 4, 6], 3), 4);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

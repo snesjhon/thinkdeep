@@ -24,7 +24,7 @@ test('[1,2,3,4] — left products', () => productExceptSelf([1, 2, 3, 4]), [1, 1
 test('[2,3,4] — left products', () => productExceptSelf([2, 3, 4]), [1, 2, 6]);
 test('zeros [0,1,2] — left products', () => productExceptSelf([0, 1, 2]), [1, 0, 0]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

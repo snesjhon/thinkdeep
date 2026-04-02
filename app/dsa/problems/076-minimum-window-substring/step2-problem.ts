@@ -27,7 +27,7 @@ test('duplicate requirement — need A twice', () => minWindow('AABC', 'AAB'), '
 test('minimum window is at the end of stage', () => minWindow('DCBA', 'AB'), 'BA');
 test('t is a single repeated character', () => minWindow('AAAB', 'AA'), 'AA');
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

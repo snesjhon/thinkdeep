@@ -2,6 +2,8 @@
 // Reverse Linked List — Complete Solution
 // =============================================================================
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -10,6 +12,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function reverseList(head: ListNode | null): ListNode | null {
   let prev: ListNode | null = null;   // edge of town — where the reversed chain begins
@@ -32,7 +36,7 @@ test('two nodes', () => listToArray(reverseList(createList([1, 2]))), [2, 1]);
 test('three nodes', () => listToArray(reverseList(createList([1, 2, 3]))), [3, 2, 1]);
 test('five nodes', () => listToArray(reverseList(createList([1, 2, 3, 4, 5]))), [5, 4, 3, 2, 1]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

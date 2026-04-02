@@ -34,7 +34,7 @@ test('single bar',         () => trappingRainWater([5]),                        
 test('no water ascending', () => trappingRainWater([1,2,3,4,5]),               0);
 test('simple valley',      () => trappingRainWater([3,0,3]),                   3);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

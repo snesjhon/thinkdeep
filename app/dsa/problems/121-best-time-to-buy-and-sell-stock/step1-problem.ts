@@ -13,7 +13,7 @@ test('empty street — no houses to visit', () => maxProfit([]), 0);
 test('single house — nothing to sell after buying', () => maxProfit([7]), 0);
 test('prices only drop — no profitable sale exists', () => maxProfit([7, 6, 4, 3, 1]), 0);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

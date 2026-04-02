@@ -24,7 +24,7 @@ test('[2, 7, 11, 15] target=18 → [2,3]', () => twoSum([2, 7, 11, 15], 18), [2,
 test('[2, 3, 4] target=6 → [1,3]', () => twoSum([2, 3, 4], 6), [1, 3]);
 test('[1, 2, 3, 4] target=7 → [3,4]', () => twoSum([1, 2, 3, 4], 7), [3, 4]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

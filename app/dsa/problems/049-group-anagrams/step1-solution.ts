@@ -19,7 +19,7 @@ test('bat → abt', () => catalogCode('bat'), 'abt');
 test('empty string → empty string', () => catalogCode(''), '');
 test('single letter → same letter', () => catalogCode('a'), 'a');
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

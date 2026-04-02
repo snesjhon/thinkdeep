@@ -13,7 +13,7 @@ test('Team B empty: no merging needed', () => {
   const n1 = [1, 2, 3]; merge(n1, 3, [], 0); return n1;
 }, [1, 2, 3]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {

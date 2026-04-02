@@ -13,6 +13,8 @@
 //   removeAll(3 → 3 → 3, 3)       → null
 //   removeAll(1 → 2 → 3, 9)       → 1 → 2 → 3
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -21,6 +23,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function removeAll(head: ListNode | null, target: number): ListNode | null {
   throw new Error('not implemented');
@@ -49,7 +53,7 @@ test(
 );
 test('empty train', () => toArray(removeAll(null, 1)), []);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

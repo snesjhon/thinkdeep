@@ -16,7 +16,7 @@ test('none removed', () => setDifference([1, 2, 3], []), [1, 2, 3]);
 test('empty a', () => setDifference([], [1, 2]), []);
 test('b has extras', () => setDifference([3, 1, 2], [5, 1]), [2, 3]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

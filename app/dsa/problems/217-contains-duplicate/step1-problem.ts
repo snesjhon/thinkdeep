@@ -12,7 +12,7 @@ function containsDuplicate(nums: number[]): boolean {
 test('empty pile has no duplicates', () => containsDuplicate([]), false);
 test('single stamp has no duplicates', () => containsDuplicate([42]), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

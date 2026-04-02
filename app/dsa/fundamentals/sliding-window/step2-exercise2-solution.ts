@@ -32,7 +32,7 @@ test('all ones already',            () => longestLit([1, 1, 1, 1], 0),          
 test('two flips, gap in middle',    () => longestLit([1, 0, 1, 1, 0, 1, 0, 1], 2), 6);
 test('single element zero',         () => longestLit([0], 1),                     1);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

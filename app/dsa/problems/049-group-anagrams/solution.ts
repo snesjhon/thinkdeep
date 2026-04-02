@@ -54,7 +54,7 @@ test('repeated word with no anagram partner',
   normalizeGroups([['ab','ab','ab']])
 );
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function normalizeGroups(groups: string[][]): string[][] {
   return groups
     .map(g => [...g].sort())

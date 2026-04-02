@@ -86,7 +86,7 @@ test('consecutive blues at start', () => {
   return nums;
 }, [0, 1, 2, 2]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function swap(arr: number[], i: number, j: number): void {
   [arr[i], arr[j]] = [arr[j], arr[i]];

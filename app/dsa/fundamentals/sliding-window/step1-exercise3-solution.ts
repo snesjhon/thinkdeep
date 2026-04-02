@@ -29,7 +29,7 @@ test('target at last window',     () => windowHasSum([2, 3, 1, 4, 6], 2, 10),   
 test('k larger than array',       () => windowHasSum([1, 2], 5, 10),            false);
 test('negative numbers',          () => windowHasSum([-2, 4, 1, -1, 3], 3, 3),  true);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

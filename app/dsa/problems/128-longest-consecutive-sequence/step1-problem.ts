@@ -14,7 +14,7 @@ test('single volume', () => longestConsecutive([1]), 1);
 test('all disjoint — every volume is its own opener', () => longestConsecutive([10, 5, 100]), 1);
 test('duplicates collapse in catalog', () => longestConsecutive([1, 1, 1]), 1);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

@@ -23,7 +23,7 @@ test('empty',       () => { const d: number[] = [];  reverseArray(d); return d; 
 test('all same',    () => { const e = [3,3,3];       reverseArray(e); return e; }, [3,3,3]);
 test('two same',    () => { const f = [5,5];          reverseArray(f); return f; }, [5,5]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

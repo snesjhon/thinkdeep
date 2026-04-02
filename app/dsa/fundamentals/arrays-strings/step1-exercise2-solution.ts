@@ -19,7 +19,7 @@ test('remove all',             () => removeElement([1,1,1], 1),             0);
 test('empty array',            () => removeElement([], 5),                  0);
 test('single match',           () => removeElement([4], 4),                 0);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

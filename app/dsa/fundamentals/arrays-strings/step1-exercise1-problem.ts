@@ -26,7 +26,7 @@ test('empty belt',      () => keepPositives([]),                     0);
 test('single positive', () => keepPositives([4]),                    1);
 test('single zero',     () => keepPositives([0]),                    0);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

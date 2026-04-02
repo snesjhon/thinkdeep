@@ -4,6 +4,8 @@
 // Goal: Place a platform marker before the train and send the scout n + 1 steps
 // ahead so head-removal cases can already be solved.
 
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -12,6 +14,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function removeNthFromEnd(head: ListNode | null, n: number): ListNode | null {
   // Platform marker — gives the remover a legal place to stand before the first car
@@ -34,7 +38,7 @@ runCase('single car removed', () => listToArray(removeNthFromEnd(createList([1])
 runCase('remove head from two-car train', () => listToArray(removeNthFromEnd(createList([1, 2]), 2)), [2]);
 runCase('remove head from three-car train', () => listToArray(removeNthFromEnd(createList([1, 2, 3]), 3)), [2, 3]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 
 function createList(values: number[]): ListNode | null {
   const dummy = new ListNode();

@@ -15,6 +15,8 @@
 //   isEvenLength(1 → 2 → 3)       → false
 //   isEvenLength(null)             → true
 // =============================================================================
+// ---Helpers
+
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -23,6 +25,8 @@ class ListNode {
     this.next = next;
   }
 }
+
+// ---End Helpers
 
 function isEvenLength(head: ListNode | null): boolean {
   throw new Error('not implemented');
@@ -35,7 +39,7 @@ test('three cars',     () => isEvenLength(buildList([1,2,3])),      false);
 test('four cars',      () => isEvenLength(buildList([1,2,3,4])),    true);
 test('five cars',      () => isEvenLength(buildList([1,2,3,4,5])), false);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function buildList(values: number[]): ListNode | null {
   if (values.length === 0) return null;
   const head = new ListNode(values[0]);

@@ -19,7 +19,7 @@ test('empty',        () => compactEvens([]),                  0);
 test('single even',  () => compactEvens([2]),                 1);
 test('single odd',   () => compactEvens([1]),                 0);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();

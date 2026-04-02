@@ -16,7 +16,7 @@ test('empty',      () => buildPrefixSums([]),            []);
 test('negatives',  () => buildPrefixSums([-1, -2, 3]),   [0, -1, -3]);
 test('zeros',      () => buildPrefixSums([0, 0, 0]),     [0, 0, 0]);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
