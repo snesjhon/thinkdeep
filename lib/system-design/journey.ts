@@ -1,7 +1,5 @@
 import type { Phase, JourneySection } from './types'
 
-export type { JourneyScenario, JourneySection, Phase } from './types'
-
 export const JOURNEY: Phase[] = [
   // ─────────────────────────────────────────────────────────────────
   // PHASE 1: NOVICE

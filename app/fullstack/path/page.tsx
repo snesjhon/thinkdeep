@@ -1,19 +1,20 @@
 import Link from 'next/link'
-import { JOURNEY, type JourneySection, type Phase } from '@/lib/fullstack/journey'
+import { JOURNEY } from '@/lib/fullstack/journey'
 import { getAllFundamentalsSlugs } from '@/lib/fullstack/fundamentals'
 import { getAllScenarioSlugsFromDisk } from '@/lib/fullstack/content'
 import { createClient } from '@/lib/supabase/server'
+import type { JourneySection, Phase } from '@/lib/fullstack/types'
+import { PhaseTracker } from '@/components/ui/PhaseTracker/PhaseTracker'
 import {
-  PhaseTracker,
   PathTOC,
   PhaseBannerContent,
   StepGuideCard,
   PlaceholderGuideCard,
-  ProgressToggle,
-  SectionProgress,
-  pColor,
-  PageHero,
-} from '@/components/ui'
+} from '@/components/ui/PathComponents/PathComponents'
+import { ProgressToggle } from '@/components/ui/ProgressToggle/ProgressToggle'
+import { SectionProgress } from '@/components/ui/SectionProgress/SectionProgress'
+import { pColor } from '@/components/ui/pathUtils'
+import { PageHero } from '@/components/ui/PageHero/PageHero'
 import pathStyles from '@/components/ui/PathComponents/PathComponents.module.css'
 
 type SectionEntry = {

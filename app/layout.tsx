@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Newsreader, Plus_Jakarta_Sans } from 'next/font/google';
-import { SiteNav } from '@/components/ui';
+import { SiteNav } from '@/components/ui/SiteNav/SiteNav';
 import { SignOutButton } from '@/components/ui/SignOutButton/SignOutButton';
 import Link from 'next/link';
 import { getAllProblems } from '@/lib/dsa/content';

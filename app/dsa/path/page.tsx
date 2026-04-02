@@ -2,16 +2,16 @@ import Link from 'next/link';
 import { JOURNEY, type JourneySection, type Phase } from '@/lib/dsa/journey';
 import { getAllProblems } from '@/lib/dsa/content';
 import { createClient } from '@/lib/supabase/server';
+import { PhaseTracker } from '@/components/ui/PhaseTracker/PhaseTracker';
 import {
-  PhaseTracker,
   PhaseBannerContent,
   StepGuideCard,
   PlaceholderGuideCard,
-  ProgressToggle,
-  SectionProgress,
-  pColor,
-  PageHero,
-} from '@/components/ui';
+} from '@/components/ui/PathComponents/PathComponents';
+import { ProgressToggle } from '@/components/ui/ProgressToggle/ProgressToggle';
+import { SectionProgress } from '@/components/ui/SectionProgress/SectionProgress';
+import { pColor } from '@/components/ui/pathUtils';
+import { PageHero } from '@/components/ui/PageHero/PageHero';
 import pathStyles from '@/components/ui/PathComponents/PathComponents.module.css';
 
 type PMap = Record<string, { title: string; hasMentalModel: boolean }>;

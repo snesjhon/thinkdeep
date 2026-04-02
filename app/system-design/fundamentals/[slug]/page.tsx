@@ -8,11 +8,11 @@ import {
 } from '@/lib/system-design/fundamentals';
 import { extractHeadings } from '@/lib/system-design/headings';
 import {
-  TableOfContents,
-  PageHero,
-  PageLayout,
   PhaseColorSync,
-} from '@/components/ui';
+} from '@/components/ui/PhaseTracker/PhaseTracker';
+import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
+import { PageHero } from '@/components/ui/PageHero/PageHero';
+import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
 import MarkdownRenderer from '@/components/system-design/MarkdownRenderer/MarkdownRenderer';
 
 const PHASE_COLORS = [

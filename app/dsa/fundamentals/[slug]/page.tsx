@@ -18,7 +18,10 @@ import {
 import { extractHeadings } from '@/lib/dsa/headings';
 import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
-import { TableOfContents, PhaseColorSync, PageHero, PageLayout } from '@/components/ui';
+import { PhaseColorSync } from '@/components/ui/PhaseTracker/PhaseTracker';
+import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
+import { PageHero } from '@/components/ui/PageHero/PageHero';
+import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
 
 interface Props {
   params: { slug: string };

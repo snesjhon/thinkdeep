@@ -34,7 +34,12 @@ const DIFF_FG: Record<string, string> = {
 import { extractHeadings } from '@/lib/dsa/headings';
 import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
-import { TableOfContents, PhaseColorSync, PageHero, PageLayout, ProgressToggleAsync, ProgressProvider } from '@/components/ui';
+import { PhaseColorSync } from '@/components/ui/PhaseTracker/PhaseTracker';
+import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
+import { PageHero } from '@/components/ui/PageHero/PageHero';
+import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
+import { ProgressToggleAsync } from '@/components/ui/ProgressToggleAsync/ProgressToggleAsync';
+import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
 
 interface Props {
   params: { id: string };

@@ -7,7 +7,9 @@ import {
   getPrecedingSection,
 } from '@/lib/fullstack/fundamentals';
 import { extractHeadings } from '@/lib/fullstack/headings';
-import { TableOfContents, PageHero, PageLayout } from '@/components/ui';
+import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
+import { PageHero } from '@/components/ui/PageHero/PageHero';
+import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
 import MarkdownRenderer from '@/components/fullstack/MarkdownRenderer/MarkdownRenderer';
 
 const PHASE_COLORS = [

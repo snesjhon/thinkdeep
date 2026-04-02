@@ -1,6 +1,6 @@
 'use client'
 
-import { MarkdownRenderer as BaseMarkdownRenderer, type BaseSegment } from '@/components/ui'
+import BaseMarkdownRenderer, { type BaseSegment } from '@/components/ui/MarkdownRenderer/MarkdownRenderer'
 import Evaluator from '../Evaluator/Evaluator'
 
 interface EvaluatorSegment extends BaseSegment {

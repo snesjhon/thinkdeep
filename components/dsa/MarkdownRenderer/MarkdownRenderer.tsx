@@ -1,9 +1,8 @@
 'use client';
 
-import {
-  MarkdownRenderer as BaseMarkdownRenderer,
+import BaseMarkdownRenderer, {
   type BaseSegment,
-} from '@/components/ui';
+} from '@/components/ui/MarkdownRenderer/MarkdownRenderer';
 import WebContainerEmbed from '../WebContainerEmbed/WebContainerEmbed';
 import ArrayTrace from '../ArrayTrace/ArrayTrace';
 import type { TraceStep } from '../ArrayTrace/ArrayTrace';
