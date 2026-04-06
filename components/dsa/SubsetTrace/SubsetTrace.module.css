@@ -1,0 +1,81 @@
+.slotActive {
+  background: var(--orange-tint);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.removing {
+  background: var(--orange-tint);
+  border-color: var(--orange);
+  color: var(--orange);
+  opacity: 0.7;
+}
+
+.section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 1rem;
+}
+
+.sectionLabel {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--fg-gutter);
+  width: 48px;
+  flex-shrink: 0;
+}
+
+.basket {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 52px;
+}
+
+.emptyBasket {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 14px;
+  color: var(--fg-gutter);
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  padding: 0 16px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+}
+
+.ptrSlot {
+  background: var(--orange-tint);
+  color: var(--orange);
+}
+
+.ptrBasket {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.badgeAdd {
+  background: var(--blue-tint);
+  color: var(--blue);
+  border: 1px solid var(--blue);
+}
+
+.badgeRemove {
+  background: var(--orange-tint);
+  color: var(--orange);
+  border: 1px solid var(--orange);
+}
+
+.badgeRecord {
+  background: var(--green-tint);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.badgeDone {
+  background: var(--purple-tint);
+  color: var(--purple);
+  border: 1px solid var(--purple);
+}

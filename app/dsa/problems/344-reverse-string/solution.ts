@@ -1,55 +1,51 @@
-// =============================================================================
-// Reverse an Array — Complete Solution
-// =============================================================================
+// Reverse String — Complete Solution
 
-function reverseArray(arr: number[]): void {
-  // Step 1: Station the two dealers at opposite ends of the card table
-  let frontDealer = 0;              // front dealer at the first card
-  let backDealer = arr.length - 1;  // back dealer at the last card
+function reverseString(s: string[]): void {
+  let frontDealer = 0;
+  let backDealer = s.length - 1;
 
-  // Step 2: March inward, swapping cards at every stop until dealers meet
   while (frontDealer < backDealer) {
-    const heldCard = arr[frontDealer];    // front dealer grips their card briefly
-    arr[frontDealer] = arr[backDealer];   // receives the back dealer's card
-    arr[backDealer] = heldCard;           // back dealer receives the held card
-    frontDealer++;                         // front dealer steps one position right
-    backDealer--;                          // back dealer steps one position left
+    const heldCard = s[frontDealer];
+    s[frontDealer] = s[backDealer];
+    s[backDealer] = heldCard;
+    frontDealer++;
+    backDealer--;
   }
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty array stays empty', () => {
-  const arr: number[] = [];
-  reverseArray(arr);
-  return arr;
+  const s: string[] = [];
+  reverseString(s);
+  return s;
 }, []);
 
-test('single element stays unchanged', () => {
-  const arr = [1];
-  reverseArray(arr);
-  return arr;
-}, [1]);
+test('single character stays unchanged', () => {
+  const s = ['a'];
+  reverseString(s);
+  return s;
+}, ['a']);
 
-test('two elements swap', () => {
-  const arr = [1, 2];
-  reverseArray(arr);
-  return arr;
-}, [2, 1]);
-
-test('reverses even-length array', () => {
-  const arr = [1, 4, 3, 2, 6, 5];
-  reverseArray(arr);
-  return arr;
-}, [5, 6, 2, 3, 4, 1]);
+test('two characters swap', () => {
+  const s = ['a', 'b'];
+  reverseString(s);
+  return s;
+}, ['b', 'a']);
 
 test('reverses odd-length array', () => {
-  const arr = [4, 5, 2];
-  reverseArray(arr);
-  return arr;
-}, [2, 5, 4]);
+  const s = ['h', 'e', 'l', 'l', 'o'];
+  reverseString(s);
+  return s;
+}, ['o', 'l', 'l', 'e', 'h']);
+
+test('reverses even-length array', () => {
+  const s = ['H', 'a', 'n', 'n', 'a', 'h'];
+  reverseString(s);
+  return s;
+}, ['h', 'a', 'n', 'n', 'a', 'H']);
+// ---End Tests
 
 // ---Helpers
-
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
@@ -67,3 +63,4 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
     }
   }
 }
+// ---End Helpers

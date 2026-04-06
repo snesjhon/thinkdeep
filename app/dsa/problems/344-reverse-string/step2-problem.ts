@@ -1,51 +1,49 @@
-// =============================================================================
-// Reverse an Array — Step 2 of 2: March Inward, Swap at Every Stop
-// =============================================================================
-// Goal: While frontDealer < backDealer, swap their cards and step both inward.
+// Goal: While frontDealer < backDealer, swap s[frontDealer] with s[backDealer]
+//       using heldCard as a temporary grip, then step both pointers inward.
 //
 // Step 1 is complete and locked inside the function body.
 
-function reverseArray(arr: number[]): void {
+function reverseString(s: string[]): void {
   // ✓ Step 1: Station the dealers at opposite ends (locked)
   let frontDealer = 0;
-  let backDealer = arr.length - 1;
+  let backDealer = s.length - 1;
 
   throw new Error('not implemented');
 }
 
-// Tests — all cases including multi-element arrays
+// ---Tests
 test('empty array stays empty', () => {
-  const arr: number[] = [];
-  reverseArray(arr);
-  return arr;
+  const s: string[] = [];
+  reverseString(s);
+  return s;
 }, []);
 
-test('single element stays unchanged', () => {
-  const arr = [1];
-  reverseArray(arr);
-  return arr;
-}, [1]);
+test('single character stays unchanged', () => {
+  const s = ['a'];
+  reverseString(s);
+  return s;
+}, ['a']);
 
-test('two elements swap', () => {
-  const arr = [1, 2];
-  reverseArray(arr);
-  return arr;
-}, [2, 1]);
-
-test('reverses even-length array', () => {
-  const arr = [1, 4, 3, 2, 6, 5];
-  reverseArray(arr);
-  return arr;
-}, [5, 6, 2, 3, 4, 1]);
+test('two characters swap', () => {
+  const s = ['a', 'b'];
+  reverseString(s);
+  return s;
+}, ['b', 'a']);
 
 test('reverses odd-length array', () => {
-  const arr = [4, 5, 2];
-  reverseArray(arr);
-  return arr;
-}, [2, 5, 4]);
+  const s = ['h', 'e', 'l', 'l', 'o'];
+  reverseString(s);
+  return s;
+}, ['o', 'l', 'l', 'e', 'h']);
+
+test('reverses even-length array', () => {
+  const s = ['H', 'a', 'n', 'n', 'a', 'h'];
+  reverseString(s);
+  return s;
+}, ['h', 'a', 'n', 'n', 'a', 'H']);
+// ---End Tests
 
 // ---Helpers
-
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
@@ -63,3 +61,4 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
     }
   }
 }
+// ---End Helpers

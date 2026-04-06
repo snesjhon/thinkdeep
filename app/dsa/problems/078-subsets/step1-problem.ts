@@ -1,21 +1,19 @@
-// Goal: Place frontDealer at index 0 and backDealer at s.length - 1.
+// Goal: Inside subsets(), declare results and basket, define backtrack(start) as a
+// closure that records [...basket] into results, add a for-loop header from start to
+// nums.length-1 (body empty), then call backtrack(0) and return results.
 
-function reverseString(s: string[]): void {
+function subsets(nums: number[]): number[][] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('empty array stays empty', () => {
-  const s: string[] = [];
-  reverseString(s);
-  return s;
-}, []);
+test('empty nums yields one subset: the empty basket', () => {
+  return subsets([]);
+}, [[]]);
 
-test('single character stays unchanged', () => {
-  const s = ['a'];
-  reverseString(s);
-  return s;
-}, ['a']);
+test('single element: only the empty basket is recorded (loop body not yet filled)', () => {
+  return subsets([5]);
+}, [[]]);
 // ---End Tests
 
 // ---Helpers

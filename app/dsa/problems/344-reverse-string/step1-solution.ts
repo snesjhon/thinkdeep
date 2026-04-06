@@ -1,31 +1,26 @@
-// =============================================================================
-// Reverse an Array — Step 1 of 2: Station the Two Dealers — SOLUTION
-// =============================================================================
-// Goal: Place frontDealer at index 0 and backDealer at index arr.length - 1.
+// Goal: Place frontDealer at index 0 and backDealer at s.length - 1.
 
-function reverseArray(arr: number[]): void {
-  // ✓ Step 1: Station the dealers at opposite ends of the card table
-  let frontDealer = 0;              // front dealer at the first card
-  let backDealer = arr.length - 1;  // back dealer at the last card
-  // march and swap come in step 2
+function reverseString(s: string[]): void {
+  let frontDealer = 0;
+  let backDealer = s.length - 1;
   void frontDealer; void backDealer;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty array stays empty', () => {
-  const arr: number[] = [];
-  reverseArray(arr);
-  return arr;
+  const s: string[] = [];
+  reverseString(s);
+  return s;
 }, []);
 
-test('single element stays unchanged', () => {
-  const arr = [1];
-  reverseArray(arr);
-  return arr;
-}, [1]);
+test('single character stays unchanged', () => {
+  const s = ['a'];
+  reverseString(s);
+  return s;
+}, ['a']);
+// ---End Tests
 
 // ---Helpers
-
 function test(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
@@ -43,3 +38,4 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
     }
   }
 }
+// ---End Helpers

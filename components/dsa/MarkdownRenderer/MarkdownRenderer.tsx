@@ -11,6 +11,7 @@ import type { HashMapStep } from '../HashMapTrace/HashMapTrace';
 import type { LinkedListStep } from '../LinkedListTrace/LinkedListTrace';
 import type { DoublyLinkedListStep } from '../DoublyLinkedListTrace/DoublyLinkedListTrace';
 import type { StackQueueStep } from '../StackQueueTrace/StackQueueTrace';
+import type { SubsetTraceStep } from '../SubsetTrace/SubsetTrace';
 
 const WebContainerEmbed = dynamic(
   () => import('../WebContainerEmbed/WebContainerEmbed'),
@@ -38,6 +39,7 @@ const DoublyLinkedListTrace = dynamic(
 const StackQueueTrace = dynamic(
   () => import('../StackQueueTrace/StackQueueTrace'),
 );
+const SubsetTrace = dynamic(() => import('../SubsetTrace/SubsetTrace'));
 
 interface MarkdownRendererProps {
   content: string;
@@ -73,6 +75,10 @@ type TraceSQSegment = BaseSegment & {
   type: 'trace-sq';
   steps: StackQueueStep[];
 };
+type TraceSubsetSegment = BaseSegment & {
+  type: 'trace-subset';
+  steps: SubsetTraceStep[];
+};
 type StackBlitzSegment = BaseSegment & {
   type: 'stackblitz';
   file: string;
@@ -99,7 +105,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       | 'trace-map'
       | 'trace-ll'
       | 'trace-dll'
-      | 'trace-sq';
+      | 'trace-sq'
+      | 'trace-subset';
   }> = [
     { fence: /^:::trace\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace' },
     { fence: /^:::trace-lr\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-lr' },
@@ -111,6 +118,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
     { fence: /^:::trace-ll\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-ll' },
     { fence: /^:::trace-dll\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-dll' },
     { fence: /^:::trace-sq\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-sq' },
+    { fence: /^:::trace-subset\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-subset' },
   ];
 
   for (const seg of segments) {
@@ -132,7 +140,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
         | 'trace-map'
         | 'trace-ll'
         | 'trace-dll'
-        | 'trace-sq';
+        | 'trace-sq'
+        | 'trace-subset';
     };
     const matches: RawMatch[] = [];
     for (const { fence, type } of configs) {
@@ -291,6 +300,10 @@ export default function MarkdownRenderer({
         if (seg.type === 'trace-sq')
           return (
             <StackQueueTrace key={i} steps={(seg as TraceSQSegment).steps} />
+          );
+        if (seg.type === 'trace-subset')
+          return (
+            <SubsetTrace key={i} steps={(seg as TraceSubsetSegment).steps} />
           );
         if (seg.type === 'stackblitz') {
           const s = seg as StackBlitzSegment;
