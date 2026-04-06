@@ -1,0 +1,30 @@
+[data-theme='mocha'] {
+  --ms-rosewater: #f5e0dc;
+  --ms-flamingo: #f2cdcd;
+  --ms-pink: #f5c2e7;
+  --ms-mauve: #cba6f7;
+  --ms-red: #f38ba8;
+  --ms-maroon: #eba0ac;
+  --ms-peach: #fab387;
+  --ms-yellow: #f9e2af;
+  --ms-green: #a6e3a1;
+  --ms-teal: #94e2d5;
+  --ms-sky: #89dceb;
+  --ms-sapphire: #74c7ec;
+  --ms-blue: #89b4fa;
+  --ms-lavender: #b4befe;
+  --ms-text: #cdd6f4;
+  --ms-subtext1: #bac2de;
+  --ms-subtext0: #a6adc8;
+  --ms-overlay2: #9399b2;
+  --ms-overlay1: #7f849c;
+  --ms-overlay0: #6c7086;
+  --ms-surface2: #585b70;
+  --ms-surface1: #45475a;
+  --ms-surface0: #313244;
+  --ms-base: #1e1e2e;
+  --ms-mantle: #181825;
+  --ms-crust: #11111b;
+  --ms-on-accent: var(--ms-crust);
+  color-scheme: dark;
+}

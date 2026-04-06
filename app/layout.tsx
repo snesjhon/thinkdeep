@@ -3,7 +3,7 @@ import { Newsreader, Plus_Jakarta_Sans } from 'next/font/google';
 import { SiteNav } from '@/components/ui/SiteNav/SiteNav';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
-import { DEFAULT_THEME_FLAVOR } from '@/lib/theme';
+import { DEFAULT_THEME_FLAVOR, getThemeInitScript } from '@/lib/theme';
 import '../styles/globals.css';
 
 const newsreader = Newsreader({
@@ -40,6 +40,9 @@ export default async function RootLayout({
       data-theme={DEFAULT_THEME_FLAVOR}
       className={`${newsreader.variable} ${plusJakarta.variable}`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: getThemeInitScript() }} />
+      </head>
       <body className="min-h-screen bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)]">
         <div
           className="grid"

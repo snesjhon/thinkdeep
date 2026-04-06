@@ -1,7 +1,8 @@
 @import './base.css';
-@import './dsa.css';
-@import './system-design.css';
-@import './fullstack.css';
+@import './themes/latte.css';
+@import './themes/mocha.css';
+@import './themes/tokyo-light.css';
+@import './themes/tokyo-storm.css';
 
 @tailwind base;
 @tailwind components;

@@ -1,7 +1,12 @@
 export const THEME_STORAGE_KEY = 'theme-flavor';
 export const THEME_CHANGE_EVENT = 'theme-flavor-change';
 
-export const THEME_FLAVORS = ['latte', 'mocha'] as const;
+export const THEME_FLAVORS = [
+  'latte',
+  'mocha',
+  'tokyo-light',
+  'tokyo-storm',
+] as const;
 
 export type ThemeFlavor = (typeof THEME_FLAVORS)[number];
 
@@ -14,7 +19,7 @@ export function isThemeFlavor(value: unknown): value is ThemeFlavor {
 }
 
 export function isDarkTheme(flavor: ThemeFlavor): boolean {
-  return flavor === 'mocha';
+  return flavor === 'mocha' || flavor === 'tokyo-storm';
 }
 
 export function getStoredThemeFlavor(): ThemeFlavor {
@@ -63,13 +68,21 @@ export function getThemeInitScript(): string {
 
       try {
         var stored = window.localStorage.getItem(storageKey);
-        if (stored === 'latte' || stored === 'mocha') {
+        if (
+          stored === 'latte' ||
+          stored === 'mocha' ||
+          stored === 'tokyo-light' ||
+          stored === 'tokyo-storm'
+        ) {
           theme = stored;
         }
       } catch (error) {}
 
       root.setAttribute('data-theme', theme);
-      root.classList.toggle('dark', theme === 'mocha');
+      root.classList.toggle(
+        'dark',
+        theme === 'mocha' || theme === 'tokyo-storm',
+      );
     })();
   `;
 }

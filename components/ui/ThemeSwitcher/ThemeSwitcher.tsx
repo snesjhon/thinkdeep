@@ -18,15 +18,27 @@ interface ThemeSwitcherProps {
 const FLAVOR_LABELS: Record<ThemeFlavor, string> = {
   latte: 'Latte',
   mocha: 'Mocha',
+  'tokyo-light': 'Light',
+  'tokyo-storm': 'Storm',
 };
 
 const FLAVOR_ICONS: Record<ThemeFlavor, LucideIcon> = {
   latte: Sun,
   mocha: Moon,
+  'tokyo-light': Sun,
+  'tokyo-storm': Moon,
 };
 
+const FLAVOR_ORDER = [
+  'latte',
+  'mocha',
+  'tokyo-light',
+  'tokyo-storm',
+] as const satisfies readonly ThemeFlavor[];
+
 function nextFlavor(flavor: ThemeFlavor): ThemeFlavor {
-  return flavor === 'latte' ? 'mocha' : 'latte';
+  const index = FLAVOR_ORDER.indexOf(flavor);
+  return FLAVOR_ORDER[(index + 1) % FLAVOR_ORDER.length];
 }
 
 export function ThemeSwitcher({
@@ -80,7 +92,7 @@ export function ThemeSwitcher({
         title={`Switch to ${FLAVOR_LABELS[next]}`}
         className="appearance-none shadow-none cursor-pointer border-none bg-transparent px-2 py-1 text-[var(--ms-text-subtle)] outline-none ring-0 transition-colors hover:text-[var(--ms-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
       >
-        {theme === 'mocha' ? (
+        {theme === 'mocha' || theme === 'tokyo-storm' ? (
           <Sun aria-hidden="true" className="h-4 w-4" />
         ) : (
           <Moon aria-hidden="true" className="h-4 w-4" />
@@ -103,7 +115,7 @@ export function ThemeSwitcher({
 
         {open && (
           <div className="absolute bottom-full right-0 z-[100] mb-2 min-w-[160px] overflow-hidden rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] shadow-lg">
-            {(['latte', 'mocha'] as const).map((flavor) => {
+            {FLAVOR_ORDER.map((flavor) => {
               const active = theme === flavor;
               const Icon = FLAVOR_ICONS[flavor];
 
@@ -134,7 +146,7 @@ export function ThemeSwitcher({
 
   return (
     <div className="inline-flex rounded-md border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-1">
-      {(['latte', 'mocha'] as const).map((flavor) => {
+      {FLAVOR_ORDER.map((flavor) => {
         const active = theme === flavor;
         const Icon = FLAVOR_ICONS[flavor];
 
