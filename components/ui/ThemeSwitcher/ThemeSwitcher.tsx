@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Layers3, Moon, Sun } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import {
   applyThemeFlavor,
   getActiveThemeFlavor,
@@ -11,11 +12,17 @@ import {
 
 interface ThemeSwitcherProps {
   collapsed?: boolean;
+  compact?: boolean;
 }
 
 const FLAVOR_LABELS: Record<ThemeFlavor, string> = {
   latte: 'Latte',
   mocha: 'Mocha',
+};
+
+const FLAVOR_ICONS: Record<ThemeFlavor, LucideIcon> = {
+  latte: Sun,
+  mocha: Moon,
 };
 
 function nextFlavor(flavor: ThemeFlavor): ThemeFlavor {
@@ -24,8 +31,11 @@ function nextFlavor(flavor: ThemeFlavor): ThemeFlavor {
 
 export function ThemeSwitcher({
   collapsed = false,
+  compact = false,
 }: ThemeSwitcherProps) {
   const [theme, setTheme] = useState<ThemeFlavor>('latte');
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const syncTheme = () => {
@@ -41,6 +51,24 @@ export function ThemeSwitcher({
       window.removeEventListener('storage', syncTheme);
     };
   }, []);
+
+  useEffect(() => {
+    if (!compact) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [compact]);
 
   if (collapsed) {
     const next = nextFlavor(theme);
@@ -61,10 +89,54 @@ export function ThemeSwitcher({
     );
   }
 
+  if (compact) {
+    return (
+      <div ref={dropdownRef} className="relative">
+        <button
+          onClick={() => setOpen((value) => !value)}
+          aria-label={`Theme: ${FLAVOR_LABELS[theme]}`}
+          title={`Theme: ${FLAVOR_LABELS[theme]}`}
+          className="flex h-6 w-6 cursor-pointer items-center justify-center border-none bg-transparent p-0 text-[var(--ms-text-body)] outline-none transition-colors hover:text-[var(--ms-blue)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+        >
+          <Layers3 aria-hidden="true" className="h-5 w-5" strokeWidth={1.9} />
+        </button>
+
+        {open && (
+          <div className="absolute bottom-full right-0 z-[100] mb-2 min-w-[160px] overflow-hidden rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] shadow-lg">
+            {(['latte', 'mocha'] as const).map((flavor) => {
+              const active = theme === flavor;
+              const Icon = FLAVOR_ICONS[flavor];
+
+              return (
+                <button
+                  key={flavor}
+                  onClick={() => {
+                    applyThemeFlavor(flavor);
+                    setOpen(false);
+                  }}
+                  aria-pressed={active}
+                  className={`flex w-full cursor-pointer items-center gap-2 border-none px-3 py-2 text-left text-[0.72rem] font-semibold uppercase tracking-[0.08em] transition-colors focus:outline-none ${
+                    active
+                      ? 'bg-[var(--ms-bg-pane-secondary)] text-[var(--ms-text-body)]'
+                      : 'bg-transparent text-[var(--ms-text-subtle)] hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)]'
+                  }`}
+                >
+                  <Icon aria-hidden="true" className="h-3.5 w-3.5" />
+                  {FLAVOR_LABELS[flavor]}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="inline-flex rounded-md border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-1">
       {(['latte', 'mocha'] as const).map((flavor) => {
         const active = theme === flavor;
+        const Icon = FLAVOR_ICONS[flavor];
 
         return (
           <button
@@ -77,11 +149,7 @@ export function ThemeSwitcher({
                 : 'bg-transparent text-[var(--ms-text-subtle)] hover:text-[var(--ms-text-body)]'
             }`}
           >
-            {flavor === 'latte' ? (
-              <Sun aria-hidden="true" className="h-3.5 w-3.5" />
-            ) : (
-              <Moon aria-hidden="true" className="h-3.5 w-3.5" />
-            )}
+            <Icon aria-hidden="true" className="h-3.5 w-3.5" />
             {FLAVOR_LABELS[flavor]}
           </button>
         );

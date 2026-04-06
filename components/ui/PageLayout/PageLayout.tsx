@@ -1,4 +1,5 @@
 import React from 'react';
+import { ThemeSwitcher } from '../ThemeSwitcher/ThemeSwitcher';
 
 interface PageLayoutProps {
   aside: React.ReactNode;
@@ -18,7 +19,10 @@ export function PageLayout({ aside, children, accentColor }: PageLayoutProps) {
           data-dfh-page-aside
           className="hidden xl:block sticky top-8 self-start max-h-[calc(100vh-2rem)] overflow-y-auto"
         >
-          {aside}
+          <div className="space-y-4">
+            <ThemeSwitcher />
+            {aside}
+          </div>
         </aside>
       </div>
     </div>

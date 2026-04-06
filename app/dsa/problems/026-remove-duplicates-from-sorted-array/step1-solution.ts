@@ -1,6 +1,3 @@
-// =============================================================================
-// Remove Duplicates from Sorted Array — Step 1 of 2: Initialize the Writing Hand — SOLUTION
-// =============================================================================
 // Goal: Set up the writing hand at position 1, since the first book is always
 //       the first unique title in the curated section.
 

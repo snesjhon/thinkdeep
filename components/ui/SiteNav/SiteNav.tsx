@@ -1,13 +1,13 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
 import { JourneyPanel } from '../JourneyPanel/JourneyPanel';
-import { ThemeSwitcher } from '../ThemeSwitcher/ThemeSwitcher';
 import type { JourneyPanelPhase } from '../JourneyPanel/JourneyPanel';
 
 // ── DSA static lookups ────────────────────────────────────────────────────────
@@ -72,18 +72,6 @@ function dsaActiveSection(path: string): string | null {
   return null;
 }
 
-function sectionIcon(label: string): string {
-  const words = label
-    .replace(/[^a-zA-Z0-9 ]/g, '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if (words.length === 0) return '?';
-  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
-  return (words[0][0] + words[1][0]).toUpperCase();
-}
-
 type AppKey = 'dsa';
 
 function appFromPath(path: string): AppKey | null {
@@ -139,20 +127,10 @@ export function SiteNav({
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
 
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
   const [openApps, setOpenApps] = useState<Set<AppKey>>(() => {
     const app = appFromPath(pathname);
     return app ? new Set([app]) : new Set();
   });
-
-  useEffect(() => {
-    const saved = localStorage.getItem('sidebar-collapsed') === 'true';
-    setCollapsed(saved);
-    document.documentElement.style.setProperty(
-      '--sidebar-w',
-      saved ? '44px' : '260px',
-    );
-  }, []);
 
   // Auto-open the current app's section when navigating
   useEffect(() => {
@@ -175,64 +153,7 @@ export function SiteNav({
     });
   };
 
-  const toggleCollapsed = () => {
-    const next = !collapsed;
-    setCollapsed(next);
-    localStorage.setItem('sidebar-collapsed', String(next));
-    document.documentElement.style.setProperty(
-      '--sidebar-w',
-      next ? '44px' : '260px',
-    );
-  };
-
   const activeSectionId = dsaActiveSection(pathname);
-
-  if (collapsed) {
-    return (
-      <nav className="sticky left-0 top-0 z-50 flex h-screen w-[44px] flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
-        <div className="flex shrink-0 items-center justify-center border-b border-b-[var(--ms-surface)] py-[18px]">
-          <span className="text-[0.85rem] italic font-normal text-[var(--ms-text-body)] [font-family:var(--font-display)]">
-            M
-          </span>
-        </div>
-
-        <div className="flex flex-1 flex-col overflow-y-auto py-2">
-          {DSA_PHASES.map((phase) =>
-            phase.sections.map((section) => {
-              const isActive = activeSectionId === section.id;
-              return (
-                <button
-                  key={section.id}
-                  title={section.label}
-                  onClick={toggleCollapsed}
-                  className={`appearance-none shadow-none flex w-full cursor-pointer items-center justify-center border-none bg-transparent py-[6px] transition-colors outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
-                    isActive
-                      ? 'font-bold text-[var(--ms-primary)]'
-                      : 'text-[var(--ms-text-faint)] hover:text-[var(--ms-text-body)]'
-                  }`}
-                >
-                  <span className="text-[0.6rem] font-mono font-bold leading-none">
-                    {sectionIcon(section.label)}
-                  </span>
-                </button>
-              );
-            }),
-          )}
-        </div>
-
-        <div className="flex shrink-0 flex-col items-center gap-2 border-t border-t-[var(--ms-surface)] py-3">
-          <ThemeSwitcher collapsed />
-          <button
-            onClick={toggleCollapsed}
-            aria-label="Expand sidebar"
-            className="appearance-none shadow-none cursor-pointer rounded border border-[var(--ms-surface)] bg-transparent px-1.5 py-1 text-[0.65rem] leading-none text-[var(--ms-text-faint)] outline-none ring-0 hover:text-[var(--ms-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
-          >
-            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      </nav>
-    );
-  }
 
   return (
     <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
@@ -256,13 +177,13 @@ export function SiteNav({
         />
         {openApps.has('dsa') && (
           <div className="min-h-0 flex-1 overflow-y-auto">
-          <JourneyPanel
-            phases={DSA_PHASES}
-            pathname={pathname}
-            activeSectionId={activeSectionId}
-            activeItemKey={
-              pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
-            }
+            <JourneyPanel
+              phases={DSA_PHASES}
+              pathname={pathname}
+              activeSectionId={activeSectionId}
+              activeItemKey={
+                pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
+              }
               activeFundamentalsSlug={
                 pathname.match(/^\/dsa\/fundamentals\/([^/]+)/)?.[1] ?? null
               }
@@ -273,17 +194,6 @@ export function SiteNav({
             />
           </div>
         )}
-      </div>
-
-      <div className="flex shrink-0 items-center justify-between border-t border-t-[var(--ms-surface)] px-3 py-3">
-        <ThemeSwitcher />
-        <button
-          onClick={toggleCollapsed}
-          aria-label="Collapse sidebar"
-          className="appearance-none shadow-none cursor-pointer rounded border border-[var(--ms-surface)] bg-transparent px-1.5 py-1 text-[0.65rem] leading-none text-[var(--ms-text-faint)] outline-none ring-0 hover:text-[var(--ms-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
-        >
-          <ChevronLeft aria-hidden="true" className="h-3.5 w-3.5" />
-        </button>
       </div>
     </nav>
   );

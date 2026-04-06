@@ -3,9 +3,16 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { CircleUserRound } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
-export function UserAvatarDropdown() {
+interface UserAvatarDropdownProps {
+  compact?: boolean;
+}
+
+export function UserAvatarDropdown({
+  compact = false,
+}: UserAvatarDropdownProps) {
   const [email, setEmail] = useState('');
   const [resolved, setResolved] = useState(false);
   const [open, setOpen] = useState(false);
@@ -56,7 +63,55 @@ export function UserAvatarDropdown() {
   }
 
   if (!resolved) {
-    return <div className="h-[41px] border-b border-b-[var(--ms-surface)]" />;
+    return compact ? (
+      <div className="h-6 w-6" />
+    ) : (
+      <div className="h-[41px] border-b border-b-[var(--ms-surface)]" />
+    );
+  }
+
+  if (compact) {
+    return (
+      <div ref={dropdownRef} className="relative">
+        <button
+          onClick={() => setOpen((value) => !value)}
+          aria-label={email ? 'User menu' : 'Account menu'}
+          className="flex h-6 w-6 cursor-pointer items-center justify-center border-none bg-transparent p-0 text-[var(--ms-text-body)] outline-none transition-colors hover:text-[var(--ms-blue)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+        >
+          <CircleUserRound
+            aria-hidden="true"
+            className="h-5 w-5"
+            strokeWidth={1.9}
+          />
+        </button>
+
+        {open && (
+          <div className="absolute bottom-full right-0 z-[100] mb-2 min-w-[220px] overflow-hidden rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] shadow-lg">
+            {email ? (
+              <>
+                <div className="border-b border-b-[var(--ms-surface)] px-3 py-2 text-[0.72rem] text-[var(--ms-text-subtle)]">
+                  {email}
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="flex w-full cursor-pointer items-center border-none bg-transparent px-3 py-2 text-left text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)] focus:outline-none"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="block px-3 py-2 text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors no-underline hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)]"
+                onClick={() => setOpen(false)}
+              >
+                Log in
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
+    );
   }
 
   if (!email) {
