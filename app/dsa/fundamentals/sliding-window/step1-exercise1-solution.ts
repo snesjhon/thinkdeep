@@ -1,12 +1,8 @@
-// =============================================================================
-// Sliding Window — Level 1, Exercise 1: Best k-Chapter Run — SOLUTION
-// =============================================================================
 // Goal: Practice the fixed-size window slide — add one element, remove one element.
 //
 // Build the first window sum manually (indices 0..k-1).
 // Then slide: for each R from k to n-1, add nums[R] and remove nums[R-k].
 // Track the maximum sum seen across all windows.
-// =============================================================================
 function maxWindowSum(nums: number[], k: number): number {
   if (k > nums.length) return 0;
 
@@ -22,12 +18,14 @@ function maxWindowSum(nums: number[], k: number): number {
   return maxSum;
 }
 
+// ---Tests
 test('basic window, max in middle',  () => maxWindowSum([2, 1, 5, 1, 3, 2], 3),     9);
 test('two-element window',           () => maxWindowSum([1, 3, 2, 6, -1, 4], 2),    8);
 test('window equals array length',   () => maxWindowSum([4, 2, 7], 3),              13);
 test('max at beginning',             () => maxWindowSum([9, 2, 1, 3], 2),           11);
 test('k larger than array',          () => maxWindowSum([1, 2], 5),                  0);
 test('single element window',        () => maxWindowSum([7, 3, 1], 1),               7);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

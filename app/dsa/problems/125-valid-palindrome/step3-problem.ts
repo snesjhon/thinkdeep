@@ -1,6 +1,3 @@
-// =============================================================================
-// Valid Palindrome — Step 3 of 3: Comparing Exhibits and Advancing
-// =============================================================================
 // Goal: After both inspectors land on real exhibits, compare them
 //       case-insensitively; return false on mismatch, advance inward on match.
 
@@ -24,7 +21,7 @@ function isPalindrome(s: string): boolean {
   return true;
 }
 
-// Tests — full suite including mismatch detection
+// ---Tests
 test('empty string is a palindrome', () => isPalindrome(''), true);
 test('single character is a palindrome', () => isPalindrome('a'), true);
 test('spaces only is a palindrome', () => isPalindrome(' '), true);
@@ -34,6 +31,7 @@ test('"A man, a plan, a canal: Panama" is a palindrome', () => isPalindrome('A m
 test('"race a car" is not a palindrome', () => isPalindrome('race a car'), false);
 test('digits palindrome "12321"', () => isPalindrome('12321'), true);
 test('mixed case "Aba" is a palindrome', () => isPalindrome('Aba'), true);
+// ---End Tests
 
 // ---Helpers
 

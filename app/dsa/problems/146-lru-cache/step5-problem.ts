@@ -1,6 +1,3 @@
-// =============================================================================
-// 146. LRU Cache — Step 5 of 6
-// =============================================================================
 // Goal: Build put so an existing label updates and reheats the same box, while
 // a new label creates a fresh hot box. Do not evict yet.
 

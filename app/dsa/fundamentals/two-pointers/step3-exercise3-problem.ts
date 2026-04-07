@@ -1,6 +1,3 @@
-// =============================================================================
-// Two Pointers — Level 3, Exercise 3: Calculate Trapped Water
-// =============================================================================
 // Goal: Apply two-pointer with running max — an extension of the greedy gate.
 //
 // Given an elevation map where each bar has a given height, calculate how much
@@ -16,17 +13,18 @@
 // Example:
 //   trappingRainWater([0,1,0,2,1,0,1,3,2,1,2,1]) → 6
 //   trappingRainWater([4,2,0,3,2,5])              → 9
-// =============================================================================
 function trappingRainWater(heights: number[]): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('classic example',    () => trappingRainWater([0,1,0,2,1,0,1,3,2,1,2,1]), 6);
 test('second example',     () => trappingRainWater([4,2,0,3,2,5]),             9);
 test('empty array',        () => trappingRainWater([]),                         0);
 test('single bar',         () => trappingRainWater([5]),                        0);
 test('no water ascending', () => trappingRainWater([1,2,3,4,5]),               0);
 test('simple valley',      () => trappingRainWater([3,0,3]),                   3);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

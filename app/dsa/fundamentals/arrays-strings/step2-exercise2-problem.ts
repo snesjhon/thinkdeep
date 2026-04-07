@@ -1,6 +1,3 @@
-// =============================================================================
-// Arrays & Strings — Level 2, Exercise 2: Do the Inspectors Agree?
-// =============================================================================
 // Goal: Use the two converging inspectors to check symmetry.
 //
 // The left inspector starts at the front; the right inspector starts at the end.
@@ -13,17 +10,18 @@
 //   isPalindrome("racecar") → true
 //   isPalindrome("hello")   → false
 //   isPalindrome("a")       → true
-// =============================================================================
 function isPalindrome(s: string): boolean {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('classic palindrome',       () => isPalindrome('racecar'), true);
 test('not a palindrome',         () => isPalindrome('hello'),   false);
 test('single char',              () => isPalindrome('a'),       true);
 test('empty string',             () => isPalindrome(''),        true);
 test('even-length palindrome',   () => isPalindrome('abba'),    true);
 test('even-length non-palindrome', () => isPalindrome('abcd'), false);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

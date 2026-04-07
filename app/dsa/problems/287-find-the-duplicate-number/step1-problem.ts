@@ -1,6 +1,3 @@
-// =============================================================================
-// Find the Duplicate Number — Step 1 of 2: Force a Meeting Inside the Carousel
-// =============================================================================
 // Goal: Send a walker and a sprinter through the hallway signs until they meet
 //       somewhere on the loop.
 
@@ -8,7 +5,6 @@ function findDuplicate(nums: number[]): number {
   throw new Error('not implemented');
 }
 
-// Tests — cases where the carousel meeting room is already the duplicate room
 runCase('two-room hallway [1,1] meets at duplicate room 1', () => findDuplicate([1, 1]), 1);
 runCase('all hallways funnel straight into room 2', () => findDuplicate([2, 2, 2, 2, 2]), 2);
 

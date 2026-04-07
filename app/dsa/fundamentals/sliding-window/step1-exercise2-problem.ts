@@ -1,6 +1,3 @@
-// =============================================================================
-// Sliding Window — Level 1, Exercise 2: Lightest k-Chapter Frame
-// =============================================================================
 // Goal: Practice the fixed-size slide returning a minimum, not a maximum.
 //
 // The historian now wants the k consecutive chapters with the lowest
@@ -17,17 +14,18 @@
 // Example (corrected):
 //   minWindowAverage([1, 4, 2, 5], 2) → 2.5  (window [1,4] has avg 2.5)
 //   minWindowAverage([5, 1, 2, 3], 2) → 1.5  (window [1,2] has avg 1.5)
-// =============================================================================
 function minWindowAverage(nums: number[], k: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('min at end',             () => minWindowAverage([3, 7, 5, 2, 4, 1], 3),   7/3);
 test('min at start',           () => minWindowAverage([1, 4, 2, 5], 2),         2.5);
 test('min in middle',          () => minWindowAverage([5, 1, 2, 3], 2),         1.5);
 test('all same elements',      () => minWindowAverage([4, 4, 4, 4], 2),         4.0);
 test('k equals array length',  () => minWindowAverage([2, 3, 1], 3),            2.0);
 test('k larger than array',    () => minWindowAverage([1, 2], 5),               0);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

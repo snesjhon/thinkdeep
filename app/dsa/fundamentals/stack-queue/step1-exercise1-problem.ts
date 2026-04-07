@@ -1,6 +1,3 @@
-// =============================================================================
-// Stack & Queue — Level 1, Exercise 1: Restack the Plates
-// =============================================================================
 // Goal: Practice pure LIFO behavior by reversing a plate shelf.
 //
 // Plates come off one shelf and must be rebuilt onto a fresh shelf.
@@ -10,16 +7,17 @@
 // Example:
 //   restackPlates([3, 1, 4]) → [4, 1, 3]
 //   restackPlates([])        → []
-// =============================================================================
 function restackPlates(plates: number[]): number[] {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('three plates', () => restackPlates([3, 1, 4]), [4, 1, 3]);
 test('single plate', () => restackPlates([7]), [7]);
 test('empty shelf', () => restackPlates([]), []);
 test('repeated plates', () => restackPlates([2, 2, 2]), [2, 2, 2]);
 test('descending shelf', () => restackPlates([5, 4, 3, 2]), [2, 3, 4, 5]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

@@ -1,6 +1,3 @@
-// =============================================================================
-// Add Two Numbers — Step 2 of 2: Carry the Overflow Satchel Forward — SOLUTION
-// =============================================================================
 // Goal: Add the overflow satchel so each column can stamp the ones digit now
 // and carry any extra 1 into the next column.
 
@@ -43,7 +40,6 @@ function addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | nul
   return starterStub.next;
 }
 
-// Tests — all must print PASS
 runTest('both single zero digits', () => listToArray(addTwoNumbers(createList([0]), createList([0]))), [0]);
 runTest('same length without carry', () => listToArray(addTwoNumbers(createList([2, 4, 3]), createList([5, 4, 1]))), [7, 8, 4]);
 runTest('different lengths without carry', () => listToArray(addTwoNumbers(createList([1, 2]), createList([3]))), [4, 2]);

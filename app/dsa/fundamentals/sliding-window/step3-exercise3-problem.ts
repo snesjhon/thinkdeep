@@ -1,6 +1,3 @@
-// =============================================================================
-// Sliding Window — Level 3, Exercise 3: Count Rich-Vocabulary Passages
-// =============================================================================
 // Goal: Practice the "exactly k" pattern by combining two at-most-k window scans.
 //
 // A "rich-vocabulary" passage uses exactly k distinct characters — not fewer,
@@ -21,17 +18,18 @@
 // Explanation for "aab" with k=1:
 //   Substrings with exactly 1 distinct: "a"(0), "a"(1), "b"(2), "aa"(0-1) = 4
 //   atMost(1) = 4, atMost(0) = 0 → exactly 1 = 4 − 0 = 4
-// =============================================================================
 function countExactK(s: string, k: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('basic two-char distinct',   () => countExactK('abc', 2),      2);
 test('one distinct in "aab"',     () => countExactK('aab', 1),      4);
 test('two distinct in "aab"',     () => countExactK('aab', 2),      2);
 test('all same chars',            () => countExactK('aaaa', 1),     10);
 test('k equals 0',                () => countExactK('abc', 0),      0);
 test('k larger than distinct',    () => countExactK('ab', 3),       0);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

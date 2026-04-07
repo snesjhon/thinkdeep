@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked Lists — Level 1, Exercise 1: Count the Manifest
-// =============================================================================
 // Goal: Practice basic linked list traversal by walking the train car by car.
 //
 // You are given the head of a freight train. Count how many cars it has.
@@ -10,7 +7,6 @@
 // Example:
 //   countNodes(1 → 2 → 3)  → 3
 //   countNodes(null)        → 0
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -28,7 +24,9 @@ function countNodes(head: ListNode | null): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('empty train', () => countNodes(null), 0);
+// ---End Tests
 test('single car', () => countNodes(buildList([1])), 1);
 test('three cars', () => countNodes(buildList([1, 2, 3])), 3);
 test('five cars', () => countNodes(buildList([1, 2, 3, 4, 5])), 5);

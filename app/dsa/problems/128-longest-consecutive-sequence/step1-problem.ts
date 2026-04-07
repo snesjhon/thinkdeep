@@ -1,6 +1,3 @@
-// =============================================================================
-// Longest Consecutive Sequence — Step 1 of 2: Building the Catalog and Finding Openers
-// =============================================================================
 // Goal: Register every volume in the catalog (Set), then scan for series openers —
 //       volumes whose predecessor is absent — and record each as a run of length 1.
 
@@ -8,11 +5,12 @@ function longestConsecutive(nums: number[]): number {
   throw new Error('not implemented');
 }
 
-// Tests — these only require the catalog + opener detection (no chain expansion needed)
+// ---Tests
 test('empty array', () => longestConsecutive([]), 0);
 test('single volume', () => longestConsecutive([1]), 1);
 test('all disjoint — every volume is its own opener', () => longestConsecutive([10, 5, 100]), 1);
 test('duplicates collapse in catalog', () => longestConsecutive([1, 1, 1]), 1);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

@@ -1,6 +1,3 @@
-// =============================================================================
-// Minimum Window Substring — Step 2 of 2: Tightening the Frame — SOLUTION
-// =============================================================================
 // Goal: Once a valid window is found, contract from the left to minimize it.
 //       Track the best (shortest) valid window across all contraction cycles.
 
@@ -50,7 +47,7 @@ function minWindow(s: string, t: string): string {
   return resLen === Infinity ? '' : s.slice(resL, resR + 1);
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('no valid window: required actor missing', () => minWindow('A', 'B'), '');
 test('no valid window: need two but only one on stage', () => minWindow('A', 'AA'), '');
 test('single actor needed and present', () => minWindow('A', 'A'), 'A');
@@ -59,6 +56,7 @@ test('classic example — minimum requires contraction', () => minWindow('ADOBEC
 test('duplicate requirement — need A twice', () => minWindow('AABC', 'AAB'), 'AAB');
 test('minimum window is at the end of stage', () => minWindow('DCBA', 'AB'), 'BA');
 test('t is a single repeated character', () => minWindow('AAAB', 'AA'), 'AA');
+// ---End Tests
 
 // ---Helpers
 

@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked Lists — Level 3, Exercise 1: Find the Center Car
-// =============================================================================
 // Goal: Practice the fast/slow pointer technique by finding the middle node.
 //
 // You are given the head of a train with at least one car.
@@ -17,7 +14,6 @@
 //   middleValue(1 → 2 → 3)       → 2
 //   middleValue(1 → 2 → 3 → 4)   → 3
 //   middleValue(1)                → 1
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -35,7 +31,9 @@ function middleValue(head: ListNode): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('odd length 3',   () => middleValue(buildList([1,2,3])!),       2);
+// ---End Tests
 test('odd length 5',   () => middleValue(buildList([1,2,3,4,5])!),   3);
 test('even length 2',  () => middleValue(buildList([1,2])!),         2);
 test('even length 4',  () => middleValue(buildList([1,2,3,4])!),     3);

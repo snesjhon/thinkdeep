@@ -1,6 +1,3 @@
-// =============================================================================
-// Two Pointers — Level 1, Exercise 1: Do the Inspectors Find Their Match?
-// =============================================================================
 // Goal: Practice the core sorted-array two-pointer decision loop.
 //
 // Two inspectors stand at opposite ends of a sorted measurement lane.
@@ -14,17 +11,18 @@
 // Example:
 //   hasPairWithSum([1, 2, 3, 5, 7], 9)  → true  (2 + 7 = 9)
 //   hasPairWithSum([1, 2, 3, 5, 7], 13) → false  (no pair reaches 13)
-// =============================================================================
 function hasPairWithSum(nums: number[], target: number): boolean {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('pair exists at ends',     () => hasPairWithSum([1, 2, 3, 5, 7], 9),   true);
 test('no valid pair',           () => hasPairWithSum([1, 2, 3, 5, 7], 13),  false);
 test('pair in the middle',      () => hasPairWithSum([1, 4, 6, 9, 11], 15), true);
 test('empty array',             () => hasPairWithSum([], 5),                false);
 test('single element',          () => hasPairWithSum([5], 10),              false);
 test('negative numbers',        () => hasPairWithSum([-3, 0, 3, 7], 0),    true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

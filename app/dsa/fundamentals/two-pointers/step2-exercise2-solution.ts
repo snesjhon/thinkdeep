@@ -1,6 +1,3 @@
-// =============================================================================
-// Two Pointers — Level 2, Exercise 2: Widest Viable Gate — SOLUTION
-// =============================================================================
 // Goal: Apply the greedy gate insight to a threshold search instead of a max.
 //
 // Start with the widest span (L=0, R=n-1). If area >= minArea, return R-L
@@ -8,7 +5,6 @@
 // greedy rule: move the shorter gate. Proof: skipped pairs have area at most
 // height[shorter] * (R-L-1) < height[shorter] * (R-L) — provably not better.
 // The first valid pair found during the greedy walk IS the widest valid pair.
-// =============================================================================
 function largestWindowWidth(heights: number[], minArea: number): number {
   let L = 0, R = heights.length - 1;
   while (L < R) {
@@ -20,12 +16,14 @@ function largestWindowWidth(heights: number[], minArea: number): number {
   return -1;
 }
 
+// ---Tests
 test('first pair qualifies',   () => largestWindowWidth([3, 1, 5, 2, 4], 12),              4);
 test('first pair too small',   () => largestWindowWidth([1, 8, 6, 2, 5, 4, 8, 3, 7], 49), 7);
 test('no pair qualifies',      () => largestWindowWidth([1, 1], 2),                        -1);
 test('two walls exact',        () => largestWindowWidth([3, 3], 3),                        1);
 test('two walls insufficient', () => largestWindowWidth([1, 2], 3),                        -1);
 test('inner pair is widest',   () => largestWindowWidth([2, 5, 5, 5, 5, 2], 15),           3);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

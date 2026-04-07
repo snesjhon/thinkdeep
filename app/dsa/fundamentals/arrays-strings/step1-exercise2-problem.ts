@@ -1,6 +1,3 @@
-// =============================================================================
-// Arrays & Strings — Level 1, Exercise 2: Filter the Belt
-// =============================================================================
 // Goal: Use the reader + writer to reject a specific value.
 //
 // The belt carries mixed items. Your writer has one rule: skip anything
@@ -10,17 +7,18 @@
 // Example:
 //   removeElement([3, 2, 2, 3], 3)          → 2   (belt becomes [2, 2, ...])
 //   removeElement([0, 1, 2, 2, 3, 0, 4], 2) → 5
-// =============================================================================
 function removeElement(nums: number[], val: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('remove middle values',   () => removeElement([3,2,2,3], 3),         2);
 test('remove scattered',       () => removeElement([0,1,2,2,3,0,4,2], 2), 5);
 test('remove none',            () => removeElement([1,2,3], 9),            3);
 test('remove all',             () => removeElement([1,1,1], 1),             0);
 test('empty array',            () => removeElement([], 5),                  0);
 test('single match',           () => removeElement([4], 4),                 0);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

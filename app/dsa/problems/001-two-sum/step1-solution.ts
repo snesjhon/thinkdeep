@@ -1,6 +1,3 @@
-// =============================================================================
-// Two Sum — Step 1 of 1: Check the Guest Book, Then Record the Guest — SOLUTION
-// =============================================================================
 // Goal: One pass through the arrival line — look up each complement, then record the guest.
 
 function twoSum(nums: number[], target: number): number[] {
@@ -19,10 +16,11 @@ function twoSum(nums: number[], target: number): number[] {
   return [];
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('finds pair at start', () => twoSum([2, 7, 11, 15], 9), [0, 1]);
 test('finds pair in middle', () => twoSum([3, 2, 4], 6), [1, 2]);
 test('finds duplicate pair', () => twoSum([3, 3], 6), [0, 1]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

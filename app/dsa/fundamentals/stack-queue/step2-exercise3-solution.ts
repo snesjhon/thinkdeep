@@ -1,6 +1,3 @@
-// =============================================================================
-// Stack & Queue — Level 2, Exercise 3: Run the Two-Shelf Ticket Desk — SOLUTION
-// =============================================================================
 function runTwoShelfDesk(events: string[]): Array<string | null> {
   const arrivalShelf: string[] = [];
   const serviceShelf: string[] = [];
@@ -29,11 +26,13 @@ function runTwoShelfDesk(events: string[]): Array<string | null> {
   return answer;
 }
 
+// ---Tests
 test('front then serve', () => runTwoShelfDesk(['ARRIVE Ana', 'ARRIVE Ben', 'FRONT', 'SERVE']), ['Ana', 'Ana']);
 test('serve through transfer', () => runTwoShelfDesk(['ARRIVE Ana', 'ARRIVE Ben', 'SERVE', 'ARRIVE Cam', 'SERVE', 'SERVE']), ['Ana', 'Ben', 'Cam']);
 test('empty desk queries', () => runTwoShelfDesk(['FRONT', 'SERVE']), [null, null]);
 test('front does not remove', () => runTwoShelfDesk(['ARRIVE Kai', 'FRONT', 'FRONT', 'SERVE']), ['Kai', 'Kai', 'Kai']);
 test('interleaved arrivals', () => runTwoShelfDesk(['ARRIVE Lux', 'ARRIVE Nia', 'SERVE', 'ARRIVE Omar', 'FRONT', 'SERVE', 'SERVE']), ['Lux', 'Nia', 'Nia', 'Omar']);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

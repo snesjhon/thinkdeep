@@ -18,6 +18,7 @@ function countDivisibleSubarrays(nums: number[], k: number): number {
   return count;
 }
 
+// ---Tests
 test('empty', () => countDivisibleSubarrays([], 3), 0);
 test('single hit', () => countDivisibleSubarrays([5], 5), 1);
 test('single miss', () => countDivisibleSubarrays([4], 5), 0);
@@ -28,6 +29,7 @@ test(
   7,
 );
 test('all zeros', () => countDivisibleSubarrays([0, 0, 0], 1), 6);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

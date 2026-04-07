@@ -1,6 +1,3 @@
-// =============================================================================
-// Stack & Queue — Level 2, Exercise 1: Shadow the Lowest Plate — SOLUTION
-// =============================================================================
 function shadowLowestPlate(plates: number[]): number[] {
   const mins: number[] = [];
   const answer: number[] = [];
@@ -15,11 +12,13 @@ function shadowLowestPlate(plates: number[]): number[] {
   return answer;
 }
 
+// ---Tests
 test('basic minima', () => shadowLowestPlate([5, 3, 7, 2]), [5, 3, 3, 2]);
 test('already rising', () => shadowLowestPlate([1, 2, 3]), [1, 1, 1]);
 test('already falling', () => shadowLowestPlate([9, 6, 4]), [9, 6, 4]);
 test('single plate', () => shadowLowestPlate([8]), [8]);
 test('empty shelf', () => shadowLowestPlate([]), []);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

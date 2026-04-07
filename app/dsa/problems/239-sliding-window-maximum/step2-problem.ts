@@ -1,6 +1,3 @@
-// =============================================================================
-// Sliding Window Maximum — Step 2 of 2: The Telescope's Left Edge
-// =============================================================================
 // Goal: After back-cleaning and adding index i, check whether the notebook's
 // front entry has scrolled past the window's left edge. If so, remove it.
 // This ensures the front always refers to a hill inside the current window.
@@ -25,11 +22,12 @@ function maxSlidingWindow(nums: number[], k: number): number[] {
   return vistas;
 }
 
-// Tests
+// ---Tests
 test('empty array', () => maxSlidingWindow([], 3), []);
 test('single element', () => maxSlidingWindow([1], 1), [1]);
 test('front-cleaning required — old max scrolls out', () => maxSlidingWindow([3, 1, 2], 2), [3, 2]);
 test('main example', () => maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3), [3, 3, 5, 5, 6, 7]);
+// ---End Tests
 
 // ---Helpers
 

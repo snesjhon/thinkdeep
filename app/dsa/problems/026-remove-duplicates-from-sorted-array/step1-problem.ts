@@ -5,9 +5,10 @@ function removeDuplicates(nums: number[]): number {
   throw new Error('not implemented');
 }
 
-// Tests — step 1: only the single-element case passes (no loop yet)
+// ---Tests
 test('single element stays', () => removeDuplicates([1]), 1);
 test('writing hand starts at 1', () => removeDuplicates([5]), 1);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

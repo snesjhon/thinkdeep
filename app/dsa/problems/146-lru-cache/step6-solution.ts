@@ -1,6 +1,3 @@
-// =============================================================================
-// 146. LRU Cache — Step 6 of 6 Solution
-// =============================================================================
 // Goal: Finish put by evicting the coldest box whenever the shelf overflows.
 
 // ---Helpers

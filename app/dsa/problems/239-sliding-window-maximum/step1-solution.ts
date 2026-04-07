@@ -1,6 +1,3 @@
-// =============================================================================
-// Sliding Window Maximum — Step 1 of 2: The Candidates Notebook — SOLUTION
-// =============================================================================
 // Goal: Maintain a decreasing notebook of hill indices. When a new hill arrives,
 // erase any back entries with heights ≤ the new hill's height, then add the new
 // index. Report the front entry's height whenever the window is full (i ≥ k-1).
@@ -25,11 +22,12 @@ function maxSlidingWindow(nums: number[], k: number): number[] {
   return vistas;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty array', () => maxSlidingWindow([], 3), []);
 test('single element', () => maxSlidingWindow([5], 1), [5]);
 test('increasing single window — back-cleaning fires repeatedly', () => maxSlidingWindow([1, 3, 2], 3), [3]);
 test('decreasing single window — nothing cleaned from back', () => maxSlidingWindow([3, 1, 2], 3), [3]);
+// ---End Tests
 
 // ---Helpers
 

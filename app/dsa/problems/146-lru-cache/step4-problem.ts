@@ -1,6 +1,3 @@
-// =============================================================================
-// 146. LRU Cache — Step 4 of 6
-// =============================================================================
 // Goal: Build get so the ledger can find a box in O(1) and every successful
 // read reheats that box onto the hot end.
 

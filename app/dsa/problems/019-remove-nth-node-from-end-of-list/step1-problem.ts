@@ -1,6 +1,3 @@
-// =============================================================================
-// Remove Nth Node From End of List — Step 1 of 2: The Platform Marker and the Scout Gap
-// =============================================================================
 // Goal: Place a platform marker before the train and send the scout n + 1 steps
 // ahead so head-removal cases can already be solved.
 
@@ -21,7 +18,6 @@ function removeNthFromEnd(head: ListNode | null, n: number): ListNode | null {
   throw new Error('not implemented');
 }
 
-// Tests
 runCase('single car removed', () => listToArray(removeNthFromEnd(createList([1]), 1)), []);
 runCase('remove head from two-car train', () => listToArray(removeNthFromEnd(createList([1, 2]), 2)), [2]);
 runCase('remove head from three-car train', () => listToArray(removeNthFromEnd(createList([1, 2, 3]), 3)), [2, 3]);

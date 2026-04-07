@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked Lists — Level 3, Exercise 2: Even or Odd Convoy?
-// =============================================================================
 // Goal: Use fast/slow pointers to determine the parity of the train's length
 //       without counting every car.
 //
@@ -14,7 +11,6 @@
 //   isEvenLength(1 → 2 → 3 → 4)  → true
 //   isEvenLength(1 → 2 → 3)       → false
 //   isEvenLength(null)             → true
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -32,7 +28,9 @@ function isEvenLength(head: ListNode | null): boolean {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('empty train',    () => isEvenLength(null),                    true);
+// ---End Tests
 test('one car',        () => isEvenLength(buildList([1])),          false);
 test('two cars',       () => isEvenLength(buildList([1,2])),        true);
 test('three cars',     () => isEvenLength(buildList([1,2,3])),      false);

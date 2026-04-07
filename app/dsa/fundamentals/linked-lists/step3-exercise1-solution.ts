@@ -1,13 +1,9 @@
-// =============================================================================
-// Linked Lists — Level 4, Exercise 1: Flip the Front Cars — SOLUTION
-// =============================================================================
 // Goal: Practice in-place pointer rewiring by reversing the first k cars.
 //
 // Run the save → rewire → advance loop exactly k times (or until curr is null).
 // After the loop, head is the new tail of the reversed section.
 // Set head.next = curr to reattach the unreversed remainder.
 // Return prev as the new head.
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -37,7 +33,9 @@ function reverseFirstK(head: ListNode | null, k: number): ListNode | null {
   return prev;
 }
 
+// ---Tests
 test('reverse first 3 of 5',  () => toArray(reverseFirstK(buildList([1,2,3,4,5]), 3)), [3,2,1,4,5]);
+// ---End Tests
 test('reverse entire list',   () => toArray(reverseFirstK(buildList([1,2,3]), 3)),     [3,2,1]);
 test('reverse just 1 (noop)', () => toArray(reverseFirstK(buildList([1,2,3,4,5]), 1)), [1,2,3,4,5]);
 test('reverse first 2',       () => toArray(reverseFirstK(buildList([1,2,3,4,5]), 2)), [2,1,3,4,5]);

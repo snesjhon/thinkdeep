@@ -1,6 +1,3 @@
-// =============================================================================
-// Stack & Queue — Level 3, Exercise 1: Clear the Watchlist — SOLUTION
-// =============================================================================
 function daysUntilTallerBuilding(heights: number[]): number[] {
   const answer = new Array(heights.length).fill(0);
   const stack: number[] = [];
@@ -16,11 +13,13 @@ function daysUntilTallerBuilding(heights: number[]): number[] {
   return answer;
 }
 
+// ---Tests
 test('mixed skyline', () => daysUntilTallerBuilding([3, 1, 4, 2]), [2, 1, 0, 0]);
 test('strictly rising', () => daysUntilTallerBuilding([1, 2, 3, 4]), [1, 1, 1, 0]);
 test('strictly falling', () => daysUntilTallerBuilding([4, 3, 2, 1]), [0, 0, 0, 0]);
 test('plateau then rise', () => daysUntilTallerBuilding([2, 2, 3]), [2, 1, 0]);
 test('single building', () => daysUntilTallerBuilding([9]), [0]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

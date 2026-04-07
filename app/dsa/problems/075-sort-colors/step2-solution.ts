@@ -1,6 +1,3 @@
-// =============================================================================
-// Sort Colors — Step 2 of 3: The Red Escort — SOLUTION
-// =============================================================================
 // Goal: When the Inspector spots a red participant (0), swap them to the Red
 //       Flag position and advance both the Red Flag and the Inspector.
 
@@ -28,7 +25,7 @@ function sortColors(nums: number[]): void {
   }
 }
 
-// Tests — all must print PASS (inputs with only reds and whites)
+// ---Tests
 test('empty parade', () => {
   const nums: number[] = [];
   sortColors(nums);
@@ -66,6 +63,7 @@ test('red then white', () => {
 }, [0, 1]);
 
 test('white then red', () => {
+// ---End Tests
   const nums = [1, 0];
   sortColors(nums);
   return nums;

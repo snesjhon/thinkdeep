@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked Lists — Level 1, Exercise 3: Hitch a New Car
-// =============================================================================
 // Goal: Practice sentinel-based insertion at an arbitrary position.
 //
 // You are given the head of a train, a 0-indexed position k, and a cargo value.
@@ -14,7 +11,6 @@
 //   insertAt(1 → 2 → 3, 1, 99)  → 1 → 99 → 2 → 3
 //   insertAt(1 → 2 → 3, 0, 99)  → 99 → 1 → 2 → 3
 //   insertAt(null, 0, 5)         → 5
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -32,7 +28,9 @@ function insertAt(head: ListNode | null, k: number, val: number): ListNode | nul
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('insert in middle',     () => toArray(insertAt(buildList([1,2,3]), 1, 99)),   [1,99,2,3]);
+// ---End Tests
 test('insert at front',      () => toArray(insertAt(buildList([1,2,3]), 0, 99)),   [99,1,2,3]);
 test('insert at end',        () => toArray(insertAt(buildList([1,2,3]), 3, 99)),   [1,2,3,99]);
 test('insert beyond length', () => toArray(insertAt(buildList([1,2,3]), 10, 99)),  [1,2,3,99]);

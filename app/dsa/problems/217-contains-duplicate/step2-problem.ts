@@ -1,6 +1,3 @@
-// =============================================================================
-// Contains Duplicate — Step 2 of 2: Examine Each Stamp and Check for Duplicates
-// =============================================================================
 // Goal: Walk through every stamp in the pile; if the current design is already
 //       in the album, return true immediately. Otherwise mount it and continue.
 //       Return false after the pile is exhausted with no duplicates found.
@@ -12,7 +9,7 @@ function containsDuplicate(nums: number[]): boolean {
   throw new Error('not implemented');
 }
 
-// Tests — step 2 covers all cases
+// ---Tests
 test('has duplicate at end', () => containsDuplicate([1, 2, 3, 1]), true);
 test('no duplicates', () => containsDuplicate([1, 2, 3, 4]), false);
 test('all same value', () => containsDuplicate([1, 1, 1, 1]), true);
@@ -21,6 +18,7 @@ test('two elements unique', () => containsDuplicate([1, 2]), false);
 test('empty pile', () => containsDuplicate([]), false);
 test('single stamp', () => containsDuplicate([7]), false);
 test('duplicate in middle', () => containsDuplicate([1, 1, 1, 3, 3, 4, 3, 2, 4, 2]), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

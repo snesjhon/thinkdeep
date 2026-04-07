@@ -1,6 +1,3 @@
-// =============================================================================
-// Remove Nth Node From End of List — Step 2 of 2: The Synchronized Walk and the Uncoupling
-// =============================================================================
 // Goal: After the scout gap is set, walk both workers together until the remover
 // stands right before the target car, then skip it.
 //
@@ -33,7 +30,6 @@ function removeNthFromEnd(head: ListNode | null, n: number): ListNode | null {
   throw new Error('not implemented');
 }
 
-// Tests
 runCase('single car removed', () => listToArray(removeNthFromEnd(createList([1]), 1)), []);
 runCase('remove head from two-car train', () => listToArray(removeNthFromEnd(createList([1, 2]), 2)), [2]);
 runCase('example 1', () => listToArray(removeNthFromEnd(createList([1, 2, 3, 4, 5]), 2)), [1, 2, 3, 5]);

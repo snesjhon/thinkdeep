@@ -1,6 +1,3 @@
-// =============================================================================
-// Evaluate Reverse Polish Notation — Step 1 of 2: Stack the Prepared Bowls — SOLUTION
-// =============================================================================
 // Goal: Build the counter of prepared bowls so every number token lands on top
 //       of the stack in arrival order.
 
@@ -14,7 +11,6 @@ function evalRPN(tokens: string[]): number {
   return mixingBowls[mixingBowls.length - 1]; // the top bowl is the current answer
 }
 
-// Tests — all must print PASS
 runCase('single bowl stays as the answer', () => evalRPN(['7']), 7);
 runCase('negative bowl is still just a number token', () => evalRPN(['-11']), -11);
 runCase('zero bowl returns zero', () => evalRPN(['0']), 0);

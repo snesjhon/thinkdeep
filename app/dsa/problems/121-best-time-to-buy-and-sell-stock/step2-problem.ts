@@ -1,6 +1,3 @@
-// =============================================================================
-// Best Time to Buy and Sell Stock — Step 2 of 2: Calculating the Best Profit
-// =============================================================================
 // Goal: At each house, after updating the cheapest-found note, calculate
 //       today's sell profit and update bestProfit if it is a new high.
 //
@@ -22,13 +19,14 @@ function maxProfit(prices: number[]): number {
   return bestProfit;
 }
 
-// Tests
+// ---Tests
 test('empty street', () => maxProfit([]), 0);
 test('single house', () => maxProfit([7]), 0);
 test('prices only drop', () => maxProfit([7, 6, 4, 3, 1]), 0);
 test('buy low sell high', () => maxProfit([7, 1, 5, 3, 6, 4]), 5);
 test('only one upward move', () => maxProfit([7, 6, 4, 1, 2]), 1);
 test('prices only rise', () => maxProfit([1, 2, 3, 4, 5]), 4);
+// ---End Tests
 
 // ---Helpers
 

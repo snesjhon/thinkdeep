@@ -1,6 +1,3 @@
-// =============================================================================
-// Trapping Rain Water — Step 1 of 2: The Left Surveyor Measures
-// =============================================================================
 // Goal: Initialize both surveyors and implement the left surveyor's logic —
 //       update the left gauge, then measure water when leftMark <= rightMark.
 
@@ -8,11 +5,12 @@ function trap(height: number[]): number {
   throw new Error('not implemented');
 }
 
-// Tests — inputs where the right wall is always at least as tall as the left,
 // so the left surveyor handles every position
+// ---Tests
 test('empty terrain — no walls, no water', () => trap([]), 0);
 test('symmetric valley — left side bottleneck', () => trap([3, 0, 3]), 3);
 test('right wall tallest — left surveyor measures all', () => trap([2, 0, 1, 0, 3]), 5);
+// ---End Tests
 
 // ---Helpers
 

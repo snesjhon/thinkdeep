@@ -1,6 +1,3 @@
-// =============================================================================
-// Longest Substring Without Repeating Characters — Step 2 of 2: The Haul Jump
-// =============================================================================
 // Goal: Add duplicate detection. When a town is already in the active haul,
 // jump haul-start (left) past the last visit. Use the >= left guard to avoid
 // jumping backwards on stale log entries.
@@ -21,7 +18,7 @@ function lengthOfLongestSubstring(s: string): number {
   return maxHaul;
 }
 
-// Tests — includes strings with repeated characters
+// ---Tests
 test('empty string', () => lengthOfLongestSubstring(''), 0);
 test('single character', () => lengthOfLongestSubstring('a'), 1);
 test('all unique — abc', () => lengthOfLongestSubstring('abc'), 3);
@@ -29,6 +26,7 @@ test('all repeated — bbbbb', () => lengthOfLongestSubstring('bbbbb'), 1);
 test('classic — abcabcbb', () => lengthOfLongestSubstring('abcabcbb'), 3);
 test('classic — pwwkew', () => lengthOfLongestSubstring('pwwkew'), 3);
 test('stale log check — dvdf', () => lengthOfLongestSubstring('dvdf'), 3);
+// ---End Tests
 
 // ---Helpers
 

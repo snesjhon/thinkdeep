@@ -1,6 +1,3 @@
-// =============================================================================
-// Valid Parentheses — Step 1 of 2: Stack the Open Cases
-// =============================================================================
 // Goal: Build the pile of still-open cases and enforce the "latest case closes
 //       first" rule, without checking lid shape yet.
 
@@ -8,7 +5,6 @@ function isValid(s: string): boolean {
   throw new Error('not implemented');
 }
 
-// Tests — step 1 focuses on pile order, not lid type
 runCase('empty log leaves no open cases', () => isValid(''), true);
 runCase('simple round case closes cleanly', () => isValid('()'), true);
 runCase('nested cases close in reverse order', () => isValid('([])'), true);

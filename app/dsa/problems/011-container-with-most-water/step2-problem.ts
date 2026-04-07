@@ -1,6 +1,3 @@
-// =============================================================================
-// Container With Most Water — Step 2 of 2: The Scout Squeeze
-// =============================================================================
 // Goal: Add the hiking loop — while scouts haven't met, measure the basin,
 //       track the best, and advance the shorter-wall scout inward.
 
@@ -12,13 +9,14 @@ function maxArea(height: number[]): number {
   throw new Error('not implemented');
 }
 
-// Tests
+// ---Tests
 test('two equal walls', () => maxArea([2, 2]), 2);
 test('left wall taller', () => maxArea([3, 1]), 1);
 test('LeetCode example 1', () => maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7]), 49);
 test('LeetCode example 2', () => maxArea([1, 1]), 1);
 test('symmetric equal ends', () => maxArea([4, 3, 2, 1, 4]), 16);
 test('ascending walls', () => maxArea([1, 2, 3, 4, 5]), 6);
+// ---End Tests
 
 // ---Helpers
 

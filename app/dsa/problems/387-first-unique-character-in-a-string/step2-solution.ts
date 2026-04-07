@@ -1,6 +1,3 @@
-// =============================================================================
-// First Unique Character in a String — Step 2 of 2: Find the First Sole Nominee — SOLUTION
-// =============================================================================
 // Goal: With the ledger complete, scan the ballot box left to right and return
 //       the index of the first character whose tally shows exactly one vote.
 
@@ -21,12 +18,13 @@ function firstUniqChar(s: string): number {
   return -1; // no candidate received exactly one vote
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('first character is the sole nominee', () => firstUniqChar('leetcode'), 0);
 test('third character is the sole nominee', () => firstUniqChar('loveleetcode'), 2);
 test('single character string — only one ballot', () => firstUniqChar('z'), 0);
 test('all characters repeat — no sole nominee', () => firstUniqChar('aabb'), -1);
 test('no unique character anywhere', () => firstUniqChar('aabbcc'), -1);
+// ---End Tests
 
 // ---Helpers
 

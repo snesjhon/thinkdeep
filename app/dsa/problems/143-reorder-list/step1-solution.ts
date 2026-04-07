@@ -1,6 +1,3 @@
-// =============================================================================
-// Reorder List — Step 1 of 2: The Crease — SOLUTION
-// =============================================================================
 // Goal: Find where the ribbon folds so short ribbons stay unchanged and longer
 // ribbons can be split into a front strand and a tail strand.
 
@@ -36,7 +33,6 @@ function reorderList(head: ListNode | null): void {
   void tailStart;                          // tail strand is prepared for the next step
 }
 
-// Tests — all must print PASS
 runCase('null ribbon stays null', () => {
   const head = createList([]);
   reorderList(head);

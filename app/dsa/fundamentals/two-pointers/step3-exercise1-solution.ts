@@ -1,12 +1,8 @@
-// =============================================================================
-// Two Pointers — Level 3, Exercise 1: Find All Zero-Balance Triplets — SOLUTION
-// =============================================================================
 // Goal: Practice the pin-one-pointer reduction from 3Sum to pair-sum.
 //
 // Sort once. For each i, run two-pointer on [i+1, n-1] targeting -nums[i].
 // Skip outer duplicates at the start of each iteration.
 // After recording a triplet, skip inner duplicates before advancing L and R.
-// =============================================================================
 function threeSumZero(nums: number[]): number[][] {
   nums.sort((a, b) => a - b);
   const result: number[][] = [];
@@ -30,12 +26,14 @@ function threeSumZero(nums: number[]): number[][] {
   return result;
 }
 
+// ---Tests
 test('standard case',    () => threeSumZero([-4, -1, -1, 0, 1, 2]),  [[-1,-1,2],[-1,0,1]]);
 test('all zeros',        () => threeSumZero([0, 0, 0]),               [[0,0,0]]);
 test('no triplets',      () => threeSumZero([1, 2, 3]),               []);
 test('empty array',      () => threeSumZero([]),                      []);
 test('with duplicates',  () => threeSumZero([-2, 0, 0, 2, 2]),       [[-2,0,2]]);
 test('two elements',     () => threeSumZero([0, 0]),                  []);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

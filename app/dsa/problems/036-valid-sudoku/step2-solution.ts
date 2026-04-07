@@ -1,6 +1,3 @@
-// =============================================================================
-// Valid Sudoku — Step 2 of 2: The Inspection Walk — SOLUTION
-// =============================================================================
 // Goal: For each occupied unit, compute its wing index, check all three
 //       logbooks for the resident number, and record it if no duplicate found.
 
@@ -37,7 +34,6 @@ function isValidSudoku(board: string[][]): boolean {
   return true;
 }
 
-// Tests — all must print PASS
 function makeBoard(overrides: [number, number, string][]): string[][] {
   const b: string[][] = Array.from({length: 9}, () => Array<string>(9).fill('.'));
   for (const [r, c, v] of overrides) b[r][c] = v;
@@ -56,11 +52,13 @@ const validBoard: string[][] = [
   [".",".",".",".","8",".",".","7","9"],
 ];
 
+// ---Tests
 test('empty board (all dots) is valid', () => isValidSudoku(makeBoard([])), true);
 test('valid sudoku board', () => isValidSudoku(validBoard), true);
 test('invalid: duplicate in row', () => isValidSudoku(makeBoard([[0,0,'1'],[0,1,'1']])), false);
 test('invalid: duplicate in column', () => isValidSudoku(makeBoard([[0,0,'1'],[1,0,'1']])), false);
 test('invalid: duplicate in box', () => isValidSudoku(makeBoard([[0,0,'1'],[2,2,'1']])), false);
+// ---End Tests
 
 // ---Helpers
 

@@ -1,6 +1,3 @@
-// =============================================================================
-// Sort Colors — Step 3 of 3: The Blue Escort — SOLUTION
-// =============================================================================
 // Goal: When the Inspector spots a blue participant (2), swap them to the Blue
 //       Flag position and retreat the Blue Flag — but do NOT advance the
 //       Inspector, because the incoming element is unknown.
@@ -31,7 +28,7 @@ function sortColors(nums: number[]): void {
   }
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty parade', () => {
   const nums: number[] = [];
   sortColors(nums);
@@ -81,6 +78,7 @@ test('blue then red', () => {
 }, [0, 2]);
 
 test('consecutive blues at start', () => {
+// ---End Tests
   const nums = [2, 2, 0, 1];
   sortColors(nums);
   return nums;

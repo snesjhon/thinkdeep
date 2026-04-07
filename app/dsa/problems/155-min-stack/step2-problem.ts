@@ -1,6 +1,3 @@
-// =============================================================================
-// 155. Min Stack — Step 2 of 2
-// =============================================================================
 // Goal: Add the record-light side pile so the current lightest crate is always
 // waiting on top for O(1) retrieval.
 

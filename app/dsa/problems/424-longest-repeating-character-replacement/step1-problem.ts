@@ -1,6 +1,3 @@
-// =============================================================================
-// Longest Repeating Character Replacement — Step 1 of 2: Tracking the Dominant Color
-// =============================================================================
 // Goal: Set up the 26-slot frequency logbook, slide the right edge forward tile
 // by tile, track the dominant color count (maxFreq), and record the frame width
 // only when the budget check passes (size - maxFreq <= k). No shrinking yet.
@@ -9,12 +6,13 @@ function characterReplacement(s: string, k: number): number {
   throw new Error('not implemented');
 }
 
-// Tests — inputs where no frame ever exceeds budget (no shrinking needed)
+// ---Tests
 test('empty string', () => characterReplacement('', 0), 0);
 test('single tile', () => characterReplacement('A', 5), 1);
 test('all same color — no repaints needed', () => characterReplacement('AAAA', 0), 4);
 test('two colors, budget covers all minorities', () => characterReplacement('AABB', 2), 4);
 test('large budget, whole wall valid', () => characterReplacement('ABCD', 3), 4);
+// ---End Tests
 
 // ---Helpers
 

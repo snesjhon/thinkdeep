@@ -1,6 +1,3 @@
-// =============================================================================
-// Evaluate Reverse Polish Notation — Step 2 of 2: Play the Action Cards
-// =============================================================================
 // Goal: Teach the host to combine the top two bowls in left-right order and
 //       return one replacement bowl to the counter.
 //
@@ -22,7 +19,6 @@ function evalRPN(tokens: string[]): number {
   return mixingBowls[mixingBowls.length - 1];
 }
 
-// Tests — step 2 adds real action cards and full postfix evaluation
 runCase('example 1', () => evalRPN(['2', '1', '+', '3', '*']), 9);
 runCase('example 2', () => evalRPN(['4', '13', '5', '/', '+']), 6);
 runCase('subtraction respects left and right bowls', () => evalRPN(['5', '3', '-']), 2);

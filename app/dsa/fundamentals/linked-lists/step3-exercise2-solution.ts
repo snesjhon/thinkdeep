@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked Lists — Level 4, Exercise 2: Reverse from a Position — SOLUTION
-// =============================================================================
 // Goal: Combine sentinel-based walking with in-place reversal of a suffix.
 //
 // Walk a sentinel pos-1 steps to reach beforeStart.
@@ -8,7 +5,6 @@
 // Reconnect: beforeStart.next = prev (new head of reversed segment).
 // The original first node of the segment becomes the tail (its .next was set to
 // null on the very first reversal step, so no extra reconnection needed).
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -43,7 +39,9 @@ function reverseFrom(head: ListNode | null, pos: number): ListNode | null {
   return dummy.next;
 }
 
+// ---Tests
 test('reverse from position 3', () => toArray(reverseFrom(buildList([1,2,3,4,5]), 3)), [1,2,5,4,3]);
+// ---End Tests
 test('reverse from position 1', () => toArray(reverseFrom(buildList([1,2,3,4,5]), 1)), [5,4,3,2,1]);
 test('reverse from position 2', () => toArray(reverseFrom(buildList([1,2,3]), 2)),     [1,3,2]);
 test('reverse last car only',   () => toArray(reverseFrom(buildList([1,2,3,4,5]), 5)), [1,2,3,4,5]);

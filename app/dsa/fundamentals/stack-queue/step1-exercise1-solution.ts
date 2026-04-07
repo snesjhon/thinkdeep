@@ -1,6 +1,3 @@
-// =============================================================================
-// Stack & Queue — Level 1, Exercise 1: Restack the Plates — SOLUTION
-// =============================================================================
 function restackPlates(plates: number[]): number[] {
   const shelf: number[] = [];
   for (const plate of plates) {
@@ -14,11 +11,13 @@ function restackPlates(plates: number[]): number[] {
   return rebuilt;
 }
 
+// ---Tests
 test('three plates', () => restackPlates([3, 1, 4]), [4, 1, 3]);
 test('single plate', () => restackPlates([7]), [7]);
 test('empty shelf', () => restackPlates([]), []);
 test('repeated plates', () => restackPlates([2, 2, 2]), [2, 2, 2]);
 test('descending shelf', () => restackPlates([5, 4, 3, 2]), [2, 3, 4, 5]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

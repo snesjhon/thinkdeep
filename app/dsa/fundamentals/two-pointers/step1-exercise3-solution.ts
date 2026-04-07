@@ -1,13 +1,9 @@
-// =============================================================================
-// Two Pointers — Level 1, Exercise 3: Count the Light Loads — SOLUTION
-// =============================================================================
 // Goal: Use bulk counting within the two-pointer loop to count valid pairs.
 //
 // When nums[L] + nums[R] < target, every element between L+1 and R pairs
 // with nums[L] to produce a valid sum (they are all <= nums[R] since sorted).
 // Count all (R - L) pairs at once, then advance L to the next candidate.
 // When the sum is >= target, move R left to reduce the sum.
-// =============================================================================
 function countPairsLessThan(nums: number[], target: number): number {
   let L = 0, R = nums.length - 1;
   let count = 0;
@@ -22,12 +18,14 @@ function countPairsLessThan(nums: number[], target: number): number {
   return count;
 }
 
+// ---Tests
 test('basic case',          () => countPairsLessThan([1, 2, 3, 4, 5], 6),  4);
 test('all pairs qualify',   () => countPairsLessThan([1, 1, 1, 1],    3),  6);
 test('no pairs qualify',    () => countPairsLessThan([3, 4, 5],        5),  0);
 test('empty array',         () => countPairsLessThan([],               5),  0);
 test('two elements',        () => countPairsLessThan([1, 4],           6),  1);
 test('negative numbers',    () => countPairsLessThan([-3, 0, 2, 5],   4),  4);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

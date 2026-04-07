@@ -1,6 +1,3 @@
-// =============================================================================
-// Merge Sorted Array — Step 1 of 2: Place the Three Markers — SOLUTION
-// =============================================================================
 // Goal: Handle the n=0 edge case (Team B shelf is empty) and initialize the
 //       three markers: A-marker (p1), B-marker (p2), and write marker.
 
@@ -16,8 +13,9 @@ function merge(nums1: number[], m: number, nums2: number[], n: number): void {
   // (filling loop comes in step 2)
 }
 
-// Tests — step 1 covers the n=0 case; all must print PASS
+// ---Tests
 test('Team B empty: no merging needed', () => {
+// ---End Tests
   const n1 = [1, 2, 3]; merge(n1, 3, [], 0); return n1;
 }, [1, 2, 3]);
 

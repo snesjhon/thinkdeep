@@ -8,17 +8,17 @@
 //   setDifference([1,2,3], [2])      → [1, 3]
 //   setDifference([1,2,2,3], [2,3])  → [1]
 //   setDifference([1,2,3], [1,2,3])  → []
-// =============================================================================
-function setDifference(a: number[], b: number[]): number[] {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('basic', () => setDifference([1, 2, 3], [2]), [1, 3]);
 test('duplicates in a', () => setDifference([1, 2, 2, 3], [2, 3]), [1]);
 test('all removed', () => setDifference([1, 2, 3], [1, 2, 3]), []);
 test('none removed', () => setDifference([1, 2, 3], []), [1, 2, 3]);
 test('empty a', () => setDifference([], [1, 2]), []);
 test('b has extras', () => setDifference([3, 1, 2], [5, 1]), [2, 3]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

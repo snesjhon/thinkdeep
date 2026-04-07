@@ -1,6 +1,3 @@
-// =============================================================================
-// 232. Implement Queue using Stacks — Step 1 of 2
-// =============================================================================
 // Goal: Separate arrival from service. Push into `inStack`; report empty only
 // when both stacks are empty.
 

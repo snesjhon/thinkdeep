@@ -1,6 +1,3 @@
-// =============================================================================
-// 232. Implement Queue using Stacks — Step 2 of 2
-// =============================================================================
 // Goal: When `outStack` is empty, pour everything from `inStack` into it.
 // Then `peek()` and `pop()` can read from the top of `outStack`.
 

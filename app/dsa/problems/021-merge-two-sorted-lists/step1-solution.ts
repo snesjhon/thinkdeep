@@ -1,6 +1,3 @@
-// =============================================================================
-// Merge Two Sorted Lists — Step 1 of 2: The Sentinel Engine and the Empty Train Gate — SOLUTION
-// =============================================================================
 // Goal: Place the sentinel engine and coupling hook, build the structural frame.
 
 // ---Helpers
@@ -31,8 +28,9 @@ function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode
   return sentinel.next;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('both lists empty', () => listToArray(mergeTwoLists(null, null)), []);
+// ---End Tests
 test('first list empty', () => listToArray(mergeTwoLists(null, createList([1]))), [1]);
 test('second list empty', () => listToArray(mergeTwoLists(createList([1]), null)), [1]);
 

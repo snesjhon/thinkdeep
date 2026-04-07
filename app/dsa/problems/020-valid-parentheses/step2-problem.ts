@@ -1,6 +1,3 @@
-// =============================================================================
-// Valid Parentheses — Step 2 of 2: Match the Latest Lid
-// =============================================================================
 // Goal: When a lid appears, verify that it matches the newest unfinished case
 //       before removing it from the pile.
 //
@@ -24,7 +21,6 @@ function isValid(s: string): boolean {
   return openCases.length === 0;
 }
 
-// Tests — cumulative (step 1 + step 2 cases)
 runCase('empty log leaves no open cases', () => isValid(''), true);
 runCase('simple round case closes cleanly', () => isValid('()'), true);
 runCase('nested cases close in reverse order', () => isValid('([])'), true);

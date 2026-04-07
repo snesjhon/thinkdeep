@@ -1,6 +1,3 @@
-// =============================================================================
-// Sliding Window — Level 3, Exercise 1: Longest Passage with Limited Vocabulary
-// =============================================================================
 // Goal: Practice variable window with a frequency map — map size as the constraint.
 //
 // The historian is studying passages that use a limited vocabulary.
@@ -14,17 +11,18 @@
 // Example:
 //   longestKDistinct("eceba", 2) → 3  (substring "ece" has 2 distinct chars)
 //   longestKDistinct("aabbcc", 1) → 2  (longest run of one char is "aa" or "bb" or "cc")
-// =============================================================================
 function longestKDistinct(s: string, k: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('two distinct allowed',      () => longestKDistinct('eceba', 2),        3);
 test('one distinct allowed',      () => longestKDistinct('aabbcc', 1),       2);
 test('entire string qualifies',   () => longestKDistinct('aabbcc', 3),       6);
 test('k equals 0',                () => longestKDistinct('abc', 0),          0);
 test('empty string',              () => longestKDistinct('', 2),             0);
 test('all same characters',       () => longestKDistinct('aaaa', 2),         4);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked List Cycle — Step 1 of 2: The Starting Line
-// =============================================================================
 // Goal: Place both runners at the starting line and define when the race ends —
 //       the sprinter must have at least two steps of road ahead to keep going.
 
@@ -21,8 +18,9 @@ function hasCycle(head: ListNode | null): boolean {
   throw new Error('not implemented');
 }
 
-// Tests — only cases where the while loop never runs
+// ---Tests
 test('empty list has no cycle', () => hasCycle(null), false);
+// ---End Tests
 test('single node with no self-link has no cycle', () => hasCycle(createCycle([1], -1)), false);
 
 // ---Helpers

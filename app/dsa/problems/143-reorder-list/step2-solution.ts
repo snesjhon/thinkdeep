@@ -1,6 +1,3 @@
-// =============================================================================
-// Reorder List — Step 2 of 2: The Return Weave — SOLUTION
-// =============================================================================
 // Goal: Flip the tail into a returning strand, then lace it into the front
 // strand one tag at a time.
 
@@ -59,7 +56,6 @@ function reorderList(head: ListNode | null): void {
   }
 }
 
-// Tests — all must print PASS
 runCase('null ribbon stays null', () => {
   const head = createList([]);
   reorderList(head);

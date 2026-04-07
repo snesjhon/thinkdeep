@@ -1,6 +1,3 @@
-// =============================================================================
-// Encode and Decode Strings — Step 1 of 2: Stamp Each Package with Its Label — SOLUTION
-// =============================================================================
 // Goal: For each string, prepend its character count and "#" to produce one
 //       continuous belt string — the encoded form.
 
@@ -9,12 +6,13 @@ function encode(strs: string[]): string {
   return strs.map(s => `${s.length}#${s}`).join('');
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('basic two strings', () => encode(['hello', 'world']), '5#hello5#world');
 test('string containing # inside', () => encode(['a#b', 'cd']), '3#a#b2#cd');
 test('empty string in list', () => encode(['']), '0#');
 test('empty list', () => encode([]), '');
 test('single-char strings', () => encode(['a', 'b', 'c']), '1#a1#b1#c');
+// ---End Tests
 
 // ---Helpers
 

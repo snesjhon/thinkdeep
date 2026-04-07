@@ -1,6 +1,3 @@
-// =============================================================================
-// Merge Two Sorted Lists — Step 2 of 2: The Coupling Decision
-// =============================================================================
 // Goal: Fill in the loop body — compare the two front cars and couple the
 // lighter one onto tail, advancing that train's pointer and the tail pointer.
 
@@ -31,8 +28,9 @@ function mergeTwoLists(list1: ListNode | null, list2: ListNode | null): ListNode
   return sentinel.next;
 }
 
-// Tests
+// ---Tests
 test('both lists empty', () => listToArray(mergeTwoLists(null, null)), []);
+// ---End Tests
 test('first list empty', () => listToArray(mergeTwoLists(null, createList([1]))), [1]);
 test('second list empty', () => listToArray(mergeTwoLists(createList([1]), null)), [1]);
 test('example 1', () => listToArray(mergeTwoLists(createList([1, 2, 4]), createList([1, 3, 4]))), [1, 1, 2, 3, 4, 4]);

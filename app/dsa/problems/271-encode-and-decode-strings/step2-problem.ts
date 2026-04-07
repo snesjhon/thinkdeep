@@ -1,6 +1,3 @@
-// =============================================================================
-// Encode and Decode Strings — Step 2 of 2: Read Each Label and Count Out the Package
-// =============================================================================
 // Goal: Walk the belt with a cursor — for each label, parse the count, skip "#",
 //       take exactly that many characters, advance the cursor, repeat until empty.
 //
@@ -15,7 +12,7 @@ function decode(s: string): string[] {
   throw new Error('not implemented');
 }
 
-// Tests — encode tests still pass; decode tests will print TODO until implemented
+// ---Tests
 test('encode: basic', () => encode(['hello', 'world']), '5#hello5#world');
 test('encode: string with # inside', () => encode(['a#b', 'cd']), '3#a#b2#cd');
 test('encode: empty string', () => encode(['']), '0#');
@@ -26,6 +23,7 @@ test('decode: string with # inside', () => decode('3#a#b2#cd'), ['a#b', 'cd']);
 test('decode: empty string', () => decode('0#'), ['']);
 test('decode: empty belt', () => decode(''), []);
 test('decode: single-char strings', () => decode('1#a1#b1#c'), ['a', 'b', 'c']);
+// ---End Tests
 
 // ---Helpers
 

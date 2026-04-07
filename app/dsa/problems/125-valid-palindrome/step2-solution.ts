@@ -1,6 +1,3 @@
-// =============================================================================
-// Valid Palindrome — Step 2 of 3: Skipping Empty Pedestals — SOLUTION
-// =============================================================================
 // Goal: Inside the loop, advance each inspector past any non-alphanumeric
 //       character before stopping to compare.
 
@@ -28,11 +25,12 @@ function isPalindrome(s: string): boolean {
   return true;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty string is a palindrome', () => isPalindrome(''), true);
 test('single character is a palindrome', () => isPalindrome('a'), true);
 test('spaces only is a palindrome', () => isPalindrome('   '), true);
 test('punctuation only is a palindrome', () => isPalindrome(',.!'), true);
+// ---End Tests
 
 // ---Helpers
 

@@ -1,6 +1,3 @@
-// =============================================================================
-// Remove Element — Step 1 of 2: The Scanner's Count — SOLUTION
-// =============================================================================
 // Goal: Walk every product on the belt and count how many pass the gate
 //       (are NOT equal to the defect code val). Return k.
 
@@ -15,13 +12,14 @@ function removeElement(nums: number[], val: number): number {
   return k; // how many products shipped
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty belt', () => removeElement([], 3), 0);
 test('all defective', () => removeElement([3, 3, 3], 3), 0);
 test('none defective', () => removeElement([1, 2, 4], 3), 3);
 test('mixed — count only', () => removeElement([3, 2, 2, 3], 3), 2);
 test('single good product', () => removeElement([1], 3), 1);
 test('single defective product', () => removeElement([3], 3), 0);
+// ---End Tests
 
 // ---Helpers
 

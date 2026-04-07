@@ -1,6 +1,3 @@
-// =============================================================================
-// Product of Array Except Self — Step 2 of 2: Westbound Messenger
-// =============================================================================
 // Goal: Walk the westbound messenger right to left, multiplying the running
 //       right-product INTO each board slot (which already holds the left product
 //       from step 1). After this step, board[i] = product of all nums except nums[i].
@@ -17,11 +14,12 @@ function productExceptSelf(nums: number[]): number[] {
   throw new Error('not implemented');
 }
 
-// Tests — step 2 produces the final answer: board[i] = product of all nums except nums[i]
+// ---Tests
 test('[1,2,3,4]', () => productExceptSelf([1, 2, 3, 4]), [24, 12, 8, 6]);
 test('[2,3]', () => productExceptSelf([2, 3]), [3, 2]);
 test('[-1,1,0,-3,3]', () => productExceptSelf([-1, 1, 0, -3, 3]), [0, 0, 9, 0, 0]);
 test('zeros [0,1,2]', () => productExceptSelf([0, 1, 2]), [2, 0, 0]);
+// ---End Tests
 
 // ---Helpers
 

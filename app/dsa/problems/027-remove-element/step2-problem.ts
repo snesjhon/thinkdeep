@@ -1,6 +1,3 @@
-// =============================================================================
-// Remove Element — Step 2 of 2: The Packer's Hand
-// =============================================================================
 // Goal: When the scanner approves a product, have the packer actually place it
 //       into slot k before advancing. nums[0..k-1] must hold the kept items.
 
@@ -16,7 +13,7 @@ function removeElement(nums: number[], val: number): number {
   return k;
 }
 
-// Tests — step 1 count tests + new array-content checks
+// ---Tests
 test('empty belt', () => removeElement([], 3), 0);
 test('all defective — count', () => removeElement([3, 3, 3], 3), 0);
 test('none defective — count', () => removeElement([1, 2, 4], 3), 3);
@@ -27,6 +24,7 @@ test('mixed — packed correctly', () => {
   return [k, nums.slice(0, k)];
 }, [2, [2, 2]]);
 test('example 2 — packed correctly', () => {
+// ---End Tests
   const nums = [0, 1, 2, 2, 3, 0, 4, 2];
   const k = removeElement(nums, 2);
   return [k, nums.slice(0, k)];

@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked Lists — Level 1, Exercise 2: Retire the Bad Cargo
-// =============================================================================
 // Goal: Practice the sentinel pattern by removing all matching cars from the train.
 //
 // You are given the head of a train and a target cargo value.
@@ -12,7 +9,6 @@
 //   removeAll(1 → 3 → 3 → 4, 3)  → 1 → 4
 //   removeAll(3 → 3 → 3, 3)       → null
 //   removeAll(1 → 2 → 3, 9)       → 1 → 2 → 3
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -30,7 +26,9 @@ function removeAll(head: ListNode | null, target: number): ListNode | null {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test(
+// ---End Tests
   'remove middle cars',
   () => toArray(removeAll(buildList([1, 3, 3, 4]), 3)),
   [1, 4],

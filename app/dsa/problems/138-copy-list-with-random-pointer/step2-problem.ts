@@ -38,7 +38,6 @@ function copyRandomList(head: RandomListNode | null): RandomListNode | null {
   throw new Error('not implemented');
 }
 
-// Tests
 runCase('empty street copies to empty street', [], []);
 runCase('single house with no private note', [[7, null]], [[7, null]]);
 runCase('three-house street with only next pointers', [[1, null], [2, null], [3, null]], [[1, null], [2, null], [3, null]]);

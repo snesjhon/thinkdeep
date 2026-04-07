@@ -1,6 +1,3 @@
-// =============================================================================
-// 3Sum — Step 1 of 2: Sort the Ledger and Pin the Anchor — SOLUTION
-// =============================================================================
 // Goal: Sort a copy of nums (the ledger), then scan an anchor from left to right,
 // applying the early-exit (anchor > 0) and duplicate-skip rules.
 
@@ -20,9 +17,10 @@ function threeSum(nums: number[]): number[][] {
   return triplets;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty ledger returns no triplets', () => threeSum([]), []);
 test('all-positive entries — break immediately', () => threeSum([1, 2, 3]), []);
+// ---End Tests
 
 // ---Helpers
 

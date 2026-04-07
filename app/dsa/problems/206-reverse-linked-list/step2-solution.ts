@@ -1,6 +1,3 @@
-// =============================================================================
-// Reverse Linked List — Step 2 of 2: The Three-Step Sign-Flipping Dance — SOLUTION
-// =============================================================================
 // Goal: Inside the loop, execute the three operations in strict order:
 //       save the notebook, flip the sign, advance both markers.
 
@@ -32,8 +29,9 @@ function reverseList(head: ListNode | null): ListNode | null {
   return prev; // crew finished — prev is the old last stop, now the new head
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty list returns null', () => reverseList(null), null);
+// ---End Tests
 test('single node', () => listToArray(reverseList(createList([1]))), [1]);
 test('two nodes', () => listToArray(reverseList(createList([1, 2]))), [2, 1]);
 test('five nodes', () => listToArray(reverseList(createList([1, 2, 3, 4, 5]))), [5, 4, 3, 2, 1]);

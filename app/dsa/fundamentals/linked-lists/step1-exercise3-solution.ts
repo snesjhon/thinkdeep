@@ -1,13 +1,9 @@
-// =============================================================================
-// Linked Lists — Level 1, Exercise 3: Hitch a New Car — SOLUTION
-// =============================================================================
 // Goal: Practice sentinel-based insertion at an arbitrary position.
 //
 // Attach a sentinel before head. Walk k steps from the sentinel.
 // If curr.next is null before k steps complete, stop early (insert at end).
 // Splice the new node in: newNode.next = curr.next; curr.next = newNode.
 // Return dummy.next.
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -35,7 +31,9 @@ function insertAt(head: ListNode | null, k: number, val: number): ListNode | nul
   return dummy.next;
 }
 
+// ---Tests
 test('insert in middle',     () => toArray(insertAt(buildList([1,2,3]), 1, 99)),   [1,99,2,3]);
+// ---End Tests
 test('insert at front',      () => toArray(insertAt(buildList([1,2,3]), 0, 99)),   [99,1,2,3]);
 test('insert at end',        () => toArray(insertAt(buildList([1,2,3]), 3, 99)),   [1,2,3,99]);
 test('insert beyond length', () => toArray(insertAt(buildList([1,2,3]), 10, 99)),  [1,2,3,99]);

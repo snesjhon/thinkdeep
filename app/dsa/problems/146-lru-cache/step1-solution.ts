@@ -1,6 +1,3 @@
-// =============================================================================
-// 146. LRU Cache — Step 1 of 6 Solution
-// =============================================================================
 // Goal: Build the shelf box and the empty cache scaffold so the workshop has
 // a ledger(boxesByLabel), a hotGate, a coldGate, and open space between them.
 

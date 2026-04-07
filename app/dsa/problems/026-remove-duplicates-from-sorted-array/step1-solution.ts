@@ -8,9 +8,10 @@ function removeDuplicates(nums: number[]): number {
   return k;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('single element stays', () => removeDuplicates([1]), 1);
 test('writing hand starts at 1', () => removeDuplicates([5]), 1);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

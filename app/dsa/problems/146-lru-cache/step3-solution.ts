@@ -1,6 +1,3 @@
-// =============================================================================
-// 146. LRU Cache — Step 3 of 6 Solution
-// =============================================================================
 // Goal: Add the insertion move so a new or reheated box clips in right after
 // the hot gate.
 

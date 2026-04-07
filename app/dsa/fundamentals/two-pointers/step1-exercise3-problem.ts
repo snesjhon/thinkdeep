@@ -1,6 +1,3 @@
-// =============================================================================
-// Two Pointers — Level 1, Exercise 3: Count the Light Loads
-// =============================================================================
 // Goal: Use bulk counting within the two-pointer loop to count valid pairs.
 //
 // Two inspectors walk a sorted measurement lane. A pair of readings is
@@ -14,17 +11,18 @@
 // Example:
 //   countPairsLessThan([1, 2, 3, 4, 5], 6) → 4
 //   Pairs: (1,2)=3, (1,3)=4, (1,4)=5, (2,3)=5 — all less than 6
-// =============================================================================
 function countPairsLessThan(nums: number[], target: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('basic case',          () => countPairsLessThan([1, 2, 3, 4, 5], 6),  4);
 test('all pairs qualify',   () => countPairsLessThan([1, 1, 1, 1],    3),  6);
 test('no pairs qualify',    () => countPairsLessThan([3, 4, 5],        5),  0);
 test('empty array',         () => countPairsLessThan([],               5),  0);
 test('two elements',        () => countPairsLessThan([1, 4],           6),  1);
 test('negative numbers',    () => countPairsLessThan([-3, 0, 2, 5],   4),  4);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

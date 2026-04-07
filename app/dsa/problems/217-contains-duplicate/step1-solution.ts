@@ -1,6 +1,3 @@
-// =============================================================================
-// Contains Duplicate — Step 1 of 2: Open the Album — SOLUTION
-// =============================================================================
 // Goal: Initialize the stamp album (Set) and return false by default —
 //       no duplicates have been found before any scanning begins.
 
@@ -12,9 +9,10 @@ function containsDuplicate(nums: number[]): boolean {
   return false;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty pile has no duplicates', () => containsDuplicate([]), false);
 test('single stamp has no duplicates', () => containsDuplicate([42]), false);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

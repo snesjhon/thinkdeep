@@ -1,6 +1,3 @@
-// =============================================================================
-// Sort Colors — Step 1 of 3: Plant the Three Flags — SOLUTION
-// =============================================================================
 // Goal: Set up low, mid, high pointers and handle white participants (1s) by
 //       advancing the Inspector through the confirmed-white zone.
 
@@ -21,7 +18,7 @@ function sortColors(nums: number[]): void {
   }
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty parade', () => {
   const nums: number[] = [];
   sortColors(nums);
@@ -35,6 +32,7 @@ test('all whites — Inspector walks straight through', () => {
 }, [1, 1, 1]);
 
 test('single white participant', () => {
+// ---End Tests
   const nums = [1];
   sortColors(nums);
   return nums;

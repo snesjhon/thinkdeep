@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked Lists — Level 4, Exercise 3: The Palindrome Test
-// =============================================================================
 // Goal: Combine fast/slow pointers and in-place reversal to check symmetry.
 //
 // Return true if the cargo values of the train read the same forwards and
@@ -14,7 +11,6 @@
 //   isPalindrome(1 → 2 → 3 → 2 → 1)    → true
 //   isPalindrome(1 → 2)                 → false
 //   isPalindrome(1 → 2 → 3)             → false
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -32,7 +28,9 @@ function isPalindrome(head: ListNode | null): boolean {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('even palindrome',     () => isPalindrome(buildList([1,2,2,1])),       true);
+// ---End Tests
 test('odd palindrome',      () => isPalindrome(buildList([1,2,3,2,1])),     true);
 test('single car',          () => isPalindrome(buildList([5])),             true);
 test('identical pair',      () => isPalindrome(buildList([3,3])),           true);

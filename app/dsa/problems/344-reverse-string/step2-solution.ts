@@ -15,6 +15,7 @@ function reverseString(s: string[]): void {
 }
 
 // ---Tests
+// ---Tests
 test('empty array stays empty', () => {
   const s: string[] = [];
   reverseString(s);
@@ -40,6 +41,7 @@ test('reverses odd-length array', () => {
 }, ['o', 'l', 'l', 'e', 'h']);
 
 test('reverses even-length array', () => {
+// ---End Tests
   const s = ['H', 'a', 'n', 'n', 'a', 'h'];
   reverseString(s);
   return s;

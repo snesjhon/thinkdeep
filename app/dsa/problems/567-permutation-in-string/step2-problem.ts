@@ -1,6 +1,3 @@
-// =============================================================================
-// Permutation in String — Step 2 of 2: Sliding the Inspector's Tray
-// =============================================================================
 // Goal: Slide the tray across s2, adding the right tile and removing the left tile
 //       each step, updating matches with the before/after pattern, and returning
 //       true when matches === 26 or false when the belt is exhausted.
@@ -28,7 +25,7 @@ function checkInclusion(s1: string, s2: string): boolean {
   throw new Error('not implemented');
 }
 
-// Tests — step 1 cases still pass; step 2 adds sliding cases
+// ---Tests
 test('s1 longer than s2 — no tray position', () => checkInclusion('abc', ''), false);
 test('s1 longer than s2 by one', () => checkInclusion('abc', 'ab'), false);
 test('initial window is exact match — reversed', () => checkInclusion('ab', 'ba'), true);
@@ -37,6 +34,7 @@ test('permutation found mid-string', () => checkInclusion('ab', 'eidbaooo'), tru
 test('no permutation exists', () => checkInclusion('ab', 'eidboaoo'), false);
 test('single char — match exists', () => checkInclusion('a', 'bba'), true);
 test('single char — no match', () => checkInclusion('a', 'bbb'), false);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

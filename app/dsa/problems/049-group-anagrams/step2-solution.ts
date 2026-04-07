@@ -1,6 +1,3 @@
-// =============================================================================
-// Group Anagrams — Step 2 of 2: The Full Archive Scan — SOLUTION
-// =============================================================================
 // Goal: Use the catalog code to group all words into anagram families.
 
 function catalogCode(word: string): string {
@@ -22,7 +19,7 @@ function groupAnagrams(strs: string[]): string[][] {
   return Array.from(catalog.values()); // hand back all the drawers
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('LeetCode example 1',
   () => normalizeGroups(groupAnagrams(['eat','tea','tan','ate','nat','bat'])),
   normalizeGroups([["bat"],["nat","tan"],["ate","eat","tea"]])
@@ -48,6 +45,7 @@ test('two groups',
   normalizeGroups([['eat','tea'],['dog','god']])
 );
 test('multiple empty strings in one group',
+// ---End Tests
   () => normalizeGroups(groupAnagrams(['','',''])),
   normalizeGroups([['','','']])
 );

@@ -9,17 +9,17 @@
 //   hasPairWithSum([1, 2, 3], 7)       → false
 //   hasPairWithSum([3, 3], 6)          → true    (3 at index 0, 3 at index 1)
 //   hasPairWithSum([5], 10)            → false   (only one element)
-// =============================================================================
-function hasPairWithSum(nums: number[], target: number): boolean {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('basic pair found', () => hasPairWithSum([2, 7, 11, 15], 9), true);
 test('no pair', () => hasPairWithSum([1, 2, 3], 7), false);
 test('same value at two indices', () => hasPairWithSum([3, 3], 6), true);
 test('single element', () => hasPairWithSum([5], 10), false);
 test('empty', () => hasPairWithSum([], 0), false);
 test('pair at end', () => hasPairWithSum([4, 1, 9, 6], 10), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

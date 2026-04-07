@@ -38,7 +38,6 @@ function copyRandomList(head: RandomListNode | null): RandomListNode | null {
   return dummy.next;
 }
 
-// Tests — all must print PASS
 runCase('empty street copies to empty street', [], []);
 runCase('single house with no private note', [[7, null]], [[7, null]]);
 

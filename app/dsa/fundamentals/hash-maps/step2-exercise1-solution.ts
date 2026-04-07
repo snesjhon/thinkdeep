@@ -4,12 +4,14 @@ function countUnique(nums: number[]): number {
   return new Set(nums).size;
 }
 
+// ---Tests
 test('empty', () => countUnique([]), 0);
 test('single', () => countUnique([42]), 1);
 test('all same', () => countUnique([5, 5, 5]), 1);
 test('all different', () => countUnique([1, 2, 3]), 3);
 test('mixed', () => countUnique([1, 2, 2, 3, 3, 3]), 3);
 test('negatives', () => countUnique([-1, -1, 0, 1, 1]), 3);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

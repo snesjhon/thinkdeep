@@ -1,6 +1,3 @@
-// =============================================================================
-// Reverse Linked List — Step 1 of 2: Setting Up the Road Markers — SOLUTION
-// =============================================================================
 // Goal: Initialize prev=null (edge of town) and curr=head (first intersection),
 //       and set up the loop shell that drives the crew forward.
 
@@ -18,8 +15,9 @@ function reverseList(head: ListNode | null): ListNode | null {
   return prev; // crew is done — prev is the last intersection, now the new head
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty list returns null', () => reverseList(null), null);
+// ---End Tests
 
 // ---Helpers
 

@@ -1,6 +1,3 @@
-// =============================================================================
-// Container With Most Water — Step 1 of 2: The First Measurement
-// =============================================================================
 // Goal: Place the left scout at wall 0 and the right scout at the last wall,
 //       then compute and return the capacity of that first basin.
 
@@ -8,10 +5,11 @@ function maxArea(height: number[]): number {
   throw new Error('not implemented');
 }
 
-// Tests — 2-element inputs (the starting position is the only measurement)
+// ---Tests
 test('two equal walls', () => maxArea([2, 2]), 2);
 test('left wall taller', () => maxArea([3, 1]), 1);
 test('right wall taller', () => maxArea([5, 8]), 5);
+// ---End Tests
 
 // ---Helpers
 

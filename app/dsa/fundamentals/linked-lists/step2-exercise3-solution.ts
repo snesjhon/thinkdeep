@@ -1,13 +1,9 @@
-// =============================================================================
-// Linked Lists — Level 3, Exercise 3: The Third Car from the End — SOLUTION
-// =============================================================================
 // Goal: Practice the N-apart pointer technique with a fixed gap of 3.
 //
 // Advance lead 3 steps from head. If lead ever becomes null mid-advance,
 // the list has fewer than 3 cars — return -1.
 // Then advance both lead and trailer in lockstep until lead === null.
 // At that point trailer is at the 3rd car from the end.
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -35,7 +31,9 @@ function thirdFromEnd(head: ListNode | null): number {
   return trailer!.val;
 }
 
+// ---Tests
 test('five cars',       () => thirdFromEnd(buildList([1,2,3,4,5])),   3);
+// ---End Tests
 test('four cars',       () => thirdFromEnd(buildList([1,2,3,4])),     2);
 test('exactly 3 cars',  () => thirdFromEnd(buildList([1,2,3])),       1);
 test('two cars',        () => thirdFromEnd(buildList([1,2])),         -1);

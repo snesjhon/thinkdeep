@@ -1,6 +1,3 @@
-// =============================================================================
-// 146. LRU Cache — Step 2 of 6
-// =============================================================================
 // Goal: Add the removal move so one box can leave the shelf and its warmer
 // and colder neighbors reconnect directly.
 

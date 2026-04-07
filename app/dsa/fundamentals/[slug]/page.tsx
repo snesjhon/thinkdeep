@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   getFundamentalsGuide,
   getAllFundamentalsSlugs,
   getSectionForFundamentals,
   getPrecedingSection,
+  getFundamentalsStepNumbers,
 } from '@/lib/dsa/fundamentals';
 import { extractHeadings } from '@/lib/dsa/headings';
 import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
@@ -12,6 +14,11 @@ import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
+
+const FundamentalsProgressPanel = dynamic(
+  () => import('@/components/dsa/FundamentalsProgressPanel/FundamentalsProgressPanel'),
+  { ssr: false },
+);
 
 interface Props {
   params: { slug: string };
@@ -29,6 +36,7 @@ export default function FundamentalsPage({ params }: Props) {
   const section = context?.section;
   const phase = context?.phase;
   const prereq = getPrecedingSection(params.slug);
+  const stepNumbers = getFundamentalsStepNumbers(params.slug);
   const headings = extractHeadings(guide.content);
   const codeFiles = loadReferencedDsaCodeFiles(
     guide.content,
@@ -38,6 +46,11 @@ export default function FundamentalsPage({ params }: Props) {
 
   return (
     <DsaPageLayout
+      progress={
+        stepNumbers.length > 0 ? (
+          <FundamentalsProgressPanel slug={params.slug} stepNumbers={stepNumbers} />
+        ) : undefined
+      }
       hero={
         <PageHero>
           <h1 className="text-5xl leading-tight text-[var(--ms-text-body)] font-display mb-0">

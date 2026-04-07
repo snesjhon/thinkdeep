@@ -1,6 +1,3 @@
-// =============================================================================
-// Group Anagrams — Step 2 of 2: The Full Archive Scan
-// =============================================================================
 // Goal: Use the catalog code to group all words into anagram families.
 //       One pass through strs, one HashMap lookup per word.
 
@@ -13,7 +10,7 @@ function groupAnagrams(strs: string[]): string[][] {
   throw new Error('not implemented');
 }
 
-// Tests
+// ---Tests
 test('LeetCode example 1',
   () => normalizeGroups(groupAnagrams(['eat','tea','tan','ate','nat','bat'])),
   normalizeGroups([["bat"],["nat","tan"],["ate","eat","tea"]])
@@ -39,6 +36,7 @@ test('two groups',
   normalizeGroups([['eat','tea'],['dog','god']])
 );
 test('multiple empty strings in one group',
+// ---End Tests
   () => normalizeGroups(groupAnagrams(['','',''])),
   normalizeGroups([['','','']])
 );

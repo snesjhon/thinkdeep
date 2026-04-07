@@ -7,6 +7,7 @@ function reverseString(s: string[]): void {
 }
 
 // ---Tests
+// ---Tests
 test('empty array stays empty', () => {
   const s: string[] = [];
   reverseString(s);
@@ -14,6 +15,7 @@ test('empty array stays empty', () => {
 }, []);
 
 test('single character stays unchanged', () => {
+// ---End Tests
   const s = ['a'];
   reverseString(s);
   return s;

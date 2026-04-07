@@ -17,6 +17,7 @@ function subsets(nums: number[]): number[][] {
 }
 
 // ---Tests
+// ---Tests
 test('empty nums yields one subset: the empty basket', () => {
   return subsets([]);
 }, [[]]);
@@ -30,6 +31,7 @@ test('two elements produce four subsets', () => {
 }, [[], [1], [1, 2], [2]]);
 
 test('three elements produce all eight subsets', () => {
+// ---End Tests
   return subsets([1, 2, 3]);
 }, [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]]);
 // ---End Tests

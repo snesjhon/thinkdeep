@@ -1,12 +1,8 @@
-// =============================================================================
-// Sliding Window — Level 1, Exercise 2: Lightest k-Chapter Frame — SOLUTION
-// =============================================================================
 // Goal: Practice the fixed-size slide returning a minimum, not a maximum.
 //
 // Build the first window sum manually.
 // Slide: add nums[R], remove nums[R-k], divide by k for average.
 // Track the minimum average seen.
-// =============================================================================
 function minWindowAverage(nums: number[], k: number): number {
   if (k > nums.length) return 0;
 
@@ -22,12 +18,14 @@ function minWindowAverage(nums: number[], k: number): number {
   return minAvg;
 }
 
+// ---Tests
 test('min at end',             () => minWindowAverage([3, 7, 5, 2, 4, 1], 3),   7/3);
 test('min at start',           () => minWindowAverage([1, 4, 2, 5], 2),         2.5);
 test('min in middle',          () => minWindowAverage([5, 1, 2, 3], 2),         1.5);
 test('all same elements',      () => minWindowAverage([4, 4, 4, 4], 2),         4.0);
 test('k equals array length',  () => minWindowAverage([2, 3, 1], 3),            2.0);
 test('k larger than array',    () => minWindowAverage([1, 2], 5),               0);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

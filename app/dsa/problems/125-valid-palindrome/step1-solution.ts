@@ -1,6 +1,3 @@
-// =============================================================================
-// Valid Palindrome — Step 1 of 3: Setting Up the Two Inspectors — SOLUTION
-// =============================================================================
 // Goal: Place Inspector Left at the entrance (index 0) and Inspector Right at
 //       the exit (s.length - 1), then loop while they haven't met.
 
@@ -19,9 +16,10 @@ function isPalindrome(s: string): boolean {
   return true;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty string is a palindrome', () => isPalindrome(''), true);
 test('single character is a palindrome', () => isPalindrome('a'), true);
+// ---End Tests
 
 // ---Helpers
 

@@ -10,11 +10,10 @@
 //   countDivisibleSubarrays([4,5,0,-2,-3,1], 5)  → 7
 //   countDivisibleSubarrays([1,2,3], 3)           → 3   ([3],[1,2],[1,2,3])
 //   countDivisibleSubarrays([5], 5)               → 1
-// =============================================================================
-function countDivisibleSubarrays(nums: number[], k: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('empty', () => countDivisibleSubarrays([], 3), 0);
 test('single hit', () => countDivisibleSubarrays([5], 5), 1);
 test('single miss', () => countDivisibleSubarrays([4], 5), 0);
@@ -25,6 +24,7 @@ test(
   7,
 );
 test('all zeros', () => countDivisibleSubarrays([0, 0, 0], 1), 6);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

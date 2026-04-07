@@ -1,6 +1,3 @@
-// =============================================================================
-// Sliding Window — Level 2, Exercise 2: Longest Illuminated Stretch
-// =============================================================================
 // Goal: Practice variable window with a count-based (not sum-based) constraint.
 //
 // A corridor has sections lit (1) or dark (0). The historian can flip at
@@ -13,17 +10,18 @@
 // Example:
 //   longestLit([1, 0, 1, 1, 0, 1], 1) → 4  (flip index 1 or index 4 → run of 4)
 //   longestLit([0, 0, 1, 1, 0, 0, 1], 0) → 2  (no flips, longest run of 1s is 2)
-// =============================================================================
 function longestLit(nums: number[], maxFlips: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('one flip available',          () => longestLit([1, 0, 1, 1, 0, 1], 1),      4);
 test('no flips allowed',            () => longestLit([0, 0, 1, 1, 0, 0, 1], 0),   2);
 test('unlimited flips (all zeros)', () => longestLit([0, 0, 0, 0], 4),            4);
 test('all ones already',            () => longestLit([1, 1, 1, 1], 0),            4);
 test('two flips, gap in middle',    () => longestLit([1, 0, 1, 1, 0, 1, 0, 1], 2), 6);
 test('single element zero',         () => longestLit([0], 1),                     1);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

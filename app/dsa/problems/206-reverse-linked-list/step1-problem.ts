@@ -1,6 +1,3 @@
-// =============================================================================
-// Reverse Linked List — Step 1 of 2: Setting Up the Road Markers
-// =============================================================================
 // Goal: Initialize prev=null (edge of town) and curr=head (first intersection),
 //       and set up the loop shell that drives the crew forward.
 //       The empty list case should already pass: when head is null, curr starts
@@ -10,8 +7,9 @@ function reverseList(head: ListNode | null): ListNode | null {
   throw new Error('not implemented');
 }
 
-// Tests — step 1: empty list passes; all others are TODO until step 2
+// ---Tests
 test('empty list returns null', () => reverseList(null), null);
+// ---End Tests
 
 // ---Helpers
 

@@ -9,17 +9,17 @@
 //   intersection([1,2,3], [2,3,4])   → [2, 3]
 //   intersection([1,1,2], [1,1])     → [1]
 //   intersection([1,2,3], [4,5,6])   → []
-// =============================================================================
-function intersection(a: number[], b: number[]): number[] {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('basic', () => intersection([1, 2, 3], [2, 3, 4]), [2, 3]);
 test('duplicates deduped', () => intersection([1, 1, 2], [1, 1]), [1]);
 test('no overlap', () => intersection([1, 2, 3], [4, 5, 6]), []);
 test('empty a', () => intersection([], [1, 2]), []);
 test('empty b', () => intersection([1, 2], []), []);
 test('subset', () => intersection([1, 2, 3, 4], [2, 4]), [2, 4]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

@@ -1,6 +1,3 @@
-// =============================================================================
-// Group Anagrams — Step 1 of 2: The Catalog Code
-// =============================================================================
 // Goal: Write a helper that converts any word into its catalog code
 //       by sorting its letters alphabetically.
 
@@ -8,7 +5,7 @@ function catalogCode(word: string): string {
   throw new Error('not implemented');
 }
 
-// Tests
+// ---Tests
 test('eat → aet', () => catalogCode('eat'), 'aet');
 test('tea → aet (same code as eat)', () => catalogCode('tea'), 'aet');
 test('ate → aet (same code as eat and tea)', () => catalogCode('ate'), 'aet');
@@ -17,6 +14,7 @@ test('nat → ant (same code as tan)', () => catalogCode('nat'), 'ant');
 test('bat → abt', () => catalogCode('bat'), 'abt');
 test('empty string → empty string', () => catalogCode(''), '');
 test('single letter → same letter', () => catalogCode('a'), 'a');
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

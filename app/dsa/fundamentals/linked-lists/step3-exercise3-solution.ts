@@ -1,13 +1,9 @@
-// =============================================================================
-// Linked Lists — Level 4, Exercise 3: The Palindrome Test — SOLUTION
-// =============================================================================
 // Goal: Combine fast/slow pointers and in-place reversal to check symmetry.
 //
 // Step 1: Find the middle using fast/slow (slow ends at second middle for even).
 // Step 2: Reverse from slow to end — prev becomes the new head of second half.
 // Step 3: Walk left from head and right from prev simultaneously.
 //         Any mismatch → return false. Exhaust right → return true.
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -53,7 +49,9 @@ function isPalindrome(head: ListNode | null): boolean {
   return true;
 }
 
+// ---Tests
 test('even palindrome',     () => isPalindrome(buildList([1,2,2,1])),       true);
+// ---End Tests
 test('odd palindrome',      () => isPalindrome(buildList([1,2,3,2,1])),     true);
 test('single car',          () => isPalindrome(buildList([5])),             true);
 test('identical pair',      () => isPalindrome(buildList([3,3])),           true);

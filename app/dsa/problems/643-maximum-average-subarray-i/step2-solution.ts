@@ -1,6 +1,3 @@
-// =============================================================================
-// Maximum Average Subarray I — Step 2 of 2: Slide the Spotlight — SOLUTION
-// =============================================================================
 // Goal: After warming up, slide the spotlight across the rest of the array —
 //       add the incoming performer, drop the outgoing performer, track the best.
 
@@ -23,13 +20,14 @@ function findMaxAverage(nums: number[], k: number): number {
   return bestSpotlight / k; // convert best sum to average score
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('single performer', () => findMaxAverage([5], 1), 5);
 test('two performers, equal', () => findMaxAverage([3, 3], 2), 3);
 test('three performers', () => findMaxAverage([2, 4, 6], 3), 4);
 test('LeetCode example 1', () => findMaxAverage([1,12,-5,-6,50,3], 4), 12.75);
 test('best window at the end', () => findMaxAverage([1, 2, 3, 4, 5], 2), 4.5);
 test('all same score', () => findMaxAverage([3, 3, 3, 3], 2), 3);
+// ---End Tests
 
 // ---Helpers
 

@@ -1,6 +1,3 @@
-// =============================================================================
-// First Unique Character in a String — Step 1 of 2: Tally All the Votes
-// =============================================================================
 // Goal: Build a complete vote tally — go through every ballot in the box and
 //       count how many times each candidate (character) appears. The ledger
 //       must be fully complete before any decision can be made.
@@ -14,11 +11,12 @@ function firstUniqChar(s: string): number {
   throw new Error('not implemented');
 }
 
-// Tests — these inputs have no unique characters, so -1 is correct even
 // with just a tally and no scan logic yet.
+// ---Tests
 test('all characters repeat — no sole nominee', () => firstUniqChar('aabb'), -1);
 test('single character repeated — no sole nominee', () => firstUniqChar('cccc'), -1);
 test('two alternating characters — no sole nominee', () => firstUniqChar('abab'), -1);
+// ---End Tests
 
 // ---Helpers
 

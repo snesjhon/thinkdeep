@@ -1,6 +1,3 @@
-// =============================================================================
-// Trapping Rain Water — Step 2 of 2: The Right Surveyor Completes the Survey — SOLUTION
-// =============================================================================
 // Goal: Add the right surveyor's measurement logic — when rightMark < leftMark,
 //       the right gauge is the ceiling; measure water and step right inward.
 
@@ -28,12 +25,13 @@ function trap(height: number[]): number {
   return water;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty terrain', () => trap([]), 0);
 test('symmetric valley', () => trap([3, 0, 3]), 3);
 test('right wall tallest', () => trap([2, 0, 1, 0, 3]), 5);
 test('LeetCode example 1', () => trap([0,1,0,2,1,0,1,3,2,1,2,1]), 6);
 test('LeetCode example 2', () => trap([4,2,0,3,2,5]), 9);
+// ---End Tests
 
 // ---Helpers
 

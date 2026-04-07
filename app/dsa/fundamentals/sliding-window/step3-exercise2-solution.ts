@@ -1,13 +1,9 @@
-// =============================================================================
-// Sliding Window — Level 3, Exercise 2: Count Rearranged Passages — SOLUTION
-// =============================================================================
 // Goal: Practice fixed-size window with frequency map — find all anagram windows.
 //
 // Build need map from pattern. Use a fixed-size window of length pattern.length.
 // Track `formed` = number of chars whose count in `have` exactly meets `need`.
 // Slide: add incoming char (update have and formed), remove outgoing (update have and formed).
 // Each time formed === need.size, increment the count.
-// =============================================================================
 function countAnagramWindows(s: string, pattern: string): number {
   if (s.length < pattern.length) return 0;
 
@@ -44,12 +40,14 @@ function countAnagramWindows(s: string, pattern: string): number {
   return count;
 }
 
+// ---Tests
 test('two matches',             () => countAnagramWindows('cbaebabacd', 'abc'),   2);
 test('no matches',              () => countAnagramWindows('af', 'be'),            0);
 test('all windows match',       () => countAnagramWindows('aaa', 'a'),            3);
 test('pattern longer than s',   () => countAnagramWindows('ab', 'abc'),           0);
 test('single match at start',   () => countAnagramWindows('bac', 'abc'),          1);
 test('repeated chars in pattern', () => countAnagramWindows('aabab', 'aab'),      2);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

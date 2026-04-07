@@ -12,6 +12,7 @@ function hasZeroSumSubarray(nums: number[]): boolean {
   return false;
 }
 
+// ---Tests
 test('false: positive only', () => hasZeroSumSubarray([1, 2, 3]), false);
 test('true: zero element', () => hasZeroSumSubarray([0]), true);
 test('true: pair cancels', () => hasZeroSumSubarray([1, -1, 2]), true);
@@ -22,6 +23,7 @@ test(
 );
 test('true: whole array', () => hasZeroSumSubarray([1, 2, -3]), true);
 test('false: partial negatives', () => hasZeroSumSubarray([4, -1, 3]), false);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

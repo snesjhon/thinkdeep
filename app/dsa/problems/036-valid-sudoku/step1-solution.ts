@@ -1,6 +1,3 @@
-// =============================================================================
-// Valid Sudoku — Step 1 of 2: Setting Up the Twenty-Seven Logbooks — SOLUTION
-// =============================================================================
 // Goal: Create three families of nine logbooks (Sets) and walk every unit in
 //       the building, skipping vacant '.' cells. A fully vacant board returns true.
 
@@ -21,14 +18,15 @@ function isValidSudoku(board: string[][]): boolean {
   return true;
 }
 
-// Tests — all must print PASS
 function makeBoard(overrides: [number, number, string][]): string[][] {
   const b: string[][] = Array.from({length: 9}, () => Array<string>(9).fill('.'));
   for (const [r, c, v] of overrides) b[r][c] = v;
   return b;
 }
 
+// ---Tests
 test('empty board (all dots) is valid', () => isValidSudoku(makeBoard([])), true);
+// ---End Tests
 
 // ---Helpers
 

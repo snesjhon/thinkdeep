@@ -1,12 +1,8 @@
-// =============================================================================
-// Arrays & Strings — Level 1, Exercise 1: Write the Keepers — SOLUTION
-// =============================================================================
 // Goal: Practice the most direct form of the reader + writer.
 //
 // The reader reads every slot. The writer only advances when
 // the reader finds a positive value — it writes the keeper into slot writer,
 // then bumps writer forward by one. Everything else is skipped off the belt.
-// =============================================================================
 function keepPositives(nums: number[]): number {
   let writer = 0;
   for (let reader = 0; reader < nums.length; reader++) {
@@ -18,12 +14,14 @@ function keepPositives(nums: number[]): number {
   return writer;
 }
 
+// ---Tests
 test('mixed signs',     () => keepPositives([-1, 3, 0, 2, -4, 5]),  3);
 test('none positive',   () => keepPositives([0, -1, -2]),            0);
 test('all positive',    () => keepPositives([1, 2, 3]),              3);
 test('empty belt',      () => keepPositives([]),                     0);
 test('single positive', () => keepPositives([4]),                    1);
 test('single zero',     () => keepPositives([0]),                    0);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

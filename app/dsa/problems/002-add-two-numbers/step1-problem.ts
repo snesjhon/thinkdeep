@@ -1,6 +1,3 @@
-// =============================================================================
-// Add Two Numbers — Step 1 of 2: Stamp Columns While the Satchel Stays Empty
-// =============================================================================
 // Goal: Build the answer-roll scaffolding and stamp one digit per column for
 // cases where no column total ever reaches 10.
 
@@ -21,7 +18,6 @@ function addTwoNumbers(l1: ListNode | null, l2: ListNode | null): ListNode | nul
   throw new Error('not implemented');
 }
 
-// Tests
 runTest('both single zero digits', () => listToArray(addTwoNumbers(createList([0]), createList([0]))), [0]);
 runTest('same length without carry', () => listToArray(addTwoNumbers(createList([2, 4, 3]), createList([5, 4, 1]))), [7, 8, 4]);
 runTest('different lengths without carry', () => listToArray(addTwoNumbers(createList([1, 2]), createList([3]))), [4, 2]);

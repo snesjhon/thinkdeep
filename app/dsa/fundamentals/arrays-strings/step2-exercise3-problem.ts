@@ -1,6 +1,3 @@
-// =============================================================================
-// Arrays & Strings — Level 2, Exercise 3: Inspectors Find the Pair
-// =============================================================================
 // Goal: Use the two inspectors' sum to decide which one moves inward.
 //
 // The sorted belt lets the inspectors reason about direction:
@@ -15,16 +12,17 @@
 //   twoSumSorted([2, 7, 11, 15], 9) → [1, 2]
 //   twoSumSorted([2, 3, 4], 6)      → [1, 3]
 //   twoSumSorted([-1, 0], -1)       → [1, 2]
-// =============================================================================
 function twoSumSorted(nums: number[], target: number): [number, number] {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('basic',          () => twoSumSorted([2, 7, 11, 15], 9),  [1, 2]);
 test('middle pair',    () => twoSumSorted([2, 3, 4], 6),        [1, 3]);
 test('negatives',      () => twoSumSorted([-1, 0], -1),         [1, 2]);
 test('last two',       () => twoSumSorted([1, 2, 3, 4], 7),     [3, 4]);
 test('first and last', () => twoSumSorted([1, 5, 6, 10], 11),   [1, 4]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

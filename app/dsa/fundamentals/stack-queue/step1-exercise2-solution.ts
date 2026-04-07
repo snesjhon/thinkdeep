@@ -1,6 +1,3 @@
-// =============================================================================
-// Stack & Queue — Level 1, Exercise 2: Serve the Ticket Line — SOLUTION
-// =============================================================================
 function serveTicketLine(events: string[]): string[] {
   const line: string[] = [];
   let front = 0;
@@ -18,11 +15,13 @@ function serveTicketLine(events: string[]): string[] {
   return served;
 }
 
+// ---Tests
 test('basic service order', () => serveTicketLine(['ARRIVE Ana', 'ARRIVE Ben', 'SERVE']), ['Ana']);
 test('multiple services', () => serveTicketLine(['ARRIVE Ana', 'ARRIVE Ben', 'SERVE', 'ARRIVE Cam', 'SERVE', 'SERVE']), ['Ana', 'Ben', 'Cam']);
 test('serve empty line', () => serveTicketLine(['SERVE', 'SERVE']), []);
 test('arrivals only', () => serveTicketLine(['ARRIVE Ana', 'ARRIVE Ben']), []);
 test('interleaved events', () => serveTicketLine(['ARRIVE Kai', 'SERVE', 'ARRIVE Lux', 'ARRIVE Nia', 'SERVE']), ['Kai', 'Lux']);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

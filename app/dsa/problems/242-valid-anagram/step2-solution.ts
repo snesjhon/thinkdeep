@@ -1,6 +1,3 @@
-// =============================================================================
-// Valid Anagram — Step 2 of 2: Fill and Drain the Bag — SOLUTION
-// =============================================================================
 // Goal: Scan s to fill the tile tally, then scan t to drain it.
 //       If any letter in t has no tile left in the bag, return false.
 //       If all tiles drain cleanly, return true.
@@ -25,7 +22,7 @@ function isAnagram(s: string, t: string): boolean {
   return true;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('rat vs cats — lengths differ', () => isAnagram('rat', 'cats'), false);
 test('a vs empty — lengths differ', () => isAnagram('a', ''), false);
 test('anagram vs nagaram — valid anagram', () => isAnagram('anagram', 'nagaram'), true);
@@ -33,6 +30,7 @@ test('rat vs car — same letters, different counts', () => isAnagram('rat', 'ca
 test('ab vs ba — two-letter swap', () => isAnagram('ab', 'ba'), true);
 test('aa vs bb — same length, no matching tiles', () => isAnagram('aa', 'bb'), false);
 test('empty vs empty — trivially equal', () => isAnagram('', ''), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

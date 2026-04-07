@@ -14,12 +14,14 @@ function mostFrequent(nums: number[]): number {
   return best;
 }
 
+// ---Tests
 test('single element', () => mostFrequent([7]), 7);
 test('clear winner', () => mostFrequent([1, 2, 2, 3]), 2);
 test('three-way tie picks smallest', () => mostFrequent([3, 1, 2]), 1);
 test('dominant front', () => mostFrequent([5, 5, 5, 1, 1]), 5);
 test('dominant back', () => mostFrequent([1, 2, 3, 3, 3]), 3);
 test('two-way tie picks smaller', () => mostFrequent([4, 4, 9, 9]), 4);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

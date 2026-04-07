@@ -1,13 +1,9 @@
-// =============================================================================
-// Sliding Window — Level 2, Exercise 2: Longest Illuminated Stretch — SOLUTION
-// =============================================================================
 // Goal: Practice variable window with a count-based (not sum-based) constraint.
 //
 // Track the number of zeros inside the window.
 // Expand right: if nums[R] === 0, increment zeroCount.
 // While zeroCount > maxFlips, shrink left (if nums[L] === 0, decrement zeroCount).
 // Record window length after each shrink.
-// =============================================================================
 function longestLit(nums: number[], maxFlips: number): number {
   let L = 0;
   let zeroCount = 0;
@@ -25,12 +21,14 @@ function longestLit(nums: number[], maxFlips: number): number {
   return maxLen;
 }
 
+// ---Tests
 test('one flip available',          () => longestLit([1, 0, 1, 1, 0, 1], 1),      4);
 test('no flips allowed',            () => longestLit([0, 0, 1, 1, 0, 0, 1], 0),   2);
 test('unlimited flips (all zeros)', () => longestLit([0, 0, 0, 0], 4),            4);
 test('all ones already',            () => longestLit([1, 1, 1, 1], 0),            4);
 test('two flips, gap in middle',    () => longestLit([1, 0, 1, 1, 0, 1, 0, 1], 2), 6);
 test('single element zero',         () => longestLit([0], 1),                     1);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

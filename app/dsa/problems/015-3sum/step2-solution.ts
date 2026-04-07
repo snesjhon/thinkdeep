@@ -1,6 +1,3 @@
-// =============================================================================
-// 3Sum — Step 2 of 2: The Squeeze — SOLUTION
-// =============================================================================
 // Goal: For each valid anchor, place left and right fingers on the remaining
 // entries and squeeze inward — recording balanced triplets and skipping duplicates.
 
@@ -42,13 +39,14 @@ function threeSum(nums: number[]): number[][] {
   return triplets;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty ledger returns no triplets', () => threeSum([]), []);
 test('all-positive entries — break immediately', () => threeSum([1, 2, 3]), []);
 test('standard case', () => threeSum([-1, 0, 1, 2, -1, -4]), [[-1, -1, 2], [-1, 0, 1]]);
 test('all zeros', () => threeSum([0, 0, 0]), [[0, 0, 0]]);
 test('no valid triplet', () => threeSum([0, 1, 1]), []);
 test('duplicate values need dedup', () => threeSum([-2, 0, 0, 2, 2]), [[-2, 0, 2]]);
+// ---End Tests
 
 // ---Helpers
 

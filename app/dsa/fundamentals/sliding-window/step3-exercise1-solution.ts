@@ -1,13 +1,9 @@
-// =============================================================================
-// Sliding Window — Level 3, Exercise 1: Longest Passage with Limited Vocabulary — SOLUTION
-// =============================================================================
 // Goal: Practice variable window with a frequency map — map size as the constraint.
 //
 // Maintain a map of { char → count } inside the window.
 // Expand right: add char to map (or increment its count).
 // While map.size > k: remove the leftmost char (decrement count, delete if 0).
 // Record window length after each shrink.
-// =============================================================================
 function longestKDistinct(s: string, k: number): number {
   if (k === 0 || s.length === 0) return 0;
 
@@ -32,12 +28,14 @@ function longestKDistinct(s: string, k: number): number {
   return maxLen;
 }
 
+// ---Tests
 test('two distinct allowed',      () => longestKDistinct('eceba', 2),        3);
 test('one distinct allowed',      () => longestKDistinct('aabbcc', 1),       2);
 test('entire string qualifies',   () => longestKDistinct('aabbcc', 3),       6);
 test('k equals 0',                () => longestKDistinct('abc', 0),          0);
 test('empty string',              () => longestKDistinct('', 2),             0);
 test('all same characters',       () => longestKDistinct('aaaa', 2),         4);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

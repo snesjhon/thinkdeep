@@ -1,6 +1,3 @@
-// =============================================================================
-// Longest Consecutive Sequence — Step 2 of 2: Expanding Each Opener into Its Full Chain — SOLUTION
-// =============================================================================
 // Goal: For every series opener found in Step 1, walk forward through consecutive
 //       spine numbers to measure the full chain length.
 
@@ -27,7 +24,7 @@ function longestConsecutive(nums: number[]): number {
   return longestRun;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('empty array', () => longestConsecutive([]), 0);
 test('single volume', () => longestConsecutive([1]), 1);
 test('all disjoint', () => longestConsecutive([10, 5, 100]), 1);
@@ -36,6 +33,7 @@ test('finds 4-volume series', () => longestConsecutive([100, 4, 200, 1, 3, 2]), 
 test('finds 9-volume series', () => longestConsecutive([0, 3, 7, 2, 5, 8, 4, 6, 0, 1]), 9);
 test('two equal-length runs', () => longestConsecutive([1, 2, 3, 10, 11, 12]), 3);
 test('negative numbers', () => longestConsecutive([-3, -2, -1, 0, 1]), 5);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

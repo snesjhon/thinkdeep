@@ -10,17 +10,17 @@
 //   longestSubarrayWithSum([1, 2, 3], 3)           → 2  ([1,2])
 //   longestSubarrayWithSum([1, 2, 3], 6)           → 3  (whole array)
 //   longestSubarrayWithSum([1, 2, 3], 7)           → 0  (none)
-// =============================================================================
-function longestSubarrayWithSum(nums: number[], k: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('no match', () => longestSubarrayWithSum([1, 2, 3], 7), 0);
 test('whole array', () => longestSubarrayWithSum([1, 2, 3], 6), 3);
 test('prefer longer', () => longestSubarrayWithSum([1, -1, 5, -2, 3], 3), 4);
 test('first match of two', () => longestSubarrayWithSum([1, 2, 3], 3), 2);
 test('single element', () => longestSubarrayWithSum([5], 5), 1);
 test('negative target', () => longestSubarrayWithSum([1, 2, -3, 1], -2), 2);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

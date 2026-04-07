@@ -19,12 +19,13 @@ function removeDuplicates(nums: number[]): number {
   return k; // size of the curated section
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('single element', () => removeDuplicates([1]), 1);
 test('[1, 1, 2] → 2', () => removeDuplicates([1, 1, 2]), 2);
 test('[1, 1, 1] → 1', () => removeDuplicates([1, 1, 1]), 1);
 test('[1, 2, 3] → 3', () => removeDuplicates([1, 2, 3]), 3);
 test(
+// ---End Tests
   '[0,0,1,1,1,2,2,3,3,4] → 5',
   () => removeDuplicates([0, 0, 1, 1, 1, 2, 2, 3, 3, 4]),
   5,

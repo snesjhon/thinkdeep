@@ -1,6 +1,3 @@
-// =============================================================================
-// Stack & Queue — Level 1, Exercise 3: Undo the Plate Labels — SOLUTION
-// =============================================================================
 function undoPlateLabels(note: string): string {
   const stack: string[] = [];
   for (const char of note) {
@@ -13,12 +10,14 @@ function undoPlateLabels(note: string): string {
   return stack.join('');
 }
 
+// ---Tests
 test('simple erase', () => undoPlateLabels('ab#c'), 'ac');
 test('two erases', () => undoPlateLabels('room##'), 'ro');
 test('erase everything', () => undoPlateLabels('abc###'), '');
 test('erase on empty', () => undoPlateLabels('##a'), 'a');
 test('no erases', () => undoPlateLabels('stack'), 'stack');
 test('mixed', () => undoPlateLabels('a#bc##d'), 'd');
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

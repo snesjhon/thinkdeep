@@ -43,6 +43,17 @@ export function getFundamentalsGuide(slug: string): FundamentalsGuide | null {
   };
 }
 
+export function getFundamentalsStepNumbers(slug: string): number[] {
+  const dir = path.join(FUNDAMENTALS_DIR, slug);
+  if (!fs.existsSync(dir)) return [];
+  const files = fs.readdirSync(dir);
+  const stepNums = files
+    .filter((f) => /^step\d+-exercise\d+-problem\.ts$/.test(f))
+    .map((f) => parseInt(f.match(/^step(\d+)/)?.[1] ?? '0'))
+    .filter((n) => n > 0);
+  return [...new Set(stepNums)].sort((a, b) => a - b);
+}
+
 export function getAllFundamentalsSlugs(): string[] {
   if (!fs.existsSync(FUNDAMENTALS_DIR)) return [];
 

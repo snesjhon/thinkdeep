@@ -1,6 +1,3 @@
-// =============================================================================
-// Arrays & Strings — Level 3, Exercise 3: Both Messengers, Combined — SOLUTION
-// =============================================================================
 function productExceptSelf(nums: number[]): number[] {
   const n = nums.length;
   const output = new Array(n).fill(1);
@@ -22,12 +19,14 @@ function productExceptSelf(nums: number[]): number[] {
   return output;
 }
 
+// ---Tests
 test('basic four',    () => productExceptSelf([1, 2, 3, 4]),    [24, 12, 8, 6]);
 test('two elements',  () => productExceptSelf([2, 3]),           [3, 2]);
 test('with zero',     () => productExceptSelf([1, 0, 3, 4]),    [0, 12, 0, 0]);
 test('two zeros',     () => productExceptSelf([0, 0]),           [0, 0]);
 test('with negative', () => productExceptSelf([-1, 2, -3, 4]), [-24, 12, -8, 6]);
 test('all ones',      () => productExceptSelf([1, 1, 1]),        [1, 1, 1]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

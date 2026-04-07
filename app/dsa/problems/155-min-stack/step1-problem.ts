@@ -1,6 +1,3 @@
-// =============================================================================
-// 155. Min Stack — Step 1 of 2
-// =============================================================================
 // Goal: Build the real cargo pile so push, pop, and top obey normal stack
 // order before adding the record-light side pile.
 

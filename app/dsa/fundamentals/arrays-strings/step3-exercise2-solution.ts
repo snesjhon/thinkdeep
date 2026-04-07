@@ -1,6 +1,3 @@
-// =============================================================================
-// Arrays & Strings — Level 3, Exercise 2: Ask the Left Messenger — SOLUTION
-// =============================================================================
 function rangeSum(nums: number[], left: number, right: number): number {
   const prefix = new Array(nums.length + 1).fill(0);
   for (let i = 0; i < nums.length; i++) {
@@ -9,12 +6,14 @@ function rangeSum(nums: number[], left: number, right: number): number {
   return prefix[right + 1] - prefix[left];
 }
 
+// ---Tests
 test('full range',      () => rangeSum([1, 2, 3, 4], 0, 3), 10);
 test('partial range',   () => rangeSum([1, 2, 3, 4], 1, 3),  9);
 test('single element',  () => rangeSum([1, 2, 3, 4], 2, 2),  3);
 test('first element',   () => rangeSum([1, 2, 3, 4], 0, 0),  1);
 test('with negatives',  () => rangeSum([-1, 2, -3, 4], 1, 3), 3);
 test('single-elem arr', () => rangeSum([7], 0, 0),            7);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

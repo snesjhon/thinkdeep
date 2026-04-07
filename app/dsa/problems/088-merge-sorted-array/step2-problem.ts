@@ -1,6 +1,3 @@
-// =============================================================================
-// Merge Sorted Array — Step 2 of 2: Fill from the Right
-// =============================================================================
 // Goal: While Team B has trophies remaining, compare the current tallest from
 //       each team and place the winner at the write pedestal. Move that marker
 //       and the write marker left. Stop when Team B is exhausted.
@@ -15,7 +12,7 @@ function merge(nums1: number[], m: number, nums2: number[], n: number): void {
   throw new Error('not implemented');
 }
 
-// Tests
+// ---Tests
 test('Team B empty: no merging needed', () => {
   const n1 = [1, 2, 3]; merge(n1, 3, [], 0); return n1;
 }, [1, 2, 3]);
@@ -33,6 +30,7 @@ test('all Team A smaller: Team B placed last', () => {
 }, [1, 2, 3, 4, 5, 6]);
 
 test('duplicates across teams', () => {
+// ---End Tests
   const n1 = [1, 2, 2, 0, 0, 0]; merge(n1, 3, [2, 3, 5], 3); return n1;
 }, [1, 2, 2, 2, 3, 5]);
 

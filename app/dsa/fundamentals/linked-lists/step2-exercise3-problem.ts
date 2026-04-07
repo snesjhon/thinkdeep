@@ -1,6 +1,3 @@
-// =============================================================================
-// Linked Lists — Level 3, Exercise 3: The Third Car from the End
-// =============================================================================
 // Goal: Practice the N-apart pointer technique with a fixed gap of 3.
 //
 // Return the cargo value of the car that is 3 positions from the end of the train
@@ -14,7 +11,6 @@
 //   thirdFromEnd(1 → 2 → 3 → 4 → 5)  → 3    (5 is 1st, 4 is 2nd, 3 is 3rd)
 //   thirdFromEnd(1 → 2 → 3)           → 1    (3 is 1st, 2 is 2nd, 1 is 3rd)
 //   thirdFromEnd(1 → 2)               → -1
-// =============================================================================
 // ---Helpers
 
 class ListNode {
@@ -32,7 +28,9 @@ function thirdFromEnd(head: ListNode | null): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('five cars',       () => thirdFromEnd(buildList([1,2,3,4,5])),   3);
+// ---End Tests
 test('four cars',       () => thirdFromEnd(buildList([1,2,3,4])),     2);
 test('exactly 3 cars',  () => thirdFromEnd(buildList([1,2,3])),       1);
 test('two cars',        () => thirdFromEnd(buildList([1,2])),         -1);
