@@ -96,6 +96,7 @@ export const JOURNEY: Phase[] = [
           { id: '027', isFirstPass: true, difficulty: 'easy' },
           { id: '167', isFirstPass: true, difficulty: 'medium' },
           { id: '011', isFirstPass: true, difficulty: 'medium' },
+          { id: '121', isFirstPass: true, difficulty: 'easy' },
         ],
         reinforce: [
           { id: '075', isFirstPass: false, difficulty: 'medium' },
@@ -118,7 +119,6 @@ export const JOURNEY: Phase[] = [
           'Fixed-size sliding, variable expand-and-shrink, and frequency-map tracking — the three tools behind every contiguous subarray and substring problem.',
         firstPass: [
           { id: '643', isFirstPass: true, difficulty: 'easy' },
-          { id: '121', isFirstPass: true, difficulty: 'easy' },
           { id: '003', isFirstPass: true, difficulty: 'medium' },
         ],
         reinforce: [

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AppIcon } from '@/components/dsa/AppIcon/AppIcon';
@@ -19,7 +20,12 @@ export function LayoutShell({
   availableFundamentalsSlugs,
 }: LayoutShellProps) {
   const pathname = usePathname();
+  const mainRef = useRef<HTMLElement | null>(null);
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
+
+  useEffect(() => {
+    mainRef.current?.focus({ preventScroll: true });
+  }, [pathname]);
 
   if (isFullwidth) {
     return (
@@ -34,7 +40,14 @@ export function LayoutShell({
             </Link>
           </div>
         </header>
-        <main className="w-full">{children}</main>
+        <main
+          ref={mainRef}
+          id="main-content"
+          tabIndex={-1}
+          className="w-full focus:outline-none"
+        >
+          {children}
+        </main>
       </>
     );
   }
@@ -51,7 +64,14 @@ export function LayoutShell({
         availableProblemIds={availableProblemIds}
         availableFundamentalsSlugs={availableFundamentalsSlugs}
       />
-      <main className="w-full">{children}</main>
+      <main
+        ref={mainRef}
+        id="main-content"
+        tabIndex={-1}
+        className="w-full focus:outline-none"
+      >
+        {children}
+      </main>
     </div>
   );
 }

@@ -159,19 +159,19 @@ export function JourneyPanel({
   const isFundamentalsComplete = (slug: string) =>
     completedFundIds.has(`dsa-fundamentals-${slug}`);
 
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(() =>
-    activeSectionId ? new Set([activeSectionId]) : new Set(),
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+    () => new Set(),
   );
 
-  useEffect(() => {
-    if (!activeSectionId) return;
-    setExpandedSections((prev) => {
-      if (prev.has(activeSectionId)) return prev;
-      const next = new Set(prev);
-      next.add(activeSectionId);
-      return next;
-    });
-  }, [activeSectionId]);
+  // useEffect(() => {
+  //   if (!activeSectionId) return;
+  //   setExpandedSections((prev) => {
+  //     if (prev.has(activeSectionId)) return prev;
+  //     const next = new Set(prev);
+  //     next.add(activeSectionId);
+  //     return next;
+  //   });
+  // }, [activeSectionId]);
 
   const activeItemRef = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
@@ -182,7 +182,7 @@ export function JourneyPanel({
   }, [pathname]);
 
   const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) => {
+    setCollapsedSections((prev) => {
       const next = new Set(prev);
       if (next.has(sectionId)) next.delete(sectionId);
       else next.add(sectionId);
@@ -215,7 +215,7 @@ export function JourneyPanel({
 
             {/* Sections */}
             {phase.sections.map((section) => {
-              const isExpanded = expandedSections.has(section.id);
+              const isCollapsed = collapsedSections.has(section.id);
               const isThisActive = activeSectionId === section.id;
               const availableItems = section.items.filter((i) =>
                 availableItemKeys.has(i.key),
@@ -247,14 +247,14 @@ export function JourneyPanel({
                     <ChevronRight
                       aria-hidden="true"
                       className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${
-                        isExpanded
-                          ? 'rotate-90 text-[var(--ms-text-muted)]'
-                          : 'text-[var(--ms-text-faint)]'
+                        isCollapsed
+                          ? 'text-[var(--ms-text-faint)]'
+                          : 'rotate-90 text-[var(--ms-text-muted)]'
                       }`}
                     />
                   </button>
 
-                  {isExpanded && (
+                  {!isCollapsed && (
                     <div className="mb-1 ml-4 border-l border-l-[var(--ms-surface)]">
                       {/* Fundamentals guide link */}
                       {section.fundamentalsSlug &&
@@ -267,7 +267,6 @@ export function JourneyPanel({
                           const fundComplete = isFundamentalsComplete(
                             section.fundamentalsSlug!,
                           );
-                          const GuideIcon = fundComplete ? CircleCheck : Circle;
                           return (
                             <Link
                               ref={isFundActive ? activeItemRef : null}
@@ -280,9 +279,9 @@ export function JourneyPanel({
                                   : 'font-normal text-[var(--ms-text-subtle)]'
                               }`}
                             >
-                              <GuideIcon
-                                aria-hidden="true"
-                                className="h-3.5 w-3.5 shrink-0"
+                              <ProgressMark
+                                completed={fundComplete}
+                                fundamentals
                               />
                               <span>Fundamentals</span>
                             </Link>

@@ -101,6 +101,7 @@ Don't try to finish **Revisit** before moving to the next step. Forward momentum
 - [x] [27. Remove Element](https://leetcode.com/problems/remove-element/)
 - [ ] [167. Two Sum II - Input Array Is Sorted](https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/)
 - [x] [11. Container With Most Water](https://leetcode.com/problems/container-with-most-water/)
+- [ ] [121. Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) _(two pointers: L=cheapest buy day, R=current day — greedy in spirit but naturally framed with two pointers)_
 
 **Revisit** _(return to after Sliding Window)_:
 
@@ -125,7 +126,6 @@ Don't try to finish **Revisit** before moving to the next step. Forward momentum
 **Practice** _(do these now)_:
 
 - [x] Max sum subarray of size K _(fixed-size window — the simplest possible sliding window, do this first)_
-- [ ] [121. Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)
 - [x] [3. Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
 
 **Revisit** _(return to after Linked Lists)_:
