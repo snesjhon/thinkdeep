@@ -101,8 +101,8 @@ export function SiteNav({
           <span className="text-[var(--ms-text-body)]">
             <AppIcon size={26} />
           </span>
-          <span className="text-[1.05rem] italic font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">
-            MentalSystems
+          <span className="text-[1.05rem] font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">
+            thinkdeep.systems
           </span>
         </Link>
       </div>

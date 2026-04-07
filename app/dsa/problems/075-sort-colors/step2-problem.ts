@@ -24,48 +24,76 @@ function sortColors(nums: number[]): void {
 }
 
 // ---Tests
-test('empty parade', () => {
-  const nums: number[] = [];
-  sortColors(nums);
-  return nums;
-}, []);
+test(
+  'empty parade',
+  () => {
+    const nums: number[] = [];
+    sortColors(nums);
+    return nums;
+  },
+  [],
+);
 
-test('all whites', () => {
-  const nums = [1, 1, 1];
-  sortColors(nums);
-  return nums;
-}, [1, 1, 1]);
+test(
+  'all whites',
+  () => {
+    const nums = [1, 1, 1];
+    sortColors(nums);
+    return nums;
+  },
+  [1, 1, 1],
+);
 
-test('all reds', () => {
-  const nums = [0, 0, 0];
-  sortColors(nums);
-  return nums;
-}, [0, 0, 0]);
+test(
+  'all reds',
+  () => {
+    const nums = [0, 0, 0];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 0, 0],
+);
 
-test('single red', () => {
-  const nums = [0];
-  sortColors(nums);
-  return nums;
-}, [0]);
+test(
+  'single red',
+  () => {
+    const nums = [0];
+    sortColors(nums);
+    return nums;
+  },
+  [0],
+);
 
-test('reds and whites mixed', () => {
-  const nums = [0, 1, 0, 1];
-  sortColors(nums);
-  return nums;
-}, [0, 0, 1, 1]);
+test(
+  'reds and whites mixed',
+  () => {
+    const nums = [0, 1, 0, 1];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 0, 1, 1],
+);
 
-test('red then white', () => {
-  const nums = [0, 1];
-  sortColors(nums);
-  return nums;
-}, [0, 1]);
+test(
+  'red then white',
+  () => {
+    const nums = [0, 1];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 1],
+);
 
-test('white then red', () => {
+test(
+  'white then red',
+  () => {
+    const nums = [1, 0];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 1],
+);
 // ---End Tests
-  const nums = [1, 0];
-  sortColors(nums);
-  return nums;
-}, [0, 1]);
 
 // ---Helpers
 
@@ -85,6 +113,8 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }

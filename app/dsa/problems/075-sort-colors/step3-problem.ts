@@ -27,63 +27,98 @@ function sortColors(nums: number[]): void {
 }
 
 // ---Tests
-test('empty parade', () => {
-  const nums: number[] = [];
-  sortColors(nums);
-  return nums;
-}, []);
+test(
+  'empty parade',
+  () => {
+    const nums: number[] = [];
+    sortColors(nums);
+    return nums;
+  },
+  [],
+);
 
-test('all blues', () => {
-  const nums = [2, 2, 2];
-  sortColors(nums);
-  return nums;
-}, [2, 2, 2]);
+test(
+  'all blues',
+  () => {
+    const nums = [2, 2, 2];
+    sortColors(nums);
+    return nums;
+  },
+  [2, 2, 2],
+);
 
-test('single blue', () => {
-  const nums = [2];
-  sortColors(nums);
-  return nums;
-}, [2]);
+test(
+  'single blue',
+  () => {
+    const nums = [2];
+    sortColors(nums);
+    return nums;
+  },
+  [2],
+);
 
-test('example 1 — full mix', () => {
-  const nums = [2, 0, 2, 1, 1, 0];
-  sortColors(nums);
-  return nums;
-}, [0, 0, 1, 1, 2, 2]);
+test(
+  'example 1 — full mix',
+  () => {
+    const nums = [2, 0, 2, 1, 1, 0];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 0, 1, 1, 2, 2],
+);
 
-test('example 2 — one of each', () => {
-  const nums = [2, 0, 1];
-  sortColors(nums);
-  return nums;
-}, [0, 1, 2]);
+test(
+  'example 2 — one of each',
+  () => {
+    const nums = [2, 0, 1];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 1, 2],
+);
 
-test('already sorted', () => {
-  const nums = [0, 0, 1, 1, 2, 2];
-  sortColors(nums);
-  return nums;
-}, [0, 0, 1, 1, 2, 2]);
+test(
+  'already sorted',
+  () => {
+    const nums = [0, 0, 1, 1, 2, 2];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 0, 1, 1, 2, 2],
+);
 
-test('reverse sorted', () => {
-  const nums = [2, 2, 1, 1, 0, 0];
-  sortColors(nums);
-  return nums;
-}, [0, 0, 1, 1, 2, 2]);
+test(
+  'reverse sorted',
+  () => {
+    const nums = [2, 2, 1, 1, 0, 0];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 0, 1, 1, 2, 2],
+);
 
-test('blue then red', () => {
-  const nums = [2, 0];
-  sortColors(nums);
-  return nums;
-}, [0, 2]);
+test(
+  'blue then red',
+  () => {
+    const nums = [2, 0];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 2],
+);
 
-test('consecutive blues at start', () => {
+test(
+  'consecutive blues at start',
+  () => {
+    const nums = [2, 2, 0, 1];
+    sortColors(nums);
+    return nums;
+  },
+  [0, 1, 2, 2],
+);
 // ---End Tests
-  const nums = [2, 2, 0, 1];
-  sortColors(nums);
-  return nums;
-}, [0, 1, 2, 2]);
 
 // ---Helpers
-
 function swap(arr: number[], i: number, j: number): void {
   [arr[i], arr[j]] = [arr[j], arr[i]];
 }
@@ -100,6 +135,8 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }

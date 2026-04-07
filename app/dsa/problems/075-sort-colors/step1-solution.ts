@@ -3,8 +3,8 @@
 
 function sortColors(nums: number[]): void {
   // Plant the three flags
-  let low = 0;               // Red Flag: everything left is confirmed red
-  let mid = 0;               // Inspector: examining the unknown zone
+  let low = 0; // Red Flag: everything left is confirmed red
+  let mid = 0; // Inspector: examining the unknown zone
   let high = nums.length - 1; // Blue Flag: everything right is confirmed blue
 
   while (mid <= high) {
@@ -19,24 +19,36 @@ function sortColors(nums: number[]): void {
 }
 
 // ---Tests
-test('empty parade', () => {
-  const nums: number[] = [];
-  sortColors(nums);
-  return nums;
-}, []);
+test(
+  'empty parade',
+  () => {
+    const nums: number[] = [];
+    sortColors(nums);
+    return nums;
+  },
+  [],
+);
 
-test('all whites — Inspector walks straight through', () => {
-  const nums = [1, 1, 1];
-  sortColors(nums);
-  return nums;
-}, [1, 1, 1]);
+test(
+  'all whites — Inspector walks straight through',
+  () => {
+    const nums = [1, 1, 1];
+    sortColors(nums);
+    return nums;
+  },
+  [1, 1, 1],
+);
 
-test('single white participant', () => {
+test(
+  'single white participant',
+  () => {
+    const nums = [1];
+    sortColors(nums);
+    return nums;
+  },
+  [1],
+);
 // ---End Tests
-  const nums = [1];
-  sortColors(nums);
-  return nums;
-}, [1]);
 
 // ---Helpers
 
@@ -56,6 +68,8 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }

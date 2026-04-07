@@ -5,12 +5,14 @@
 Given an array `nums` with `n` objects colored red, white, or blue, sort them **in-place** so that objects of the same color are adjacent, with the colors in the order red, white, and blue. We will use the integers `0`, `1`, and `2` to represent the color red, white, and blue, respectively. You must solve this problem without using the library's sort function.
 
 **Example 1:**
+
 ```
 Input: nums = [2,0,2,1,1,0]
 Output: [0,0,1,1,2,2]
 ```
 
 **Example 2:**
+
 ```
 Input: nums = [2,0,1]
 Output: [0,1,2]
@@ -20,11 +22,21 @@ Output: [0,1,2]
 
 Imagine you're organizing a tricolor parade where participants wear red (0), white (1), or blue (2) shirts. They've all arrived in a random order, and you need to arrange them so all reds are at the front, whites in the middle, and blues at the back — in a single walk down the line.
 
-You plant three flags in the lineup. The **Red Flag** (`low`) marks the left boundary of the unsorted middle — everything to its left is a confirmed red-shirt participant already in place. The **Inspector** (`mid`) is your moving official who walks the line examining each person one at a time. The **Blue Flag** (`high`) marks the right boundary — everything to its right is a confirmed blue-shirt participant already in place.
+You plant three flags in the lineup.
+
+1. The **Red Flag** (`low`) marks the left boundary of the unsorted middle — everything to its left is a confirmed red-shirt participant already in place.
+2. The **Inspector** (`mid`) is your moving official who walks the line examining each person one at a time.
+3. The **Blue Flag** (`high`) marks the right boundary — everything to its right is a confirmed blue-shirt participant already in place.
 
 Between the Red Flag and the Inspector lies the **confirmed white zone** — people who've been examined and belong in the middle. Between the Inspector and the Blue Flag lies the **unknown zone** — people who haven't been examined yet. The Inspector's job is to shrink that unknown zone to zero.
 
-As the Inspector examines each participant, they make one of three decisions: white-shirts stay where they are (Inspector advances), red-shirts get escorted to the front (swap with the Red Flag position, both flags advance), and blue-shirts get escorted to the back (swap with the Blue Flag position, the Blue Flag retreats). The parade is sorted when the unknown zone is empty — when the Inspector has passed the Blue Flag.
+As the Inspector examines each participant, they make one of three decisions:
+
+1. Red (0) get escorted to the front (swap with the Red Flag position, both flags advance)
+2. White (1) stay where they are (Inspector advances)
+3. Blue (2) get escorted to the back (swap with the Blue Flag position, the Blue Flag retreats)
+
+The parade is sorted when the unknown zone is empty — when the Inspector has passed the Blue Flag.
 
 ## Understanding the Analogy
 
@@ -45,33 +57,13 @@ The Inspector only ever moves forward (`mid++`) or stays. The Red Flag only move
 
 ### Why This Approach
 
-A naive approach would count the 0s, 1s, and 2s first, then overwrite the array — correct, but two passes. This single-pass approach achieves O(n) time and O(1) space in one pass by maintaining the four-zone invariant at every step. The invariant is the key: because you always know exactly what's in each zone, you never need to revisit an element. The tricky part — and the source of most bugs — is understanding *why* you don't advance `mid` after a blue swap, but you do after a red swap. That asymmetry comes directly from the invariant.
+A naive approach would count the 0s, 1s, and 2s first, then overwrite the array — correct, but two passes. This single-pass approach achieves O(n) time and O(1) space in one pass by maintaining the four-zone invariant at every step. The invariant is the key: because you always know exactly what's in each zone, you never need to revisit an element.
 
-## How I Think Through This
-
-I set up three positions: `low = 0` (where the next red should land), `mid = 0` (where the Inspector starts), and `high = nums.length - 1` (where the next blue should land). The loop runs while `mid <= high` — as long as there's an unknown zone to process.
-
-Inside the loop I look at `nums[mid]`. White (1) is already in the right zone — just advance `mid`. Red (0) gets swapped to `low`: I swap `nums[low]` and `nums[mid]`, then advance *both* `low` and `mid`. I can safely advance `mid` because whatever came from `low` back to `mid` was in the confirmed white zone, so it's definitely white and needs no re-inspection. Blue (2) gets swapped to `high`: I swap `nums[mid]` and `nums[high]`, then retreat `high` — but I do *not* advance `mid`. The element that just landed at `mid` came from the unknown zone and hasn't been examined yet. It could be anything.
-
-Take `[2,0,2,1,1,0]`.
-
-:::trace-lr
-[
-  {"chars": ["2","0","2","1","1","0"], "L": 0, "R": 5, "action": null, "label": "low=0 | All 6 positions are unknown. Inspector and Red Flag both at 0, Blue Flag at 5."},
-  {"chars": ["0","0","2","1","1","2"], "L": 0, "R": 4, "action": "mismatch", "label": "low=0 | Blue (2) at mid=0. Swap with high=5 — a red (0) arrives at mid. Blue Flag retreats to 4. Inspector stays — that incoming 0 hasn't been examined!"},
-  {"chars": ["0","0","2","1","1","2"], "L": 1, "R": 4, "action": "match", "label": "low=1, mid=1 | Red (0) at mid=0. Swap with Red Flag (same spot — no change). Red Flag and Inspector both advance."},
-  {"chars": ["0","0","2","1","1","2"], "L": 2, "R": 4, "action": "match", "label": "low=2, mid=2 | Red (0) at mid=1. Swap with Red Flag (same spot). Both advance again."},
-  {"chars": ["0","0","1","1","2","2"], "L": 2, "R": 3, "action": "mismatch", "label": "low=2 | Blue (2) at mid=2. Swap with high=4 — a white (1) arrives. Blue Flag retreats to 3. Inspector stays."},
-  {"chars": ["0","0","1","1","2","2"], "L": 3, "R": 3, "action": "match", "label": "low=2, mid=3 | White (1) at mid=2. Already in the right zone — Inspector advances."},
-  {"chars": ["0","0","1","1","2","2"], "L": 4, "R": 3, "action": "done", "label": "low=2, mid=4 | White (1) at mid=3. Inspector advances past Blue Flag — unknown zone is empty. Parade sorted!"}
-]
-:::
+The tricky part — and the source of most bugs — is understanding _why_ you don't advance `mid` after a blue swap, but you do after a red swap. That asymmetry comes directly from the invariant.
 
 ---
 
 ## Building the Algorithm
-
-Each step introduces one concept from the Parade Organizer analogy, then a StackBlitz embed to try it.
 
 ### Step 1: Plant the Three Flags
 
@@ -81,10 +73,10 @@ With the flags in place, the Inspector walks as long as `mid <= high` — while 
 
 :::trace-lr
 [
-  {"chars": ["1","1","1"], "L": 0, "R": 2, "action": null, "label": "low=0, mid=0, high=2 | Flags planted. All three positions are unknown."},
-  {"chars": ["1","1","1"], "L": 1, "R": 2, "action": "match", "label": "low=0, mid=1 | White (1) at mid=0. Already in the middle zone — Inspector advances."},
-  {"chars": ["1","1","1"], "L": 2, "R": 2, "action": "match", "label": "low=0, mid=2 | White (1) at mid=1. Inspector advances."},
-  {"chars": ["1","1","1"], "L": 3, "R": 2, "action": "done", "label": "low=0, mid=3 | White (1) at mid=2. Inspector advances past Blue Flag — done!"}
+{"chars": ["1","1","1"], "L": 0, "R": 2, "action": null, "label": "low=0, mid=0, high=2 | Flags planted. All three positions are unknown."},
+{"chars": ["1","1","1"], "L": 1, "R": 2, "action": "match", "label": "low=0, mid=1 | White (1) at mid=0. Already in the middle zone — Inspector advances."},
+{"chars": ["1","1","1"], "L": 2, "R": 2, "action": "match", "label": "low=0, mid=2 | White (1) at mid=1. Inspector advances."},
+{"chars": ["1","1","1"], "L": 3, "R": 2, "action": "done", "label": "low=0, mid=3 | White (1) at mid=2. Inspector advances past Blue Flag — done!"}
 ]
 :::
 
@@ -101,17 +93,17 @@ With the flags in place, the Inspector walks as long as `mid <= high` — while 
 
 ### Step 2: The Red Escort
 
-When the Inspector spots a red-shirt participant (0), they belong at the front. Swap them with whoever is standing at the Red Flag position (`low`). Then advance *both* the Red Flag and the Inspector: `low++; mid++`.
+When the Inspector spots a red-shirt participant (0), they belong at the front. Swap them with whoever is standing at the Red Flag position (`low`). Then advance _both_ the Red Flag and the Inspector: `low++; mid++`.
 
-Why advance both? The person who moved from `low` back to `mid` came from the confirmed-white zone (`low..mid-1`). Every element there is a white shirt. So that person is definitely white and doesn't need re-inspection — the Inspector can safely move past them.
+Why advance `mid` too? After the swap, the element now sitting at `mid` is whoever was standing at the Red Flag position (`low`) — the left edge of the confirmed-white(1) zone. The invariant guarantees that zone contains only white-shirts (1). The Inspector already knows their color without examining them, so `mid` steps past safely.
 
 :::trace-lr
 [
-  {"chars": ["0","1","0","1"], "L": 0, "R": 3, "action": null, "label": "low=0, mid=0, high=3 | Only reds and whites — no blues. Unknown zone: all 4 positions."},
-  {"chars": ["0","1","0","1"], "L": 1, "R": 3, "action": "match", "label": "low=1, mid=1 | Red (0) at mid=0. Swap with low=0 (same spot — no-op). Red Flag and Inspector both advance."},
-  {"chars": ["0","1","0","1"], "L": 1, "R": 3, "action": "match", "label": "low=1, mid=2 | White (1) at mid=1. Inspector advances."},
-  {"chars": ["0","0","1","1"], "L": 2, "R": 3, "action": "match", "label": "low=2, mid=3 | Red (0) at mid=2. Swap with low=1 — red goes front, white comes back to mid. Both advance."},
-  {"chars": ["0","0","1","1"], "L": 2, "R": 3, "action": "done", "label": "low=2, mid=4 | White (1) at mid=3. Inspector advances past Blue Flag — done!"}
+{"chars": ["0","1","0","1"], "L": 0, "R": 3, "action": null, "label": "low=0, mid=0, high=3 | Only reds and whites — no blues. Unknown zone: all 4 positions."},
+{"chars": ["0","1","0","1"], "L": 1, "R": 3, "action": "match", "label": "low=1, mid=1 | Red (0) at mid=0. Swap with low=0 (same spot — no-op). Red Flag and Inspector both advance."},
+{"chars": ["0","1","0","1"], "L": 1, "R": 3, "action": "match", "label": "low=1, mid=2 | White (1) at mid=1. Inspector advances."},
+{"chars": ["0","0","1","1"], "L": 2, "R": 3, "action": "match", "label": "low=2, mid=3 | Red (0) at mid=2. Swap with low=1 — red goes front, white comes back to mid. Both advance."},
+{"chars": ["0","0","1","1"], "L": 2, "R": 3, "action": "done", "label": "low=2, mid=4 | White (1) at mid=3. Inspector advances past Blue Flag — done!"}
 ]
 :::
 
@@ -130,17 +122,17 @@ Why advance both? The person who moved from `low` back to `mid` came from the co
 
 When the Inspector spots a blue-shirt participant (2), they belong at the back. Swap them with whoever is at the Blue Flag position (`high`). Then retreat the Blue Flag: `high--`.
 
-**Here is the critical asymmetry from step 2:** you do *not* advance `mid`. The person who just landed at `mid` came from the unknown zone — they haven't been examined. They could be red, white, or blue. The Inspector must look at them before moving on. The unknown zone still shrinks (because `high` retreated), but the Inspector holds position.
+**Here is the critical asymmetry from step 2:** you do _not_ advance `mid`. The person who just landed at `mid` came from the unknown zone — they haven't been examined. They could be red, white, or blue. The Inspector must look at them before moving on. The unknown zone still shrinks (because `high` retreated), but the Inspector holds position.
 
 :::trace-lr
 [
-  {"chars": ["2","0","2","1","1","0"], "L": 0, "R": 5, "action": null, "label": "low=0, mid=0, high=5 | Full mix. Three officials in position."},
-  {"chars": ["0","0","2","1","1","2"], "L": 0, "R": 4, "action": "mismatch", "label": "low=0 | Blue (2) at mid=0. Swap with high=5 — red (0) arrives. Blue Flag retreats to 4. Inspector stays — that 0 needs examining!"},
-  {"chars": ["0","0","2","1","1","2"], "L": 1, "R": 4, "action": "match", "label": "low=1, mid=1 | Red (0) at mid=0. Swap with low. Both advance."},
-  {"chars": ["0","0","2","1","1","2"], "L": 2, "R": 4, "action": "match", "label": "low=2, mid=2 | Red (0) at mid=1. Swap with low. Both advance."},
-  {"chars": ["0","0","1","1","2","2"], "L": 2, "R": 3, "action": "mismatch", "label": "low=2 | Blue (2) at mid=2. Swap with high=4 — white (1) arrives. Blue Flag retreats to 3. Inspector stays."},
-  {"chars": ["0","0","1","1","2","2"], "L": 3, "R": 3, "action": "match", "label": "low=2, mid=3 | White (1) at mid=2. Just advance."},
-  {"chars": ["0","0","1","1","2","2"], "L": 4, "R": 3, "action": "done", "label": "low=2, mid=4 | White (1) at mid=3. Advance. Inspector past Blue Flag — parade fully sorted!"}
+{"chars": ["2","0","2","1","1","0"], "L": 0, "R": 5, "action": null, "label": "low=0, mid=0, high=5 | Full mix. Three officials in position."},
+{"chars": ["0","0","2","1","1","2"], "L": 0, "R": 4, "action": "mismatch", "label": "low=0 | Blue (2) at mid=0. Swap with high=5 — red (0) arrives. Blue Flag retreats to 4. Inspector stays — that 0 needs examining!"},
+{"chars": ["0","0","2","1","1","2"], "L": 1, "R": 4, "action": "match", "label": "low=1, mid=1 | Red (0) at mid=0. Swap with low. Both advance."},
+{"chars": ["0","0","2","1","1","2"], "L": 2, "R": 4, "action": "match", "label": "low=2, mid=2 | Red (0) at mid=1. Swap with low. Both advance."},
+{"chars": ["0","0","1","1","2","2"], "L": 2, "R": 3, "action": "mismatch", "label": "low=2 | Blue (2) at mid=2. Swap with high=4 — white (1) arrives. Blue Flag retreats to 3. Inspector stays."},
+{"chars": ["0","0","1","1","2","2"], "L": 3, "R": 3, "action": "match", "label": "low=2, mid=3 | White (1) at mid=2. Just advance."},
+{"chars": ["0","0","1","1","2","2"], "L": 4, "R": 3, "action": "done", "label": "low=2, mid=4 | White (1) at mid=3. Advance. Inspector past Blue Flag — parade fully sorted!"}
 ]
 :::
 
@@ -149,12 +141,34 @@ When the Inspector spots a blue-shirt participant (2), they belong at the back. 
 <details>
 <summary>Hints & gotchas</summary>
 
-- **The key asymmetry**: Red swaps return a *guaranteed white* to `mid` (from the confirmed-white zone), so `mid++` is safe. Blue swaps return an *unknown* element to `mid` (from the unexamined zone), so `mid` must stay.
+- **The key asymmetry**: Red swaps return a _guaranteed white_ to `mid` (from the confirmed-white zone), so `mid++` is safe. Blue swaps return an _unknown_ element to `mid` (from the unexamined zone), so `mid` must stay.
 - **The loop still terminates**: Even though `mid` doesn't advance on blue swaps, `high` decreases by 1. The unknown zone always shrinks. Eventually `mid > high`.
 - **Consecutive blues**: If a blue swap produces another blue at `mid`, the Inspector will swap it away next iteration. No special-casing needed — the algorithm handles any run of blues correctly.
 - **All three cases must be covered**: The `if/else if/else` (or equivalent) needs branches for 0, 1, and 2. A common mistake is writing `if (0) ... else if (2) ... ` and forgetting the white (1) branch falls through to undefined behavior.
 
 </details>
+
+---
+
+## How I Think Through This
+
+I set up three positions: `low = 0` (where the next red should land), `mid = 0` (where the Inspector starts), and `high = nums.length - 1` (where the next blue should land). The loop runs while `mid <= high` — as long as there's an unknown zone to process.
+
+Inside the loop I look at `nums[mid]`. White (1) is already in the right zone — just advance `mid`. Red (0) gets swapped to `low`: I swap `nums[low]` and `nums[mid]`, then advance _both_ `low` and `mid`. I can safely advance `mid` because whatever came from `low` back to `mid` was in the confirmed white zone, so it's definitely white and needs no re-inspection. Blue (2) gets swapped to `high`: I swap `nums[mid]` and `nums[high]`, then retreat `high` — but I do _not_ advance `mid`. The element that just landed at `mid` came from the unknown zone and hasn't been examined yet. It could be anything.
+
+Take `[2,0,2,1,1,0]`.
+
+:::trace-lr
+[
+{"chars": ["2","0","2","1","1","0"], "L": 0, "R": 5, "action": null, "label": "low=0 | All 6 positions are unknown. Inspector and Red Flag both at 0, Blue Flag at 5."},
+{"chars": ["0","0","2","1","1","2"], "L": 0, "R": 4, "action": "mismatch", "label": "low=0 | Blue (2) at mid=0. Swap with high=5 — a red (0) arrives at mid. Blue Flag retreats to 4. Inspector stays — that incoming 0 hasn't been examined!"},
+{"chars": ["0","0","2","1","1","2"], "L": 1, "R": 4, "action": "match", "label": "low=1, mid=1 | Red (0) at mid=0. Swap with Red Flag (same spot — no change). Red Flag and Inspector both advance."},
+{"chars": ["0","0","2","1","1","2"], "L": 2, "R": 4, "action": "match", "label": "low=2, mid=2 | Red (0) at mid=1. Swap with Red Flag (same spot). Both advance again."},
+{"chars": ["0","0","1","1","2","2"], "L": 2, "R": 3, "action": "mismatch", "label": "low=2 | Blue (2) at mid=2. Swap with high=4 — a white (1) arrives. Blue Flag retreats to 3. Inspector stays."},
+{"chars": ["0","0","1","1","2","2"], "L": 3, "R": 3, "action": "match", "label": "low=2, mid=3 | White (1) at mid=2. Already in the right zone — Inspector advances."},
+{"chars": ["0","0","1","1","2","2"], "L": 4, "R": 3, "action": "done", "label": "low=2, mid=4 | White (1) at mid=3. Inspector advances past Blue Flag — unknown zone is empty. Parade sorted!"}
+]
+:::
 
 ---
 
@@ -179,15 +193,15 @@ flowchart TD
 
 Input: `nums = [2,0,2,1,1,0]`
 
-| Step | Inspector (mid) | Red Flag (low) | Blue Flag (high) | nums[mid] | Color | Action | Array State |
-|------|---|---|---|---|---|---|---|
-| Start | 0 | 0 | 5 | 2 | Blue | swap(0,5) → 0 arrives at mid. high=4. mid stays. | [0,0,2,1,1,2] |
-| 2 | 0 | 0 | 4 | 0 | Red | swap(low=0, mid=0) → no-op. low=1, mid=1. | [0,0,2,1,1,2] |
-| 3 | 1 | 1 | 4 | 0 | Red | swap(low=1, mid=1) → no-op. low=2, mid=2. | [0,0,2,1,1,2] |
-| 4 | 2 | 2 | 4 | 2 | Blue | swap(2,4) → 1 arrives at mid. high=3. mid stays. | [0,0,1,1,2,2] |
-| 5 | 2 | 2 | 3 | 1 | White | mid=3. | [0,0,1,1,2,2] |
-| 6 | 3 | 2 | 3 | 1 | White | mid=4. | [0,0,1,1,2,2] |
-| Done | 4 | 2 | 3 | — | — | mid(4) > high(3) → exit loop | [0,0,1,1,2,2] |
+| Step  | Inspector (mid) | Red Flag (low) | Blue Flag (high) | nums[mid] | Color | Action                                           | Array State   |
+| ----- | --------------- | -------------- | ---------------- | --------- | ----- | ------------------------------------------------ | ------------- |
+| Start | 0               | 0              | 5                | 2         | Blue  | swap(0,5) → 0 arrives at mid. high=4. mid stays. | [0,0,2,1,1,2] |
+| 2     | 0               | 0              | 4                | 0         | Red   | swap(low=0, mid=0) → no-op. low=1, mid=1.        | [0,0,2,1,1,2] |
+| 3     | 1               | 1              | 4                | 0         | Red   | swap(low=1, mid=1) → no-op. low=2, mid=2.        | [0,0,2,1,1,2] |
+| 4     | 2               | 2              | 4                | 2         | Blue  | swap(2,4) → 1 arrives at mid. high=3. mid stays. | [0,0,1,1,2,2] |
+| 5     | 2               | 2              | 3                | 1         | White | mid=3.                                           | [0,0,1,1,2,2] |
+| 6     | 3               | 2              | 3                | 1         | White | mid=4.                                           | [0,0,1,1,2,2] |
+| Done  | 4               | 2              | 3                | —         | —     | mid(4) > high(3) → exit loop                     | [0,0,1,1,2,2] |
 
 ---
 

@@ -32,10 +32,15 @@ export function LayoutShell({
       <>
         <header className="sticky top-0 z-50 bg-[var(--ms-bg-pane-secondary)] border-b border-b-[var(--ms-surface)]">
           <div className="max-w-[1152px] mx-auto px-6 h-14 flex items-center">
-            <Link href="/" className="no-underline flex items-center gap-[10px] focus:outline-none">
-              <span className="text-[var(--ms-text-body)]"><AppIcon size={22} /></span>
-              <span className="italic font-normal text-[1.05rem] text-[var(--ms-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
-                MentalSystems
+            <Link
+              href="/"
+              className="no-underline flex items-center gap-[10px] focus:outline-none"
+            >
+              <span className="text-[var(--ms-text-body)]">
+                <AppIcon size={22} />
+              </span>
+              <span className="font-normal text-[1.05rem] text-[var(--ms-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
+                thinkdeep.systems
               </span>
             </Link>
           </div>
