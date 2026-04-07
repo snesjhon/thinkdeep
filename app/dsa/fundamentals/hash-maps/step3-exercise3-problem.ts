@@ -10,6 +10,7 @@
 //   countDivisibleSubarrays([4,5,0,-2,-3,1], 5)  → 7
 //   countDivisibleSubarrays([1,2,3], 3)           → 3   ([3],[1,2],[1,2,3])
 //   countDivisibleSubarrays([5], 5)               → 1
+function countDivisibleSubarrays(nums: number[], k: number): number {
   throw new Error('not implemented');
 }
 

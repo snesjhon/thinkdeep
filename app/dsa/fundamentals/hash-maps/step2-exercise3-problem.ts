@@ -8,6 +8,7 @@
 //   setDifference([1,2,3], [2])      → [1, 3]
 //   setDifference([1,2,2,3], [2,3])  → [1]
 //   setDifference([1,2,3], [1,2,3])  → []
+function setDifference(a: number[], b: number[]): number[] {
   throw new Error('not implemented');
 }
 

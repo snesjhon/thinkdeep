@@ -7,6 +7,7 @@
 //   mostFrequent([1,2,2,3])    → 2
 //   mostFrequent([5,5,5,1,1])  → 5
 //   mostFrequent([1,2])        → 1   (tie — return the smaller)
+function mostFrequent(nums: number[]): number {
   throw new Error('not implemented');
 }
 

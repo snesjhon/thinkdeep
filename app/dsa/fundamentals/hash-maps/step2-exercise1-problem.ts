@@ -8,6 +8,7 @@
 //   countUnique([5, 5, 5])           → 1
 //   countUnique([1, 2, 3])           → 3
 //   countUnique([])                  → 0
+function countUnique(nums: number[]): number {
   throw new Error('not implemented');
 }
 

@@ -7,12 +7,14 @@ Write a function that reverses a string. The input string is given as an array o
 You must do this by modifying the input array **in-place** with O(1) extra memory.
 
 **Example 1:**
+
 ```
 Input: s = ["h","e","l","l","o"]
 Output: ["o","l","l","e","h"]
 ```
 
 **Example 2:**
+
 ```
 Input: s = ["H","a","n","n","a","h"]
 Output: ["h","a","n","n","a","H"]
@@ -32,7 +34,9 @@ Every swap exchanges one card at the front with its mirror counterpart at the ba
 
 ### The Setup
 
-You have a row of character cards on the table, and you want the row — read from right to left — to be exactly what you currently read left to right. Two dealers take their starting positions at opposite ends: one at the far left end of the row, one at the far right end. Their job is simple: walk toward each other, swap what they're holding at each position, and stop when they meet.
+You have a row of character cards on the table, and you want the row — read from right to left — to be exactly what you currently read left to right. Two dealers take their starting positions at opposite ends: one at the far left end of the row, one at the far right end.
+
+> Their job is simple: **walk toward each other, swap what they're holding at each position, and stop when they meet**.
 
 ### The Two Dealers Walking Inward
 
@@ -54,9 +58,9 @@ Take `["h","e","l","l","o"]`.
 
 :::trace-lr
 [
-  {"chars":["h","e","l","l","o"],"L":0,"R":4,"action":"match","label":"frontDealer=0 ('h'), backDealer=4 ('o'). Swap → ['o','e','l','l','h']. Both step inward."},
-  {"chars":["o","e","l","l","h"],"L":1,"R":3,"action":"match","label":"frontDealer=1 ('e'), backDealer=3 ('l'). Swap → ['o','l','l','e','h']. Both step inward."},
-  {"chars":["o","l","l","e","h"],"L":2,"R":2,"action":"done","label":"frontDealer(2) === backDealer(2): center card, no swap needed. Done. Output: ['o','l','l','e','h'] ✓"}
+{"chars":["h","e","l","l","o"],"L":0,"R":4,"action":"match","label":"frontDealer=0 ('h'), backDealer=4 ('o'). Swap → ['o','e','l','l','h']. Both step inward."},
+{"chars":["o","e","l","l","h"],"L":1,"R":3,"action":"match","label":"frontDealer=1 ('e'), backDealer=3 ('l'). Swap → ['o','l','l','e','h']. Both step inward."},
+{"chars":["o","l","l","e","h"],"L":2,"R":2,"action":"done","label":"frontDealer(2) === backDealer(2): center card, no swap needed. Done. Output: ['o','l','l','e','h'] ✓"}
 ]
 :::
 
@@ -74,8 +78,8 @@ After this setup, for an empty row or a single-card row, the front dealer is alr
 
 :::trace-lr
 [
-  {"chars":["h","e","l","l","o"],"L":0,"R":4,"action":"match","label":"frontDealer=0, backDealer=4. Dealers stationed at opposite ends — ready to march."},
-  {"chars":["a"],"L":0,"R":0,"action":"done","label":"Single card: frontDealer=0, backDealer=0. Not frontDealer < backDealer — loop will never run."}
+{"chars":["h","e","l","l","o"],"L":0,"R":4,"action":"match","label":"frontDealer=0, backDealer=4. Dealers stationed at opposite ends — ready to march."},
+{"chars":["a"],"L":0,"R":0,"action":"done","label":"Single card: frontDealer=0, backDealer=0. Not frontDealer < backDealer — loop will never run."}
 ]
 :::
 
@@ -100,9 +104,9 @@ The stopping condition `frontDealer < backDealer` (strict) is the key invariant.
 
 :::trace-lr
 [
-  {"chars":["h","e","l","l","o"],"L":0,"R":4,"action":"match","label":"Swap s[0]='h' ↔ s[4]='o' via heldCard. Result: ['o','e','l','l','h']. frontDealer→1, backDealer→3."},
-  {"chars":["o","e","l","l","h"],"L":1,"R":3,"action":"match","label":"Swap s[1]='e' ↔ s[3]='l' via heldCard. Result: ['o','l','l','e','h']. frontDealer→2, backDealer→2."},
-  {"chars":["o","l","l","e","h"],"L":2,"R":2,"action":"done","label":"frontDealer(2) not < backDealer(2): loop exits. Output: ['o','l','l','e','h'] ✓"}
+{"chars":["h","e","l","l","o"],"L":0,"R":4,"action":"match","label":"Swap s[0]='h' ↔ s[4]='o' via heldCard. Result: ['o','e','l','l','h']. frontDealer→1, backDealer→3."},
+{"chars":["o","e","l","l","h"],"L":1,"R":3,"action":"match","label":"Swap s[1]='e' ↔ s[3]='l' via heldCard. Result: ['o','l','l','e','h']. frontDealer→2, backDealer→2."},
+{"chars":["o","l","l","e","h"],"L":2,"R":2,"action":"done","label":"frontDealer(2) not < backDealer(2): loop exits. Output: ['o','l','l','e','h'] ✓"}
 ]
 :::
 

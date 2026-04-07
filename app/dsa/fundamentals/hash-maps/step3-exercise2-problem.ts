@@ -10,6 +10,7 @@
 //   longestSubarrayWithSum([1, 2, 3], 3)           → 2  ([1,2])
 //   longestSubarrayWithSum([1, 2, 3], 6)           → 3  (whole array)
 //   longestSubarrayWithSum([1, 2, 3], 7)           → 0  (none)
+function longestSubarrayWithSum(nums: number[], k: number): number {
   throw new Error('not implemented');
 }
 

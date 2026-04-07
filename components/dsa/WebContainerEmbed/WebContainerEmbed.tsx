@@ -67,9 +67,14 @@ const stripAnsi = (s: string) => s.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
 
 const RUN_TIMEOUT_MS = 5000;
 
-// Singleton — one WebContainer per browsing context
-let wcInstance: WebContainer | null = null;
-let wcBootPromise: Promise<WebContainer> | null = null;
+// Singleton — one WebContainer per browsing context.
+// Stored on globalThis so HMR module reloads don't trigger a re-install.
+declare global {
+  // eslint-disable-next-line no-var
+  var __wcInstance: WebContainer | null | undefined;
+  // eslint-disable-next-line no-var
+  var __wcBootPromise: Promise<WebContainer> | null | undefined;
+}
 
 interface CodeSyncRecord {
   snippet: string;
@@ -104,9 +109,9 @@ async function fetchCodeSyncRecord(url: string): Promise<CodeSyncRecord | null> 
 }
 
 async function getWebContainer(): Promise<WebContainer> {
-  if (wcInstance) return wcInstance;
-  if (!wcBootPromise) {
-    wcBootPromise = (async () => {
+  if (globalThis.__wcInstance) return globalThis.__wcInstance;
+  if (!globalThis.__wcBootPromise) {
+    globalThis.__wcBootPromise = (async () => {
       const { WebContainer } = await import('@webcontainer/api');
       const wc = await WebContainer.boot();
 
@@ -136,14 +141,14 @@ async function getWebContainer(): Promise<WebContainer> {
       if (code !== 0)
         throw new Error(`npm install failed:\n${installLog.join('')}`);
 
-      wcInstance = wc;
+      globalThis.__wcInstance = wc;
       return wc;
     })().catch((err) => {
-      wcBootPromise = null;
+      globalThis.__wcBootPromise = null;
       throw err;
     });
   }
-  return wcBootPromise;
+  return globalThis.__wcBootPromise;
 }
 
 interface Props {
@@ -269,18 +274,13 @@ export default function WebContainerEmbed({
     const pageLayout = root.closest('[data-dfh-page-layout]');
     const mainColumn = pageLayout?.querySelector('[data-dfh-page-main]');
 
-    const horizontalMargin = window.innerWidth >= 1280 ? 24 : 16;
-    const left = mainColumn instanceof HTMLElement
-      ? mainColumn.getBoundingClientRect().left
-      : horizontalMargin;
-    const width = mainColumn instanceof HTMLElement
-      ? mainColumn.getBoundingClientRect().width
-      : window.innerWidth - horizontalMargin * 2;
+    const width = Math.max(320, Math.round(window.innerWidth * 0.75));
+    const left = Math.round((window.innerWidth - width) / 2);
 
     setExpandedLayout({
-      left: Math.max(horizontalMargin, left),
+      left,
       top: 24,
-      width: Math.max(320, width),
+      width,
       height: Math.max(420, window.innerHeight - 48),
     });
     setInlineHeight(root.getBoundingClientRect().height);
@@ -557,6 +557,7 @@ export default function WebContainerEmbed({
     if (!isExpanded) return;
 
     measureExpandedLayout();
+    viewRef.current?.focus();
     document.body.dataset.dfhWcExpandedOpen = 'true';
     document.body.style.overflow = 'hidden';
     const dimmedElements = Array.from(
@@ -726,73 +727,77 @@ export default function WebContainerEmbed({
           className={`${styles.root}${isExpanded ? ` ${styles.expanded}` : ''}`}
           style={rootStyle}
         >
-          <div className={styles.header}>
-            {tabs.length > 1 && (
-              <div className={styles.tabs}>
-                {tabs.map((t, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className={`${styles.tab}${tabIdx === i ? ` ${styles.tabActive}` : ''}`}
-                    onClick={() => setTabIdx(i)}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            )}
-            {tabs.length > 1 && (
-              <span className={styles.step}>
-                Step {step} of {total}
-              </span>
-            )}
-          </div>
           <div className={styles.body}>
-            <div ref={editorRef} className={styles.editor} />
-            <div className={styles.toolbar}>
-              <button
-                type="button"
-                className={styles.runButton}
-                onClick={runCode}
-                disabled={
-                  status === 'booting' || status === 'running' || !hasCode
-                }
-              >
-                {status === 'booting' ? (
-                  '⏳ Installing…'
-                ) : status === 'running' ? (
-                  '⏳ Running…'
-                ) : (
-                  <>
-                    Run{' '}
-                    <kbd className={styles.kbd}>
-                      {typeof navigator !== 'undefined' &&
-                      /Mac|iPhone|iPod|iPad/.test(navigator.platform)
-                        ? '⌘'
-                        : 'Ctrl'}
-                      ↵
-                    </kbd>
-                  </>
+            <div className={styles.leftPane}>
+              <div className={styles.header}>
+                {tabs.length > 1 && (
+                  <div className={styles.tabs}>
+                    {tabs.map((t, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className={`${styles.tab}${tabIdx === i ? ` ${styles.tabActive}` : ''}`}
+                        onClick={() => setTabIdx(i)}
+                      >
+                        {t.label}
+                      </button>
+                    ))}
+                  </div>
                 )}
-              </button>
-              <button
-                type="button"
-                className={styles.expandButton}
-                onClick={() => {
-                  if (!isExpanded) measureExpandedLayout();
-                  setIsExpanded((prev) => !prev);
-                }}
-              >
-                {isExpanded ? 'Collapse' : 'Expand Editor'}
-              </button>
+                {tabs.length > 1 && (
+                  <span className={styles.step}>
+                    Step {step} of {total}
+                  </span>
+                )}
+              </div>
+              <div ref={editorRef} className={styles.editor} />
             </div>
-            {output && (
-              <pre
-                className={`${styles.output}${status === 'error' ? ` ${styles.outputError}` : ''}`}
-              >
-                {output}
-              </pre>
-            )}
+            <div className={styles.rightPane}>
+              <div className={styles.toolbar}>
+                <button
+                  type="button"
+                  className={styles.runButton}
+                  onClick={runCode}
+                  disabled={
+                    status === 'booting' || status === 'running' || !hasCode
+                  }
+                >
+                  {status === 'booting' ? (
+                    globalThis.__wcInstance ? '⏳ Starting…' : '⏳ Installing…'
+                  ) : status === 'running' ? (
+                    '⏳ Running…'
+                  ) : (
+                    <>
+                      Run{' '}
+                      <kbd className={styles.kbd}>
+                        {typeof navigator !== 'undefined' &&
+                        /Mac|iPhone|iPod|iPad/.test(navigator.platform)
+                          ? '⌘'
+                          : 'Ctrl'}
+                        ↵
+                      </kbd>
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  className={styles.expandButton}
+                  onClick={() => {
+                    if (!isExpanded) measureExpandedLayout();
+                    setIsExpanded((prev) => !prev);
+                  }}
+                >
+                  {isExpanded ? 'Collapse' : 'Expand Editor'}
+                </button>
+              </div>
+              {output && (
+                <pre
+                  className={`${styles.output}${status === 'error' ? ` ${styles.outputError}` : ''}`}
+                >
+                  {output}
+                </pre>
+              )}
+            </div>
           </div>
         </div>
       </div>

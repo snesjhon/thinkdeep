@@ -8,10 +8,11 @@
 //   countChars('aabbc')  → { a:2, b:2, c:1 }
 //   countChars('hello')  → { h:1, e:1, l:2, o:1 }
 //   countChars('')       → {}
+
+function countChars() {
   throw new Error('not implemented');
 }
 
-// ---Tests
 // ---Tests
 test('empty string', () => countChars(''), {});
 test('single char', () => countChars('z'), { z: 1 });
@@ -19,7 +20,6 @@ test('all same', () => countChars('aaaa'), { a: 4 });
 test('two chars', () => countChars('aabbc'), { a: 2, b: 2, c: 1 });
 test('hello', () => countChars('hello'), { h: 1, e: 1, l: 2, o: 1 });
 test('mixed', () => countChars('abcabc'), { a: 2, b: 2, c: 2 });
-// ---End Tests
 // ---End Tests
 
 // ---Helpers

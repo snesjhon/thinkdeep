@@ -4,8 +4,8 @@
 // On a match: prev.next = curr.next, advance curr only (prev stays).
 // On a keep: advance prev to curr, then advance curr.
 // Return dummy.next.
-// ---Helpers
 
+// ---Helpers
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -14,7 +14,6 @@ class ListNode {
     this.next = next;
   }
 }
-
 // ---End Helpers
 
 function removeAll(head: ListNode | null, target: number): ListNode | null {
@@ -34,13 +33,29 @@ function removeAll(head: ListNode | null, target: number): ListNode | null {
 }
 
 // ---Tests
-test('remove middle cars',    () => toArray(removeAll(buildList([1,3,3,4]), 3)),   [1,4]);
+test(
+  'remove middle cars',
+  () => toArray(removeAll(buildList([1, 3, 3, 4]), 3)),
+  [1, 4],
+);
+test(
+  'remove the locomotive',
+  () => toArray(removeAll(buildList([3, 1, 2]), 3)),
+  [1, 2],
+);
+test(
+  'remove last car',
+  () => toArray(removeAll(buildList([1, 2, 3]), 3)),
+  [1, 2],
+);
+test('remove all cars', () => toArray(removeAll(buildList([3, 3, 3]), 3)), []);
+test(
+  'target not in train',
+  () => toArray(removeAll(buildList([1, 2, 3]), 9)),
+  [1, 2, 3],
+);
+test('empty train', () => toArray(removeAll(null, 1)), []);
 // ---End Tests
-test('remove the locomotive', () => toArray(removeAll(buildList([3,1,2]), 3)),     [1,2]);
-test('remove last car',       () => toArray(removeAll(buildList([1,2,3]), 3)),     [1,2]);
-test('remove all cars',       () => toArray(removeAll(buildList([3,3,3]), 3)),     []);
-test('target not in train',   () => toArray(removeAll(buildList([1,2,3]), 9)),     [1,2,3]);
-test('empty train',           () => toArray(removeAll(null, 1)),                  []);
 
 // ---Helpers
 function buildList(values: number[]): ListNode | null {
@@ -76,6 +91,8 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }

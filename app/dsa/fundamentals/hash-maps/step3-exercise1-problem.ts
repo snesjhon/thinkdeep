@@ -12,6 +12,7 @@
 //   hasZeroSumSubarray([0])           → true   ([0] sums to 0)
 //   hasZeroSumSubarray([1, 2, 3])     → false
 //   hasZeroSumSubarray([3, 1, -4, 2]) → true   ([3,1,-4] sums to 0)
+function hasZeroSumSubarray(nums: number[]): boolean {
   throw new Error('not implemented');
 }
 

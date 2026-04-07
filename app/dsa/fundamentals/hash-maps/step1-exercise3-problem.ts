@@ -9,6 +9,7 @@
 //   hasPairWithSum([1, 2, 3], 7)       → false
 //   hasPairWithSum([3, 3], 6)          → true    (3 at index 0, 3 at index 1)
 //   hasPairWithSum([5], 10)            → false   (only one element)
+function hasPairWithSum(nums: number[], target: number): boolean {
   throw new Error('not implemented');
 }
 

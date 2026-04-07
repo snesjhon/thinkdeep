@@ -28,7 +28,6 @@ function removeAll(head: ListNode | null, target: number): ListNode | null {
 
 // ---Tests
 test(
-// ---End Tests
   'remove middle cars',
   () => toArray(removeAll(buildList([1, 3, 3, 4]), 3)),
   [1, 4],
@@ -50,6 +49,7 @@ test(
   [1, 2, 3],
 );
 test('empty train', () => toArray(removeAll(null, 1)), []);
+// ---End Tests
 
 // ---Helpers
 function buildList(values: number[]): ListNode | null {

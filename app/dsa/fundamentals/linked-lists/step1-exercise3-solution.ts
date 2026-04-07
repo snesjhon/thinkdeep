@@ -4,8 +4,8 @@
 // If curr.next is null before k steps complete, stop early (insert at end).
 // Splice the new node in: newNode.next = curr.next; curr.next = newNode.
 // Return dummy.next.
-// ---Helpers
 
+// ---Helpers
 class ListNode {
   val: number;
   next: ListNode | null;
@@ -14,10 +14,13 @@ class ListNode {
     this.next = next;
   }
 }
-
 // ---End Helpers
 
-function insertAt(head: ListNode | null, k: number, val: number): ListNode | null {
+function insertAt(
+  head: ListNode | null,
+  k: number,
+  val: number,
+): ListNode | null {
   const dummy = new ListNode(0);
   dummy.next = head;
   let curr: ListNode = dummy;
@@ -32,13 +35,33 @@ function insertAt(head: ListNode | null, k: number, val: number): ListNode | nul
 }
 
 // ---Tests
-test('insert in middle',     () => toArray(insertAt(buildList([1,2,3]), 1, 99)),   [1,99,2,3]);
+test(
+  'insert in middle',
+  () => toArray(insertAt(buildList([1, 2, 3]), 1, 99)),
+  [1, 99, 2, 3],
+);
+test(
+  'insert at front',
+  () => toArray(insertAt(buildList([1, 2, 3]), 0, 99)),
+  [99, 1, 2, 3],
+);
+test(
+  'insert at end',
+  () => toArray(insertAt(buildList([1, 2, 3]), 3, 99)),
+  [1, 2, 3, 99],
+);
+test(
+  'insert beyond length',
+  () => toArray(insertAt(buildList([1, 2, 3]), 10, 99)),
+  [1, 2, 3, 99],
+);
+test('insert into empty', () => toArray(insertAt(null, 0, 5)), [5]);
+test(
+  'insert single at end',
+  () => toArray(insertAt(buildList([1]), 1, 2)),
+  [1, 2],
+);
 // ---End Tests
-test('insert at front',      () => toArray(insertAt(buildList([1,2,3]), 0, 99)),   [99,1,2,3]);
-test('insert at end',        () => toArray(insertAt(buildList([1,2,3]), 3, 99)),   [1,2,3,99]);
-test('insert beyond length', () => toArray(insertAt(buildList([1,2,3]), 10, 99)),  [1,2,3,99]);
-test('insert into empty',    () => toArray(insertAt(null, 0, 5)),                 [5]);
-test('insert single at end', () => toArray(insertAt(buildList([1]), 1, 2)),       [1,2]);
 
 // ---Helpers
 function buildList(values: number[]): ListNode | null {
@@ -74,6 +97,8 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }

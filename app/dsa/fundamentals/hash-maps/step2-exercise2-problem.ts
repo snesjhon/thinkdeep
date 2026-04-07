@@ -9,6 +9,7 @@
 //   intersection([1,2,3], [2,3,4])   → [2, 3]
 //   intersection([1,1,2], [1,1])     → [1]
 //   intersection([1,2,3], [4,5,6])   → []
+function intersection(a: number[], b: number[]): number[] {
   throw new Error('not implemented');
 }
 
