@@ -4,6 +4,8 @@ export const THEME_CHANGE_EVENT = 'theme-flavor-change';
 export const THEME_FLAVORS = [
   'latte',
   'mocha',
+  'github-light',
+  'github-dark',
   'tokyo-light',
   'tokyo-storm',
 ] as const;
@@ -12,6 +14,12 @@ export type ThemeFlavor = (typeof THEME_FLAVORS)[number];
 
 export const DEFAULT_THEME_FLAVOR: ThemeFlavor = 'latte';
 
+const DARK_THEME_FLAVORS: readonly ThemeFlavor[] = [
+  'mocha',
+  'github-dark',
+  'tokyo-storm',
+];
+
 export function isThemeFlavor(value: unknown): value is ThemeFlavor {
   return (
     typeof value === 'string' && THEME_FLAVORS.includes(value as ThemeFlavor)
@@ -19,7 +27,7 @@ export function isThemeFlavor(value: unknown): value is ThemeFlavor {
 }
 
 export function isDarkTheme(flavor: ThemeFlavor): boolean {
-  return flavor === 'mocha' || flavor === 'tokyo-storm';
+  return DARK_THEME_FLAVORS.includes(flavor);
 }
 
 export function getStoredThemeFlavor(): ThemeFlavor {
@@ -71,6 +79,8 @@ export function getThemeInitScript(): string {
         if (
           stored === 'latte' ||
           stored === 'mocha' ||
+          stored === 'github-light' ||
+          stored === 'github-dark' ||
           stored === 'tokyo-light' ||
           stored === 'tokyo-storm'
         ) {
@@ -79,10 +89,7 @@ export function getThemeInitScript(): string {
       } catch (error) {}
 
       root.setAttribute('data-theme', theme);
-      root.classList.toggle(
-        'dark',
-        theme === 'mocha' || theme === 'tokyo-storm',
-      );
+      root.classList.toggle('dark', ${JSON.stringify(DARK_THEME_FLAVORS)}.includes(theme));
     })();
   `;
 }

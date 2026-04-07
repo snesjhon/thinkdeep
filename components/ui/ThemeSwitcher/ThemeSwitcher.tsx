@@ -18,6 +18,8 @@ interface ThemeSwitcherProps {
 const FLAVOR_LABELS: Record<ThemeFlavor, string> = {
   latte: 'Latte',
   mocha: 'Mocha',
+  'github-light': 'GitHub Light',
+  'github-dark': 'GitHub Dark',
   'tokyo-light': 'Light',
   'tokyo-storm': 'Storm',
 };
@@ -25,6 +27,8 @@ const FLAVOR_LABELS: Record<ThemeFlavor, string> = {
 const FLAVOR_ICONS: Record<ThemeFlavor, LucideIcon> = {
   latte: Sun,
   mocha: Moon,
+  'github-light': Sun,
+  'github-dark': Moon,
   'tokyo-light': Sun,
   'tokyo-storm': Moon,
 };
@@ -32,6 +36,8 @@ const FLAVOR_ICONS: Record<ThemeFlavor, LucideIcon> = {
 const FLAVOR_ORDER = [
   'latte',
   'mocha',
+  'github-light',
+  'github-dark',
   'tokyo-light',
   'tokyo-storm',
 ] as const satisfies readonly ThemeFlavor[];
@@ -92,7 +98,9 @@ export function ThemeSwitcher({
         title={`Switch to ${FLAVOR_LABELS[next]}`}
         className="appearance-none shadow-none cursor-pointer border-none bg-transparent px-2 py-1 text-[var(--ms-text-subtle)] outline-none ring-0 transition-colors hover:text-[var(--ms-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
       >
-        {theme === 'mocha' || theme === 'tokyo-storm' ? (
+        {theme === 'mocha' ||
+        theme === 'github-dark' ||
+        theme === 'tokyo-storm' ? (
           <Sun aria-hidden="true" className="h-4 w-4" />
         ) : (
           <Moon aria-hidden="true" className="h-4 w-4" />

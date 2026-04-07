@@ -18,7 +18,8 @@ import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvi
 import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
 
 const FundamentalsProgressPanel = dynamic(
-  () => import('@/components/dsa/FundamentalsProgressPanel/FundamentalsProgressPanel'),
+  () =>
+    import('@/components/dsa/FundamentalsProgressPanel/FundamentalsProgressPanel'),
   { ssr: false },
 );
 
@@ -49,7 +50,10 @@ export default function FundamentalsPage({ params }: Props) {
   return (
     <ProgressProvider
       items={[
-        { itemType: 'fundamentals' as const, itemId: `dsa-fundamentals-${params.slug}` },
+        {
+          itemType: 'fundamentals' as const,
+          itemId: `dsa-fundamentals-${params.slug}`,
+        },
         ...stepNumbers.map((n) => ({
           itemType: 'fundamentals-level' as const,
           itemId: `dsa-fundamentals-${params.slug}-step-${n}`,
@@ -59,7 +63,10 @@ export default function FundamentalsPage({ params }: Props) {
       <DsaPageLayout
         progress={
           stepNumbers.length > 0 ? (
-            <FundamentalsProgressPanel slug={params.slug} stepNumbers={stepNumbers} />
+            <FundamentalsProgressPanel
+              slug={params.slug}
+              stepNumbers={stepNumbers}
+            />
           ) : undefined
         }
         hero={
@@ -69,7 +76,7 @@ export default function FundamentalsPage({ params }: Props) {
                 guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
             </h1>
             {section && (
-              <p className="text-lg italic leading-snug text-[var(--ms-mauve)] mb-6">
+              <p className="text-lg italic leading-snug text-[var(--ms-primary)] mb-6">
                 &ldquo;{section.mentalModelHook}&rdquo;
               </p>
             )}

@@ -143,7 +143,7 @@ export default function ProblemPage({ params }: Props) {
               {problem.title}
             </h1>
             {primarySection && (
-              <p className="text-md italic leading-snug text-[var(--ms-mauve)] mb-6">
+              <p className="text-md italic leading-snug text-[var(--ms-primary)] mb-6">
                 &ldquo;{primarySection.mentalModelHook}&rdquo;
               </p>
             )}
@@ -170,7 +170,10 @@ export default function ProblemPage({ params }: Props) {
           </PageHero>
         }
         progress={
-          <ProblemProgressPanel problemId={params.id} stepNumbers={stepNumbers} />
+          <ProblemProgressPanel
+            problemId={params.id}
+            stepNumbers={stepNumbers}
+          />
         }
         aside={<TableOfContents headings={headings} title="Contents" />}
       >

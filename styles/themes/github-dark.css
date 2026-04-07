@@ -1,0 +1,57 @@
+[data-theme='github-dark'] {
+  --ms-rosewater: #f0f6fc;
+  --ms-flamingo: #c9d1d9;
+  --ms-pink: #f778ba;
+  --ms-mauve: #d2a8ff;
+  --ms-red: #f47067;
+  --ms-maroon: #ff7b72;
+  --ms-peach: #ffa657;
+  --ms-yellow: #d29922;
+  --ms-green: #7ee787;
+  --ms-teal: #39c5cf;
+  --ms-sky: #a5d6ff;
+  --ms-sapphire: #79c0ff;
+  --ms-blue: #6cb6ff;
+  --ms-lavender: #b392f0;
+  --ms-text: #c9d1d9;
+  --ms-subtext1: #8b949e;
+  --ms-subtext0: #6e7681;
+  --ms-overlay2: #484f58;
+  --ms-overlay1: #30363d;
+  --ms-overlay0: #21262d;
+  --ms-surface2: #484f58;
+  --ms-surface1: #30363d;
+  --ms-surface0: #21262d;
+  --ms-base: #0d1117;
+  --ms-mantle: #161b22;
+  --ms-crust: #010409;
+  --ms-primary: var(--ms-blue);
+  --ms-primary-surface: color-mix(in srgb, var(--ms-primary) 14%, var(--ms-bg-pane));
+  --ms-primary-surface-strong: color-mix(
+    in srgb,
+    var(--ms-primary) 20%,
+    var(--ms-bg-pane)
+  );
+  --ms-link: var(--ms-blue);
+  --ms-selection: color-mix(in srgb, var(--ms-blue) 26%, transparent);
+  --ms-cursor: var(--ms-blue);
+  --ms-blue-surface: color-mix(in srgb, var(--ms-blue) 14%, var(--ms-bg-pane));
+  --ms-green-surface: color-mix(in srgb, var(--ms-green) 14%, var(--ms-bg-pane));
+  --ms-peach-surface: color-mix(in srgb, var(--ms-peach) 16%, var(--ms-bg-pane));
+  --ms-mauve-surface: color-mix(in srgb, var(--ms-mauve) 14%, var(--ms-bg-pane));
+  --ms-red-surface: color-mix(in srgb, var(--ms-red) 14%, var(--ms-bg-pane));
+  --ms-teal-surface: color-mix(in srgb, var(--ms-teal) 14%, var(--ms-bg-pane));
+  --ms-sapphire-surface: color-mix(
+    in srgb,
+    var(--ms-sapphire) 14%,
+    var(--ms-bg-pane)
+  );
+  --ms-on-accent: var(--ms-crust);
+  --pico-h1-color: var(--ms-green);
+  --pico-h2-color: var(--ms-green);
+  --pico-h3-color: var(--ms-green);
+  --pico-h4-color: var(--ms-green);
+  --pico-h5-color: var(--ms-green);
+  --pico-h6-color: var(--ms-green);
+  color-scheme: dark;
+}

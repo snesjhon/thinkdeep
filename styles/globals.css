@@ -1,6 +1,8 @@
 @import './base.css';
 @import './themes/latte.css';
 @import './themes/mocha.css';
+@import './themes/github-light.css';
+@import './themes/github-dark.css';
 @import './themes/tokyo-light.css';
 @import './themes/tokyo-storm.css';
 
