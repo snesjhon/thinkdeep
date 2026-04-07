@@ -1,5 +1,6 @@
 /** Static problem title lookup — safe to import in client components (no `fs`). */
 export const PROBLEM_TITLES: Record<string, string> = {
+  '000': 'Factorial',
   '001': 'Two Sum',
   '002': 'Add Two Numbers',
   '003': 'Longest Substring Without Repeating Characters',

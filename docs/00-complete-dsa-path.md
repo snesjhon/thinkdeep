@@ -207,7 +207,6 @@ Don't try to finish **Revisit** before moving to the next step. Forward momentum
 
 - [x] Factorial _(simplest recursion: one base case, one recursive call)_
 - [x] [509. Fibonacci Number](https://leetcode.com/problems/fibonacci-number/)
-- [x] [344. Reverse String](https://leetcode.com/problems/reverse-string/)
 - [x] [78. Subsets](https://leetcode.com/problems/subsets/) _(first backtracking: pure include/exclude, no constraints)_
 
 **Revisit** _(return to after Binary Search)_:

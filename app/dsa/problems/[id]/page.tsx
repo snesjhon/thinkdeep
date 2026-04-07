@@ -132,7 +132,7 @@ export default function ProblemPage({ params }: Props) {
             {problem.title}
           </h1>
           {primarySection && (
-            <p className="text-lg italic leading-snug text-[var(--ms-mauve)] mb-6">
+            <p className="text-md italic leading-snug text-[var(--ms-mauve)] mb-6">
               &ldquo;{primarySection.mentalModelHook}&rdquo;
             </p>
           )}

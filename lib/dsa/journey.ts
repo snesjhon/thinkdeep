@@ -194,6 +194,7 @@ export const JOURNEY: Phase[] = [
           'Vending Machine (subsets)',
         ],
         firstPass: [
+          { id: '000', isFirstPass: true, difficulty: 'easy' },
           { id: '509', isFirstPass: true, difficulty: 'easy' },
           { id: '078', isFirstPass: true, difficulty: 'medium' },
         ],
