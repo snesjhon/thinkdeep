@@ -91,7 +91,9 @@ function buildCodeSyncKey(base: DsaCodeBase, slug: string, file: string) {
   return `/api/dsa/code-sync?${params.toString()}`;
 }
 
-async function fetchCodeSyncRecord(url: string): Promise<CodeSyncRecord | null> {
+async function fetchCodeSyncRecord(
+  url: string,
+): Promise<CodeSyncRecord | null> {
   const response = await fetch(url, { cache: 'no-store' });
   if (!response.ok) return null;
 
@@ -263,16 +265,14 @@ export default function WebContainerEmbed({
     }
 
     await syncSnippetToServer(file, snippet !== baseSnippet ? snippet : '');
-    syncedSnippetRef.current[file] = snippet !== baseSnippet ? snippet : baseSnippet;
+    syncedSnippetRef.current[file] =
+      snippet !== baseSnippet ? snippet : baseSnippet;
     dirtyFilesRef.current[file] = false;
   }
 
   function measureExpandedLayout() {
     const root = rootRef.current;
     if (!root || typeof window === 'undefined') return;
-
-    const pageLayout = root.closest('[data-dfh-page-layout]');
-    const mainColumn = pageLayout?.querySelector('[data-dfh-page-main]');
 
     const width = Math.max(320, Math.round(window.innerWidth * 0.75));
     const left = Math.round((window.innerWidth - width) / 2);
@@ -341,7 +341,7 @@ export default function WebContainerEmbed({
           new Date(remoteRecord.updatedAt).getTime()
           ? localRecord
           : remoteRecord
-        : localRecord ?? remoteRecord;
+        : (localRecord ?? remoteRecord);
     const baseSnippet = extractEditableSnippet(normalizedContent);
     const syncedSnippet = remoteRecord?.snippet ?? baseSnippet;
     const currentSnippet = preferredRecord?.snippet ?? baseSnippet;
@@ -366,13 +366,7 @@ export default function WebContainerEmbed({
     } catch {}
 
     isResettingRef.current = false;
-  }, [
-    activeFile,
-    base,
-    contentSlug,
-    initialFiles,
-    isCodeSyncLoading,
-  ]);
+  }, [activeFile, base, contentSlug, initialFiles, isCodeSyncLoading]);
 
   // Effect 1: Mount CodeMirror once
   useEffect(() => {
@@ -413,10 +407,12 @@ export default function WebContainerEmbed({
           borderLeftWidth: '2px',
         },
         '.cm-activeLine': {
-          backgroundColor: 'color-mix(in srgb, var(--ms-text-body) 10%, transparent)',
+          backgroundColor:
+            'color-mix(in srgb, var(--ms-text-body) 10%, transparent)',
         },
         '.cm-activeLineGutter': {
-          backgroundColor: 'color-mix(in srgb, var(--ms-text-body) 10%, transparent)',
+          backgroundColor:
+            'color-mix(in srgb, var(--ms-text-body) 10%, transparent)',
         },
         '.cm-lineNumbers .cm-gutterElement': {
           color: 'var(--ms-overlay1)',
@@ -446,13 +442,21 @@ export default function WebContainerEmbed({
 
       const highlight = HighlightStyle.define([
         { tag: tags.keyword, color: 'var(--ms-mauve)', fontWeight: '600' },
-        { tag: tags.controlKeyword, color: 'var(--ms-mauve)', fontWeight: '600' },
+        {
+          tag: tags.controlKeyword,
+          color: 'var(--ms-mauve)',
+          fontWeight: '600',
+        },
         {
           tag: tags.definitionKeyword,
           color: 'var(--ms-mauve)',
           fontWeight: '600',
         },
-        { tag: tags.moduleKeyword, color: 'var(--ms-mauve)', fontWeight: '600' },
+        {
+          tag: tags.moduleKeyword,
+          color: 'var(--ms-mauve)',
+          fontWeight: '600',
+        },
         { tag: tags.string, color: 'var(--ms-green)' },
         { tag: tags.special(tags.string), color: 'var(--ms-green)' },
         { tag: tags.number, color: 'var(--ms-peach)' },
@@ -476,7 +480,11 @@ export default function WebContainerEmbed({
         { tag: tags.variableName, color: 'var(--ms-text-body)' },
         { tag: tags.operator, color: 'var(--ms-sky)' },
         { tag: tags.punctuation, color: 'var(--ms-overlay2)' },
-        { tag: tags.invalid, color: 'var(--ms-red)', textDecoration: 'underline' },
+        {
+          tag: tags.invalid,
+          color: 'var(--ms-red)',
+          textDecoration: 'underline',
+        },
         { tag: tags.angleBracket, color: 'var(--ms-overlay2)' },
       ]);
 
@@ -601,17 +609,20 @@ export default function WebContainerEmbed({
     }
   }, [isExpanded]);
 
-  useEffect(() => () => {
-    if (runTimeoutRef.current) {
-      clearTimeout(runTimeoutRef.current);
-      runTimeoutRef.current = null;
-    }
-    if (processRef.current) {
-      try {
-        processRef.current.kill();
-      } catch {}
-    }
-  }, []);
+  useEffect(
+    () => () => {
+      if (runTimeoutRef.current) {
+        clearTimeout(runTimeoutRef.current);
+        runTimeoutRef.current = null;
+      }
+      if (processRef.current) {
+        try {
+          processRef.current.kill();
+        } catch {}
+      }
+    },
+    [],
+  );
 
   // Effect 2: Sync external code changes into the editor
   useEffect(() => {
@@ -661,8 +672,9 @@ export default function WebContainerEmbed({
         if (currentRunIdRef.current !== runId || processRef.current !== proc) {
           return;
         }
-        setOutput((p) =>
-          `${p}${p ? '\n' : ''}Execution timed out after ${RUN_TIMEOUT_MS / 1000}s. It may be stuck in an infinite loop or deep recursion.`,
+        setOutput(
+          (p) =>
+            `${p}${p ? '\n' : ''}Execution timed out after ${RUN_TIMEOUT_MS / 1000}s. It may be stuck in an infinite loop or deep recursion.`,
         );
         setStatus('error');
         try {
@@ -701,42 +713,59 @@ export default function WebContainerEmbed({
   }
 
   const hasCode = !!(viewRef.current?.state.doc.length || code.length);
-  const rootStyle = isExpanded && expandedLayout
-    ? {
-        position: 'fixed' as const,
-        left: `${expandedLayout.left}px`,
-        top: `${expandedLayout.top}px`,
-        width: `${expandedLayout.width}px`,
-        height: `${expandedLayout.height}px`,
-        zIndex: 61,
-      }
-    : undefined;
+  const rootStyle =
+    isExpanded && expandedLayout
+      ? {
+          position: 'fixed' as const,
+          left: `${expandedLayout.left}px`,
+          top: `${expandedLayout.top}px`,
+          width: `${expandedLayout.width}px`,
+          height: `${expandedLayout.height}px`,
+          zIndex: 61,
+        }
+      : undefined;
   return (
     <>
       {isExpanded && (
         <button
           type="button"
           aria-label="Collapse editor"
-          className={styles.overlay}
+          className="fixed inset-0 z-[60] cursor-default border-0 bg-[rgba(12,18,28,0.18)] backdrop-blur-[1.5px] backdrop-saturate-[80%]"
           onClick={() => setIsExpanded(false)}
         />
       )}
-      <div style={inlineHeight ? { minHeight: `${inlineHeight}px` } : undefined}>
+      <div
+        style={inlineHeight ? { minHeight: `${inlineHeight}px` } : undefined}
+      >
         <div
           ref={rootRef}
-          className={`${styles.root}${isExpanded ? ` ${styles.expanded}` : ''}`}
+          className={`relative my-6 overflow-hidden rounded-lg border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] shadow-[0_0_0_rgba(0,0,0,0)] transition-[box-shadow,border-color] duration-150 ease-in-out ${
+            isExpanded
+              ? 'my-0 flex flex-col shadow-[0_28px_80px_rgba(15,23,42,0.18)]'
+              : ''
+          }`}
           style={rootStyle}
         >
-          <div className={styles.body}>
-            <div className={styles.leftPane}>
-              <div className={styles.header}>
+          <div
+            className={`flex min-h-0 flex-1 flex-col ${isExpanded ? 'flex-row' : ''}`}
+          >
+            <div
+              className={`flex min-h-0 flex-col ${
+                isExpanded
+                  ? 'min-w-0 basis-[70%] overflow-hidden border-r border-[var(--ms-surface)]'
+                  : ''
+              }`}
+            >
+              <div className="flex h-10 items-center justify-between border-b border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-3">
                 {tabs.length > 1 && (
-                  <div className={styles.tabs}>
+                  <div className="flex gap-0">
                     {tabs.map((t, i) => (
                       <button
                         key={i}
                         type="button"
-                        className={`${styles.tab}${tabIdx === i ? ` ${styles.tabActive}` : ''}`}
+                        className={`m-0 h-10 w-auto border-none bg-transparent px-3.5 text-[13px] font-medium text-[var(--ms-text-faint)] shadow-none transition-colors duration-150 hover:text-[var(--ms-text-muted)] ${
+                          tabIdx === i ? 'text-[var(--ms-blue)]' : ''
+                        }`}
                         onClick={() => setTabIdx(i)}
                       >
                         {t.label}
@@ -745,31 +774,50 @@ export default function WebContainerEmbed({
                   </div>
                 )}
                 {tabs.length > 1 && (
-                  <span className={styles.step}>
+                  <span className="font-mono text-[11px] text-[var(--ms-text-faint)]">
                     Step {step} of {total}
                   </span>
                 )}
               </div>
-              <div ref={editorRef} className={styles.editor} />
+              <div
+                ref={editorRef}
+                className={`${styles.editorShell} ${
+                  isExpanded ? styles.editorShellExpanded : ''
+                }`}
+              />
             </div>
-            <div className={styles.rightPane}>
-              <div className={styles.toolbar}>
+            <div
+              className={`${
+                isExpanded
+                  ? 'flex min-w-0 basis-[30%] flex-col'
+                  : 'overflow-y-auto'
+              }`}
+            >
+              <div
+                className={`flex items-center justify-between gap-3 border-b border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-3 py-2 ${
+                  isExpanded ? 'h-10 shrink-0 py-0' : ''
+                }`}
+              >
                 <button
                   type="button"
-                  className={styles.runButton}
+                  className="mb-0 text-xs px-2 py-1"
                   onClick={runCode}
                   disabled={
                     status === 'booting' || status === 'running' || !hasCode
                   }
                 >
                   {status === 'booting' ? (
-                    globalThis.__wcInstance ? '⏳ Starting…' : '⏳ Installing…'
+                    globalThis.__wcInstance ? (
+                      '⏳ Starting…'
+                    ) : (
+                      '⏳ Installing…'
+                    )
                   ) : status === 'running' ? (
                     '⏳ Running…'
                   ) : (
                     <>
                       Run{' '}
-                      <kbd className={styles.kbd}>
+                      <kbd className="text-white bg-transparent tracking-widest align-center p-0 ml-1">
                         {typeof navigator !== 'undefined' &&
                         /Mac|iPhone|iPod|iPad/.test(navigator.platform)
                           ? '⌘'
@@ -781,7 +829,7 @@ export default function WebContainerEmbed({
                 </button>
                 <button
                   type="button"
-                  className={styles.expandButton}
+                  className="mb-0 cursor-pointer rounded-[5px] border border-[var(--ms-surface)] bg-transparent px-3 py-1 text-xs font-semibold text-[var(--ms-text-muted)] transition-[color,border-color,background] duration-150 hover:bg-[var(--ms-bg-pane-tertiary)] hover:text-[var(--ms-text-body)]"
                   onClick={() => {
                     if (!isExpanded) measureExpandedLayout();
                     setIsExpanded((prev) => !prev);
@@ -792,7 +840,15 @@ export default function WebContainerEmbed({
               </div>
               {output && (
                 <pre
-                  className={`${styles.output}${status === 'error' ? ` ${styles.outputError}` : ''}`}
+                  className={`m-0 whitespace-pre-wrap break-all bg-[var(--ms-bg-pane)] px-5 py-4 font-mono text-[0.8125rem] leading-[1.6] text-[var(--ms-text-muted)] ${
+                    isExpanded
+                      ? 'flex-1 overflow-y-auto border-t-0'
+                      : 'border-t border-[var(--ms-surface)]'
+                  } ${
+                    status === 'error'
+                      ? 'bg-[var(--ms-bg-pane-tertiary)] text-[var(--ms-red)]'
+                      : ''
+                  }`}
                 >
                   {output}
                 </pre>
