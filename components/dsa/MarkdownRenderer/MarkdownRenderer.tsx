@@ -11,7 +11,10 @@ import type { HashMapStep } from '../HashMapTrace/HashMapTrace';
 import type { LinkedListStep } from '../LinkedListTrace/LinkedListTrace';
 import type { DoublyLinkedListStep } from '../DoublyLinkedListTrace/DoublyLinkedListTrace';
 import type { StackQueueStep } from '../StackQueueTrace/StackQueueTrace';
-import type { SubsetTraceStep } from '../SubsetTrace/SubsetTrace';
+import type {
+  SubsetTraceLabels,
+  SubsetTraceStep,
+} from '../SubsetTrace/SubsetTrace';
 
 const WebContainerEmbed = dynamic(
   () => import('../WebContainerEmbed/WebContainerEmbed'),
@@ -78,6 +81,7 @@ type TraceSQSegment = BaseSegment & {
 type TraceSubsetSegment = BaseSegment & {
   type: 'trace-subset';
   steps: SubsetTraceStep[];
+  labels?: SubsetTraceLabels;
 };
 type StackBlitzSegment = BaseSegment & {
   type: 'stackblitz';
@@ -161,8 +165,22 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
           text: text.slice(cursor, hit.index),
         });
       try {
-        const steps = JSON.parse(hit.json);
-        result.push({ type: hit.type, steps } as BaseSegment);
+        const parsed = JSON.parse(hit.json);
+        if (
+          hit.type === 'trace-subset' &&
+          parsed &&
+          !Array.isArray(parsed) &&
+          typeof parsed === 'object' &&
+          'steps' in parsed
+        ) {
+          result.push({
+            type: hit.type,
+            steps: (parsed as { steps: SubsetTraceStep[] }).steps,
+            labels: (parsed as { labels?: SubsetTraceLabels }).labels,
+          } as BaseSegment);
+        } else {
+          result.push({ type: hit.type, steps: parsed } as BaseSegment);
+        }
       } catch {
         result.push({
           type: 'markdown',
@@ -303,7 +321,11 @@ export default function MarkdownRenderer({
           );
         if (seg.type === 'trace-subset')
           return (
-            <SubsetTrace key={i} steps={(seg as TraceSubsetSegment).steps} />
+            <SubsetTrace
+              key={i}
+              steps={(seg as TraceSubsetSegment).steps}
+              labels={(seg as TraceSubsetSegment).labels}
+            />
           );
         if (seg.type === 'stackblitz') {
           const s = seg as StackBlitzSegment;

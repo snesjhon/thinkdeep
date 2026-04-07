@@ -1,59 +1,158 @@
-.slotActive {
-  background: var(--ms-peach-surface);
-  border-color: var(--ms-peach);
-  color: var(--ms-peach);
+.treeScroller {
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
 }
 
-.removing {
-  background: var(--ms-peach-surface);
-  border-color: var(--ms-peach);
-  color: var(--ms-peach);
-  opacity: 0.7;
+.tree {
+  width: max-content;
+  min-width: 100%;
 }
 
-.section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 1rem;
-}
-
-.sectionLabel {
+.treeTitle {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--ms-text-faint);
-  width: 48px;
-  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.6rem;
 }
 
-.basket {
+.subtree {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
   align-items: center;
-  min-height: 52px;
+  gap: 0.5rem;
 }
 
-.emptyBasket {
+.nodeWrap {
+  position: relative;
+}
+
+.nodeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  padding: 0.28rem 0.45rem;
+  border: 1px solid var(--ms-surface);
+  border-radius: 8px;
+  background: var(--ms-bg-pane-secondary);
+  min-width: 88px;
+}
+
+.nodeCurrent {
+  border-color: var(--ms-blue);
+  box-shadow: 0 0 0 1px var(--ms-blue);
+  background: var(--ms-bg-pane);
+}
+
+.nodeMeta {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
-  font-size: 14px;
+  font-size: 9px;
+  font-weight: 700;
   color: var(--ms-text-faint);
-  border: 2px dashed var(--ms-surface);
-  border-radius: 6px;
-  padding: 0 16px;
-  height: 52px;
-  display: flex;
-  align-items: center;
 }
 
-.ptrSlot {
+.nodeSubset {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ms-text-body);
+  white-space: nowrap;
+}
+
+.subsetText {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ms-green);
+}
+
+.children {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding-top: 0.55rem;
+}
+
+.children::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: calc(100% - 1.2rem);
+  max-width: 100%;
+  height: 0.55rem;
+  transform: translateX(-50%);
+  border-top: 1px solid var(--ms-surface);
+}
+
+.child {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.38rem;
+}
+
+.child::before {
+  content: '';
+  position: absolute;
+  top: -0.55rem;
+  left: 50%;
+  height: 0.55rem;
+  border-left: 1px solid var(--ms-surface);
+}
+
+.branchLabel {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.1rem 0.28rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.branchInclude {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+}
+
+.branchPreview {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+}
+
+.previewNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.16rem;
+  padding: 0.24rem 0.4rem;
+  border: 1px dashed var(--ms-blue);
+  border-radius: 8px;
+  background: var(--ms-bg-pane);
+  min-width: 88px;
+}
+
+.ptrIncluded {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+}
+
+.ptrExcluded {
   background: var(--ms-peach-surface);
   color: var(--ms-peach);
 }
 
-.ptrBasket {
-  background: var(--ms-green-surface);
-  color: var(--ms-green);
+.ptrCurrent {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
 }
 
 .badgeAdd {
@@ -78,4 +177,20 @@
   background: var(--ms-mauve-surface);
   color: var(--ms-mauve);
   border: 1px solid var(--ms-mauve);
+}
+
+@media (max-width: 720px) {
+  .children {
+    gap: 0.55rem;
+  }
+
+  .nodeCard,
+  .previewNode {
+    min-width: 76px;
+    padding: 0.22rem 0.34rem;
+  }
+
+  .nodeSubset {
+    font-size: 9px;
+  }
 }

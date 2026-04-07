@@ -2,14 +2,14 @@
 
 function subsets(nums: number[]): number[][] {
   const results: number[][] = [];
-  const basket: number[] = [];
+  const suitcase: number[] = [];
 
   function backtrack(start: number): void {
-    results.push([...basket]);
+    results.push([...suitcase]);
     for (let i = start; i < nums.length; i++) {
-      basket.push(nums[i]);
+      suitcase.push(nums[i]);
       backtrack(i + 1);
-      basket.pop();
+      suitcase.pop();
     }
   }
 

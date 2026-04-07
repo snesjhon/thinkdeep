@@ -1,10 +1,16 @@
 ---
 name: leet-fundamentals
-description: Generate foundational concept guides for DSA topics with progressive learning structure
+description: DEPRECATED — use dsa-fundamentals, which orchestrates dsa-fundamentals-narrative and dsa-fundamentals-build
 tags: [leetcode, dsa, fundamentals, learning]
 ---
 
 # LeetCode Fundamentals Guide Generator
+
+> **Deprecated**: Use `/dsa-fundamentals` instead. It orchestrates `dsa-fundamentals-narrative` (analogy, overview, key patterns, decision framework) and `dsa-fundamentals-build` (3 progressive levels, 18 exercise files, validation) as separate phases — the same pattern as `dsa-problem` → `dsa-intuition` + `dsa-build-algorithm`.
+>
+> Skills: `.claude/skills/dsa-fundamentals/SKILL.md`
+
+---
 
 Generate comprehensive foundational guides for DSA topics that build deep conceptual understanding through progressive learning.
 

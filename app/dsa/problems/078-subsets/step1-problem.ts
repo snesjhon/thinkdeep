@@ -1,5 +1,5 @@
-// Goal: Inside subsets(), declare results and basket, define backtrack(start) as a
-// closure that records [...basket] into results, add a for-loop header from start to
+// Goal: Inside subsets(), declare results and suitcase, define backtrack(start) as a
+// closure that records [...suitcase] into results, add a for-loop header from start to
 // nums.length-1 (body empty), then call backtrack(0) and return results.
 
 function subsets(nums: number[]): number[][] {
@@ -8,11 +8,11 @@ function subsets(nums: number[]): number[][] {
 
 // ---Tests
 // ---Tests
-test('empty nums yields one subset: the empty basket', () => {
+test('empty nums yields one subset: the empty suitcase', () => {
   return subsets([]);
 }, [[]]);
 
-test('single element: only the empty basket is recorded (loop body not yet filled)', () => {
+test('single element: only the empty suitcase is recorded (loop body not yet filled)', () => {
 // ---End Tests
   return subsets([5]);
 }, [[]]);

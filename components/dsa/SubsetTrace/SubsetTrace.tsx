@@ -15,6 +15,13 @@ export interface SubsetTraceStep {
   label: string;
 }
 
+export interface SubsetTraceLabels {
+  position?: string;
+  selection?: string;
+  source?: string;
+  pointer?: string;
+}
+
 const BADGE_LABELS: Record<SubsetTraceStep['action'], string> = {
   add: 'ADD',
   remove: 'REMOVE',
@@ -29,39 +36,177 @@ const BADGE_STYLES: Record<SubsetTraceStep['action'], string> = {
   done: styles.badgeDone,
 };
 
-function numsCellClass(i: number, start: number): string {
-  if (i < start) return shared.graveyard;
-  if (i === start) return styles.slotActive;
-  return shared.unvisited;
+interface DecisionNode {
+  basket: number[];
+  start: number;
+  key: string;
+  children: DecisionNode[];
 }
 
-function basketCellClass(
-  i: number,
-  basket: number[],
-  action: SubsetTraceStep['action'],
-): string {
-  const last = basket.length - 1;
-  if (action === 'record') return shared.confirmed;
-  if (action === 'add' && i === last) return shared.readingKeep;
-  if (action === 'remove' && i === last) return styles.removing;
-  return shared.confirmed;
+interface TraceTreeState {
+  root: DecisionNode | null;
+  activeNodeKey: string | null;
+  previewChild?: {
+    parentKey: string;
+    basket: number[];
+  };
 }
 
-export default function SubsetTrace({ steps }: { steps: SubsetTraceStep[] }) {
+function nodeKeyFromBasket(stepIndex: number, basket: number[]): string {
+  return `${stepIndex}:${basket.join(',')}`;
+}
+
+function buildTraceTree(
+  steps: SubsetTraceStep[],
+  activeIdx: number,
+): TraceTreeState {
+  const stack: DecisionNode[] = [];
+  let root: DecisionNode | null = null;
+  let activeNodeKey: string | null = null;
+  let previewChild: TraceTreeState['previewChild'];
+
+  steps.slice(0, activeIdx + 1).forEach((traceStep, stepIndex) => {
+    if (traceStep.action === 'record') {
+      const node: DecisionNode = {
+        basket: [...traceStep.basket],
+        start: traceStep.start,
+        key: nodeKeyFromBasket(stepIndex, traceStep.basket),
+        children: [],
+      };
+
+      if (stack.length === 0) {
+        root = node;
+      } else {
+        stack[stack.length - 1].children.push(node);
+      }
+
+      stack.push(node);
+      activeNodeKey = node.key;
+      previewChild = undefined;
+      return;
+    }
+
+    if (traceStep.action === 'add') {
+      activeNodeKey = stack[stack.length - 1]?.key ?? null;
+
+      if (stepIndex === activeIdx && stack.length > 0) {
+        previewChild = {
+          parentKey: stack[stack.length - 1].key,
+          basket: [...traceStep.basket],
+        };
+      }
+      return;
+    }
+
+    if (traceStep.action === 'remove') {
+      if (stack.length > 1) stack.pop();
+      activeNodeKey = stack[stack.length - 1]?.key ?? null;
+      previewChild = undefined;
+      return;
+    }
+
+    activeNodeKey = stack[0]?.key ?? activeNodeKey;
+    previewChild = undefined;
+  });
+
+  return { root, activeNodeKey, previewChild };
+}
+
+function formatSubset(values: number[]): string {
+  if (values.length === 0) return '{}';
+  return `{ ${values.join(', ')} }`;
+}
+
+function edgeLabel(parent: number[], child: number[]): string {
+  const next = child[child.length - 1];
+  if (next === undefined || child.length <= parent.length) return 'recurse';
+  return `+${next}`;
+}
+
+function isLeaf(node: DecisionNode, numsLength: number): boolean {
+  return node.start === numsLength;
+}
+
+export default function SubsetTrace({
+  steps,
+  labels,
+}: {
+  steps: SubsetTraceStep[];
+  labels?: SubsetTraceLabels;
+}) {
   const [idx, setIdx] = useState(0);
   const step = steps[idx];
+  const selectionLabel = labels?.selection ?? 'basket';
+  const sourceLabel = labels?.source ?? 'nums';
+  const tree = buildTraceTree(steps, idx);
+
+  function renderNode(node: DecisionNode): JSX.Element {
+    const current = node.key === tree.activeNodeKey;
+    const leaf = isLeaf(node, step.nums.length);
+    const children = [...node.children];
+    const preview =
+      tree.previewChild?.parentKey === node.key ? tree.previewChild : undefined;
+
+    return (
+      <div className={styles.subtree} key={node.key}>
+        <div className={styles.nodeWrap}>
+          <div className={`${styles.nodeCard} ${current ? styles.nodeCurrent : ''}`}>
+            <div className={styles.nodeMeta}>{sourceLabel}[{node.start}]</div>
+            <div className={styles.nodeSubset}>
+              {selectionLabel} = {formatSubset(node.basket)}
+            </div>
+            {leaf && (
+              <div className={styles.subsetText}>
+                subset recorded
+              </div>
+            )}
+          </div>
+        </div>
+
+        {(children.length > 0 || preview) && (
+          <div className={styles.children}>
+            {children.map((child) => (
+              <div className={styles.child} key={child.key}>
+                <div className={`${styles.branchLabel} ${styles.branchInclude}`}>
+                  {edgeLabel(node.basket, child.basket)}
+                </div>
+                {renderNode(child)}
+              </div>
+            ))}
+            {preview && (
+              <div className={styles.child}>
+                <div className={`${styles.branchLabel} ${styles.branchPreview}`}>
+                  {edgeLabel(node.basket, preview.basket)}
+                </div>
+                <div className={styles.previewNode}>
+                  <div className={styles.nodeMeta}>next call</div>
+                  <div className={styles.nodeSubset}>
+                    {selectionLabel} = {formatSubset(preview.basket)}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={shared.root}>
       <div className={shared.topbar}>
         <div className={shared.legend}>
           <span>
-            <span className={`${shared.ptr} ${styles.ptrSlot}`}>slot</span>
-            current
+            <span className={`${shared.ptr} ${styles.ptrIncluded}`}>in</span>
+            included
           </span>
           <span>
-            <span className={`${shared.ptr} ${styles.ptrBasket}`}>basket</span>
-            chosen
+            <span className={`${shared.ptr} ${styles.ptrExcluded}`}>out</span>
+            excluded
+          </span>
+          <span>
+            <span className={`${shared.ptr} ${styles.ptrCurrent}`}>now</span>
+            current node
           </span>
         </div>
         <div className={shared.nav}>
@@ -88,45 +233,10 @@ export default function SubsetTrace({ steps }: { steps: SubsetTraceStep[] }) {
       </div>
 
       <div className={shared.body}>
-        {/* nums row */}
-        <div className={styles.section}>
-          <span className={styles.sectionLabel}>nums</span>
-          <div className={shared.array}>
-            {step.nums.map((val, i) => (
-              <div key={i} className={shared.col}>
-                <div className={`${shared.cell} ${numsCellClass(i, step.start)}`}>
-                  {val}
-                </div>
-                <div className={shared.idx}>{i}</div>
-                <div className={shared.ptrs}>
-                  {i === step.start && (
-                    <span className={`${shared.ptr} ${styles.ptrSlot}`}>
-                      start
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* basket row */}
-        <div className={styles.section}>
-          <span className={styles.sectionLabel}>basket</span>
-          <div className={styles.basket}>
-            {step.basket.length === 0 ? (
-              <div className={styles.emptyBasket}>[ ]</div>
-            ) : (
-              step.basket.map((val, i) => (
-                <div key={i} className={shared.col}>
-                  <div
-                    className={`${shared.cell} ${basketCellClass(i, step.basket, step.action)}`}
-                  >
-                    {val}
-                  </div>
-                </div>
-              ))
-            )}
+        <div className={styles.treeScroller}>
+          <div className={styles.tree}>
+            <div className={styles.treeTitle}>{sourceLabel} recursion tree</div>
+            {tree.root ? renderNode(tree.root) : null}
           </div>
         </div>
 

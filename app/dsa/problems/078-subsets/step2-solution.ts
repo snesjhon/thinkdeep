@@ -1,16 +1,16 @@
-// Goal: Fill the for-loop body in backtrack: push nums[i] onto basket,
-// call backtrack(i + 1), then pop from basket.
+// Goal: Fill the for-loop body in backtrack: push nums[i] into suitcase,
+// call backtrack(i + 1), then pop from suitcase.
 
 function subsets(nums: number[]): number[][] {
   const results: number[][] = [];
-  const basket: number[] = [];
+  const suitcase: number[] = [];
 
   function backtrack(start: number): void {
-    results.push([...basket]);
+    results.push([...suitcase]);
     for (let i = start; i < nums.length; i++) {
-      basket.push(nums[i]);
+      suitcase.push(nums[i]);
       backtrack(i + 1);
-      basket.pop();
+      suitcase.pop();
     }
   }
 
@@ -20,7 +20,7 @@ function subsets(nums: number[]): number[][] {
 
 // ---Tests
 // ---Tests
-test('empty nums yields one subset: the empty basket', () => {
+test('empty nums yields one subset: the empty suitcase', () => {
   return subsets([]);
 }, [[]]);
 

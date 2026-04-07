@@ -193,6 +193,9 @@ export const JOURNEY: Phase[] = [
           'Mountain Climber (generate parentheses)',
           'Vending Machine (subsets)',
         ],
+        fundamentalsSlug: 'recursion-backtracking-intro',
+        fundamentalsBlurb:
+          'The Summit Rule (trust the recursion), branching peaks with memoization, and the choose-explore-undo cycle — the three building blocks before you write your first backtracking problem.',
         firstPass: [
           { id: '000', isFirstPass: true, difficulty: 'easy' },
           { id: '509', isFirstPass: true, difficulty: 'easy' },
