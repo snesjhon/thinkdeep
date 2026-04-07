@@ -348,14 +348,6 @@ blockquote > p {
   color: var(--ms-blue);
 }
 
-.icon-circle,
-.icon-circle-check {
-  width: 1rem;
-  height: 1rem;
-  stroke-width: 2;
-  display: block;
-}
-
 /* =============================================================================
    Scrollbar — system default
    ============================================================================= */

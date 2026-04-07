@@ -96,16 +96,24 @@ export default function FundamentalsProgressPanel({
 
   return (
     <ProgressProvider
-      items={stepNumbers.map((n) => ({
-        itemType: 'fundamentals-level' as const,
-        itemId: `dsa-fundamentals-${slug}-step-${n}`,
-      }))}
+      items={[
+        { itemType: 'fundamentals' as const, itemId: `dsa-fundamentals-${slug}` },
+        ...stepNumbers.map((n) => ({
+          itemType: 'fundamentals-level' as const,
+          itemId: `dsa-fundamentals-${slug}-step-${n}`,
+        })),
+      ]}
     >
       <div>
         <p className="mb-4 text-xs font-semibold text-[var(--ms-text-body)]">
           Your Progress
         </p>
         <div className="space-y-0.5">
+          <ProgressToggleAsync
+            itemType="fundamentals"
+            itemId={`dsa-fundamentals-${slug}`}
+            label="Fundamentals complete"
+          />
           {stepNumbers.map((n) => (
             <ProgressToggleAsync
               key={n}

@@ -14,10 +14,8 @@ export function ProgressMark({
   return (
     <Icon
       aria-hidden="true"
-      className={`${
-        completed ? 'icon-circle-check' : 'icon-circle'
-      } ${
-        completed ? 'text-[var(--ms-primary)]' : 'text-[var(--ms-surface)]'
+      className={`h-3.5 w-3.5 shrink-0 ${
+        completed ? 'text-[var(--ms-primary)]' : 'text-[var(--ms-text-subtle)]'
       } ${className}`.trim()}
     />
   );

@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 
-export type ItemType = 'problem' | 'step' | 'section' | 'fundamentals-level'
+export type ItemType = 'problem' | 'step' | 'section' | 'fundamentals' | 'fundamentals-level'
 
 export async function toggleProgress(
   itemType: ItemType,

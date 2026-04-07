@@ -52,7 +52,7 @@ export function SectionProgress({
       >
         <Icon
           aria-hidden="true"
-          className={sectionDone ? 'icon-circle-check text-[var(--ms-green)]' : 'icon-circle text-[var(--ms-surface)]'}
+          className={`h-3.5 w-3.5 shrink-0 ${sectionDone ? 'text-[var(--ms-primary)]' : ''}`}
         />
       </button>
     </div>

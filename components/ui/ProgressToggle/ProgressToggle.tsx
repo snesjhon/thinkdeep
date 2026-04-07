@@ -36,7 +36,7 @@ export function ProgressToggle({ itemType, itemId, initialCompleted }: Props) {
     >
       <Icon
         aria-hidden="true"
-        className={`${completed ? 'icon-circle-check text-[var(--ms-primary)]' : 'icon-circle text-[var(--ms-surface)]'}`}
+        className={`h-3.5 w-3.5 shrink-0 ${completed ? 'text-[var(--ms-primary)]' : 'text-[var(--ms-text-subtle)]'}`}
       />
     </button>
   )
