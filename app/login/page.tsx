@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 export default async function LoginPage({
@@ -20,10 +21,13 @@ export default async function LoginPage({
   async function signInWithGitHub() {
     'use server'
     const supabase = createClient()
+    const host = headers().get('host')!
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? `${protocol}://${host}`
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback?next=${encodeURIComponent(next)}`,
+        redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     })
     if (data.url) {
@@ -35,10 +39,13 @@ export default async function LoginPage({
   async function signInWithGoogle() {
     'use server'
     const supabase = createClient()
+    const host = headers().get('host')!
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? `${protocol}://${host}`
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback?next=${encodeURIComponent(next)}`,
+        redirectTo: `${baseUrl}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     })
     if (data.url) {

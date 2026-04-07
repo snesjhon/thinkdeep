@@ -33,6 +33,8 @@ import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
+import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
+import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
 
 const ProblemProgressPanel = dynamic(
   () => import('@/components/dsa/ProblemProgressPanel/ProblemProgressPanel'),
@@ -125,80 +127,98 @@ export default function ProblemPage({ params }: Props) {
   }
 
   return (
-    <DsaPageLayout
-      hero={
-        <PageHero>
-          <h1 className="text-5xl font-display leading-tight text-[var(--ms-text-body)] mb-0">
-            {problem.title}
-          </h1>
-          {primarySection && (
-            <p className="text-md italic leading-snug text-[var(--ms-mauve)] mb-6">
-              &ldquo;{primarySection.mentalModelHook}&rdquo;
+    <ProgressProvider
+      items={[
+        { itemType: 'problem', itemId: `dsa-${params.id}` },
+        ...stepNumbers.map((n) => ({
+          itemType: 'step' as const,
+          itemId: `dsa-${params.id}-step-${n}`,
+        })),
+      ]}
+    >
+      <DsaPageLayout
+        hero={
+          <PageHero>
+            <h1 className="text-5xl font-display leading-tight text-[var(--ms-text-body)] mb-0">
+              {problem.title}
+            </h1>
+            {primarySection && (
+              <p className="text-md italic leading-snug text-[var(--ms-mauve)] mb-6">
+                &ldquo;{primarySection.mentalModelHook}&rdquo;
+              </p>
+            )}
+
+            <div className="flex items-center gap-2">
+              {phase && (
+                <mark className="text-xs bg-transparent border border-[var(--ms-surface)] rounded text-[var(--ms-text-muted)]">
+                  {phase.emoji} {phase.label}
+                </mark>
+              )}
+
+              {difficulty && (
+                <mark
+                  className="text-xs  border border-[var(--ms-surface)] rounded"
+                  style={{
+                    background: DIFF_BG[difficulty],
+                    color: DIFF_FG[difficulty],
+                  }}
+                >
+                  {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                </mark>
+              )}
+            </div>
+          </PageHero>
+        }
+        progress={
+          <ProblemProgressPanel problemId={params.id} stepNumbers={stepNumbers} />
+        }
+        aside={<TableOfContents headings={headings} title="Contents" />}
+      >
+        <section className="space-y-8">
+          {mentalModelContent ? (
+            <MarkdownRenderer
+              content={mentalModelContent}
+              problemSlug={problem.slug}
+              problemId={params.id}
+              codeFiles={codeFiles}
+            />
+          ) : (
+            <p className="text-base text-[var(--ms-text-faint)]">
+              Mental model coming soon.
             </p>
           )}
 
-          <div className="flex items-center gap-2">
-            {phase && (
-              <mark className="text-xs bg-transparent border border-[var(--ms-surface)] rounded text-[var(--ms-text-muted)]">
-                {phase.emoji} {phase.label}
-              </mark>
-            )}
-
-            {difficulty && (
-              <mark
-                className="text-xs  border border-[var(--ms-surface)] rounded"
-                style={{
-                  background: DIFF_BG[difficulty],
-                  color: DIFF_FG[difficulty],
-                }}
+          <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-6">
+            {prevProblem ? (
+              <Link
+                href={`/dsa/problems/${prevProblem.id}`}
+                className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
               >
-                {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-              </mark>
+                ← {prevProblem.id}. {prevProblem.title}
+              </Link>
+            ) : (
+              <div />
+            )}
+            <CompletionCTA
+              itemType="problem"
+              itemId={`dsa-${params.id}`}
+              label="Complete Problem"
+              completedLabel="Problem Completed"
+              loginHref={`/login?next=${encodeURIComponent(`/dsa/problems/${params.id}`)}`}
+            />
+            {nextProblem ? (
+              <Link
+                href={`/dsa/problems/${nextProblem.id}`}
+                className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
+              >
+                {nextProblem.id}. {nextProblem.title} →
+              </Link>
+            ) : (
+              <div />
             )}
           </div>
-        </PageHero>
-      }
-      progress={
-        <ProblemProgressPanel problemId={params.id} stepNumbers={stepNumbers} />
-      }
-      aside={<TableOfContents headings={headings} title="Contents" />}
-    >
-      <section className="space-y-8">
-        {mentalModelContent ? (
-          <MarkdownRenderer
-            content={mentalModelContent}
-            problemSlug={problem.slug}
-            codeFiles={codeFiles}
-          />
-        ) : (
-          <p className="text-base text-[var(--ms-text-faint)]">
-            Mental model coming soon.
-          </p>
-        )}
-
-        <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-6">
-          {prevProblem ? (
-            <Link
-              href={`/dsa/problems/${prevProblem.id}`}
-              className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
-            >
-              ← {prevProblem.id}. {prevProblem.title}
-            </Link>
-          ) : (
-            <div />
-          )}
-          {nextProblem ? (
-            <Link
-              href={`/dsa/problems/${nextProblem.id}`}
-              className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
-            >
-              {nextProblem.id}. {nextProblem.title} →
-            </Link>
-          ) : (
-            <div />
-          )}
-        </div>
-      </section>
-    </DsaPageLayout>
+        </section>
+      </DsaPageLayout>
+    </ProgressProvider>
   );
 }

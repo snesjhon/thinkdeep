@@ -1,0 +1,112 @@
+.discarded {
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-faint);
+  opacity: 0.3;
+}
+
+.activeRange {
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-body);
+}
+
+.left {
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
+}
+
+.right {
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-peach);
+  color: var(--ms-peach);
+}
+
+.mid {
+  background: var(--ms-mauve-surface);
+  border-color: var(--ms-mauve);
+  color: var(--ms-mauve);
+}
+
+.found {
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
+}
+
+.candidate {
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
+}
+
+.leftMid {
+  background: linear-gradient(
+    135deg,
+    var(--ms-blue-surface) 0%,
+    var(--ms-blue-surface) 50%,
+    var(--ms-mauve-surface) 50%,
+    var(--ms-mauve-surface) 100%
+  );
+  border-color: var(--ms-blue);
+  color: var(--ms-text-body);
+}
+
+.rightMid {
+  background: linear-gradient(
+    135deg,
+    var(--ms-mauve-surface) 0%,
+    var(--ms-mauve-surface) 50%,
+    var(--ms-peach-surface) 50%,
+    var(--ms-peach-surface) 100%
+  );
+  border-color: var(--ms-peach);
+  color: var(--ms-text-body);
+}
+
+.leftRight {
+  background: linear-gradient(
+    135deg,
+    var(--ms-blue-surface) 0%,
+    var(--ms-blue-surface) 50%,
+    var(--ms-peach-surface) 50%,
+    var(--ms-peach-surface) 100%
+  );
+  border-color: var(--ms-blue);
+  color: var(--ms-text-body);
+}
+
+.allThree {
+  background: linear-gradient(
+    135deg,
+    var(--ms-blue-surface) 0%,
+    var(--ms-blue-surface) 33%,
+    var(--ms-mauve-surface) 33%,
+    var(--ms-mauve-surface) 66%,
+    var(--ms-peach-surface) 66%,
+    var(--ms-peach-surface) 100%
+  );
+  border-color: var(--ms-mauve);
+  color: var(--ms-text-body);
+}
+
+.leftPtr {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+}
+
+.midPtr {
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+}
+
+.rightPtr {
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
+}
+
+.candidatePtr {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+}

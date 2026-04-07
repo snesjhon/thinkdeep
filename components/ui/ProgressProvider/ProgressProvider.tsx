@@ -26,6 +26,35 @@ function buildKey(itemType: ItemType, itemIds: string[]): string {
   return `/api/progress?${params.toString()}`
 }
 
+function isMatchingProgressKey(
+  cacheKey: unknown,
+  itemType: ItemType,
+  itemId: string,
+): cacheKey is string {
+  if (typeof cacheKey !== 'string' || !cacheKey.startsWith('/api/progress?')) {
+    return false
+  }
+
+  const params = new URLSearchParams(cacheKey.split('?')[1])
+  return (
+    params.get('itemType') === itemType &&
+    params.getAll('itemId').includes(itemId)
+  )
+}
+
+function updateCompletedIds(
+  current: { completedIds?: string[] } | undefined,
+  itemId: string,
+  completed: boolean,
+) {
+  const completedIds = new Set(current?.completedIds ?? [])
+
+  if (completed) completedIds.add(itemId)
+  else completedIds.delete(itemId)
+
+  return { completedIds: Array.from(completedIds).sort() }
+}
+
 interface Props {
   items: ProgressItem[]
   children: React.ReactNode
@@ -71,16 +100,28 @@ export function ProgressProvider({ items, children }: Props) {
   async function toggle(itemType: ItemType, itemId: string) {
     const key = stateKey(itemType, itemId)
     const wasCompleted = isCompleted(itemType, itemId)
+    const nextCompleted = !wasCompleted
+
     // Optimistic update
-    setOptimistic((prev) => ({ ...prev, [key]: !wasCompleted }))
+    setOptimistic((prev) => ({ ...prev, [key]: nextCompleted }))
+    await mutate(
+      (cacheKey) => isMatchingProgressKey(cacheKey, itemType, itemId),
+      (current) => updateCompletedIds(current, itemId, nextCompleted),
+      { revalidate: false },
+    )
+
     try {
       await toggleProgress(itemType, itemId, wasCompleted)
-      // Revalidate the SWR cache for this type
-      const swrKey = buildKey(itemType, byType[itemType] ?? [itemId])
-      await mutate(swrKey)
+
+      await mutate((cacheKey) => isMatchingProgressKey(cacheKey, itemType, itemId))
     } catch {
       // Rollback
       setOptimistic((prev) => ({ ...prev, [key]: wasCompleted }))
+      await mutate(
+        (cacheKey) => isMatchingProgressKey(cacheKey, itemType, itemId),
+        (current) => updateCompletedIds(current, itemId, wasCompleted),
+        { revalidate: false },
+      )
     } finally {
       // Clear optimistic override after SWR settles
       setOptimistic((prev) => {
@@ -102,4 +143,8 @@ export function useProgress(): ProgressContextValue {
   const ctx = useContext(ProgressContext)
   if (!ctx) throw new Error('useProgress must be used within a ProgressProvider')
   return ctx
+}
+
+export function useOptionalProgress(): ProgressContextValue | null {
+  return useContext(ProgressContext)
 }

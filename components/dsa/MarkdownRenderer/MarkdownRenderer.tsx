@@ -15,6 +15,7 @@ import type {
   SubsetTraceLabels,
   SubsetTraceStep,
 } from '../SubsetTrace/SubsetTrace';
+import type { BinarySearchStep } from '../BinarySearchTrace/BinarySearchTrace';
 
 const WebContainerEmbed = dynamic(
   () => import('../WebContainerEmbed/WebContainerEmbed'),
@@ -43,11 +44,15 @@ const StackQueueTrace = dynamic(
   () => import('../StackQueueTrace/StackQueueTrace'),
 );
 const SubsetTrace = dynamic(() => import('../SubsetTrace/SubsetTrace'));
+const BinarySearchTrace = dynamic(
+  () => import('../BinarySearchTrace/BinarySearchTrace'),
+);
 
 interface MarkdownRendererProps {
   content: string;
   className?: string;
   problemSlug?: string;
+  problemId?: string;
   fundamentalsSlug?: string;
   codeFiles?: Record<string, string>;
 }
@@ -83,6 +88,10 @@ type TraceSubsetSegment = BaseSegment & {
   steps: SubsetTraceStep[];
   labels?: SubsetTraceLabels;
 };
+type TraceBSSegment = BaseSegment & {
+  type: 'trace-bs';
+  steps: BinarySearchStep[];
+};
 type StackBlitzSegment = BaseSegment & {
   type: 'stackblitz';
   file: string;
@@ -110,7 +119,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       | 'trace-ll'
       | 'trace-dll'
       | 'trace-sq'
-      | 'trace-subset';
+      | 'trace-subset'
+      | 'trace-bs';
   }> = [
     { fence: /^:::trace\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace' },
     { fence: /^:::trace-lr\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-lr' },
@@ -123,6 +133,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
     { fence: /^:::trace-dll\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-dll' },
     { fence: /^:::trace-sq\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-sq' },
     { fence: /^:::trace-subset\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-subset' },
+    { fence: /^:::trace-bs\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-bs' },
   ];
 
   for (const seg of segments) {
@@ -145,7 +156,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
         | 'trace-ll'
         | 'trace-dll'
         | 'trace-sq'
-        | 'trace-subset';
+        | 'trace-subset'
+        | 'trace-bs';
     };
     const matches: RawMatch[] = [];
     for (const { fence, type } of configs) {
@@ -281,6 +293,7 @@ export default function MarkdownRenderer({
   content,
   className,
   problemSlug,
+  problemId,
   fundamentalsSlug,
   codeFiles,
 }: MarkdownRendererProps) {
@@ -327,6 +340,10 @@ export default function MarkdownRenderer({
               labels={(seg as TraceSubsetSegment).labels}
             />
           );
+        if (seg.type === 'trace-bs')
+          return (
+            <BinarySearchTrace key={i} steps={(seg as TraceBSSegment).steps} />
+          );
         if (seg.type === 'stackblitz') {
           const s = seg as StackBlitzSegment;
           const slug = problemSlug ?? fundamentalsSlug;
@@ -346,6 +363,11 @@ export default function MarkdownRenderer({
               step={s.step}
               total={s.total}
               contentSlug={slug}
+              progressStepId={
+                !isSolutionOnly && problemId
+                  ? `dsa-${problemId}-step-${s.step}`
+                  : undefined
+              }
               base={fundamentalsSlug ? 'fundamentals' : undefined}
               initialFiles={codeFiles}
             />
@@ -366,6 +388,7 @@ export default function MarkdownRenderer({
               step={s.step}
               total={s.total}
               contentSlug={slug}
+              progressStepId={problemId ? `dsa-${problemId}-step-${s.step}` : undefined}
               base={fundamentalsSlug ? 'fundamentals' : undefined}
               initialFiles={codeFiles}
             />

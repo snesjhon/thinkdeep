@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
 import { ProgressToggleAsync } from '@/components/ui/ProgressToggleAsync/ProgressToggleAsync';
 
 interface ProblemProgressPanelProps {
@@ -95,35 +94,25 @@ export default function ProblemProgressPanel({
   }
 
   return (
-    <ProgressProvider
-      items={[
-        { itemType: 'problem', itemId: `dsa-${problemId}` },
-        ...stepNumbers.map((n) => ({
-          itemType: 'step' as const,
-          itemId: `dsa-${problemId}-step-${n}`,
-        })),
-      ]}
-    >
-      <div>
-        <p className="mb-4 text-xs font-semibold text-[var(--ms-text-body)]">
-          Your Progress
-        </p>
-        <div className="space-y-0.5">
+    <div>
+      <p className="mb-4 text-xs font-semibold text-[var(--ms-text-body)]">
+        Your Progress
+      </p>
+      <div className="space-y-0.5">
+        <ProgressToggleAsync
+          itemType="problem"
+          itemId={`dsa-${problemId}`}
+          label="Problem complete"
+        />
+        {stepNumbers.map((n) => (
           <ProgressToggleAsync
-            itemType="problem"
-            itemId={`dsa-${problemId}`}
-            label="Problem complete"
+            key={n}
+            itemType="step"
+            itemId={`dsa-${problemId}-step-${n}`}
+            label={`Step ${n} complete`}
           />
-          {stepNumbers.map((n) => (
-            <ProgressToggleAsync
-              key={n}
-              itemType="step"
-              itemId={`dsa-${problemId}-step-${n}`}
-              label={`Step ${n} complete`}
-            />
-          ))}
-        </div>
+        ))}
       </div>
-    </ProgressProvider>
+    </div>
   );
 }

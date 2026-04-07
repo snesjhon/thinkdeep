@@ -40,7 +40,7 @@ The spotlight starts at the leftmost position (covering performers 0 through k-1
 
 There are two distinct phases. First, the spotlight warms up: it starts dark and you add the first k performers one by one until all k slots are lit. This gives the initial `spotlightSum`. Before any sliding begins, this is already the best you've seen — so `bestSpotlight` starts here.
 
-Second, the spotlight slides. For each new position from k onward, one performer enters the right edge (index `i`) and the performer at the left edge falls out (index `i - k`). The net change to `spotlightSum` is just those two numbers. After each slide, if the new sum beats `bestSpotlight`, you update it.
+Second, the spotlight slides. Starting at position `k`, one performer steps into the light from the right (index `i`) and one steps out from the left (index `i - k`). You add the newcomer's score and subtract the departing score — `spotlightSum` shifts by exactly that exchange, nothing more. After each slide, if the new `spotlightSum` beats `bestSpotlight`, it becomes the new best.
 
 When the spotlight has swept past the last position, `bestSpotlight / k` is the winning average.
 

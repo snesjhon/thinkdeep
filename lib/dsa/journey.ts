@@ -214,6 +214,9 @@ export const JOURNEY: Phase[] = [
           'Thermostat Testing (koko)',
           '2D Matrix search',
         ],
+        fundamentalsSlug: 'binary-search',
+        fundamentalsBlurb:
+          'Exact-hit search, first-true boundary search, and monotone answer-space search — the three Binary Search modes that let you remove half the possibilities every step.',
         firstPass: [
           { id: '704', isFirstPass: true, difficulty: 'easy' },
           { id: '035', isFirstPass: true, difficulty: 'easy' },
