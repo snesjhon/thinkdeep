@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { AppIcon } from '@/components/dsa/AppIcon/AppIcon';
 import { SiteNav } from '@/components/ui/SiteNav/SiteNav';
 
-const FULLWIDTH_ROUTES = new Set(['/', '/dsa/path']);
+const FULLWIDTH_ROUTES = new Set(['/', '/dsa', '/dsa/path']);
 
 interface LayoutShellProps {
   children: React.ReactNode;

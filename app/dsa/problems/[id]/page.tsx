@@ -14,16 +14,6 @@ import {
   getPhaseForSection,
   getDifficultyForProblem,
 } from '@/lib/dsa/journey';
-const DIFF_BG: Record<string, string> = {
-  easy: 'var(--ms-green-surface)',
-  medium: 'var(--ms-peach-surface)',
-  hard: 'var(--ms-red-surface)',
-};
-const DIFF_FG: Record<string, string> = {
-  easy: 'var(--ms-green)',
-  medium: 'var(--ms-peach)',
-  hard: 'var(--ms-red)',
-};
 import { extractHeadings } from '@/lib/dsa/headings';
 import {
   collectStackBlitzFiles,
@@ -35,6 +25,18 @@ import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
 import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
 import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
+
+const DIFF_BG: Record<string, string> = {
+  easy: 'var(--ms-green-surface)',
+  medium: 'var(--ms-peach-surface)',
+  hard: 'var(--ms-red-surface)',
+};
+
+const DIFF_FG: Record<string, string> = {
+  easy: 'var(--ms-green)',
+  medium: 'var(--ms-peach)',
+  hard: 'var(--ms-red)',
+};
 
 const ProblemProgressPanel = dynamic(
   () => import('@/components/dsa/ProblemProgressPanel/ProblemProgressPanel'),

@@ -45,11 +45,13 @@ export default function TableOfContents({
   if (headings.length === 0) return null;
 
   // Only show h2 and h3
-  const visible = headings.filter((h) => h.level <= 3);
+  const visible = headings.filter((h) => h.level <= 2);
 
   return (
     <nav>
-      <p className="text-xs font-semibold mb-4 text-[var(--ms-text-body)]">{title}</p>
+      <p className="text-xs font-semibold mb-4 text-[var(--ms-text-body)]">
+        {title}
+      </p>
       <div className="space-y-0.5">
         {visible.map((heading) => {
           const isActive = activeId === heading.id;

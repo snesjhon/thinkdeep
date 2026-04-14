@@ -30,17 +30,6 @@ export function isDarkTheme(flavor: ThemeFlavor): boolean {
   return DARK_THEME_FLAVORS.includes(flavor);
 }
 
-export function getStoredThemeFlavor(): ThemeFlavor {
-  if (typeof window === 'undefined') return DEFAULT_THEME_FLAVOR;
-
-  try {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    return isThemeFlavor(stored) ? stored : DEFAULT_THEME_FLAVOR;
-  } catch {
-    return DEFAULT_THEME_FLAVOR;
-  }
-}
-
 export function getActiveThemeFlavor(): ThemeFlavor {
   if (typeof document === 'undefined') return DEFAULT_THEME_FLAVOR;
 
