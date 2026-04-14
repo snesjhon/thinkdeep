@@ -58,6 +58,7 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
         label: PROBLEM_TITLES[id] ?? `Problem ${id}`,
         prefix: id,
       })),
+      revisitFromLabel: revisit?.fromLabel,
     };
   }),
 }));

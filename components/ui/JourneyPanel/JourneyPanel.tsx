@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { useState, useEffect, useRef } from 'react';
 import useSWR from 'swr';
@@ -33,6 +34,7 @@ import {
   Type,
   Compass,
   Code2,
+  RefreshCw,
   type LucideIcon,
 } from 'lucide-react';
 import { pColor } from '../pathUtils';
@@ -51,6 +53,7 @@ export interface JourneyPanelSection {
   fundamentalsSlug?: string;
   items: JourneyPanelItem[];
   revisitItems?: JourneyPanelItem[];
+  revisitFromLabel?: string;
 }
 
 export interface JourneyPanelPhase {
@@ -111,6 +114,92 @@ const SECTION_ICONS: Record<string, LucideIcon> = {
   'bit-manipulation': Code2,
 };
 
+// ── Shared nav primitives ─────────────────────────────────────────────────────
+
+function NavSection({
+  icon: Icon,
+  label,
+  isCollapsed,
+  onToggle,
+  compact = false,
+  children,
+}: {
+  icon?: LucideIcon;
+  label: string;
+  isCollapsed: boolean;
+  onToggle: () => void;
+  compact?: boolean;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div>
+      <button
+        onClick={onToggle}
+        className={`appearance-none shadow-none flex w-full items-center gap-2 justify-between rounded-md border-none bg-transparent px-4 text-left text-xs font-semibold transition-[background,color] duration-150 outline-none ring-0 hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
+          compact
+            ? 'py-2 text-[var(--ms-text-muted)]'
+            : 'py-3 text-[var(--ms-text-body)]'
+        }`}
+      >
+        {Icon && (
+          <Icon
+            aria-hidden="true"
+            className={`shrink-0 text-[var(--ms-text-muted)] ${compact ? 'h-3 w-3' : 'h-3.5 w-3.5'}`}
+          />
+        )}
+        <span className="min-w-0 flex-1 pr-1.5">{label}</span>
+        <ChevronRight
+          aria-hidden="true"
+          className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${
+            isCollapsed
+              ? 'text-[var(--ms-text-faint)]'
+              : 'rotate-90 text-[var(--ms-text-muted)]'
+          }`}
+        />
+      </button>
+
+      {!isCollapsed && children && (
+        <div className="mb-1 ml-4 border-l border-l-[var(--ms-surface)] flex flex-col gap-2">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function NavItem({
+  href,
+  isActive,
+  mark,
+  label,
+  itemRef,
+}: {
+  href: string;
+  isActive: boolean;
+  mark: React.ReactNode;
+  label: string;
+  itemRef?: React.RefObject<HTMLAnchorElement>;
+}) {
+  return (
+    <Link
+      ref={itemRef}
+      href={href}
+      className={`flex items-center gap-2 rounded-md px-[10px] py-[6px] text-xs no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ms-primary-surface)] ${
+        isActive
+          ? 'font-semibold text-[var(--ms-primary)]'
+          : 'font-normal text-[var(--ms-text-subtle)]'
+      }`}
+    >
+      {mark}
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+        {label}
+      </span>
+    </Link>
+  );
+}
+
+// ── JourneyPanel ──────────────────────────────────────────────────────────────
+
 export function JourneyPanel({
   phases,
   pathname,
@@ -163,16 +252,6 @@ export function JourneyPanel({
     () => new Set(),
   );
 
-  // useEffect(() => {
-  //   if (!activeSectionId) return;
-  //   setExpandedSections((prev) => {
-  //     if (prev.has(activeSectionId)) return prev;
-  //     const next = new Set(prev);
-  //     next.add(activeSectionId);
-  //     return next;
-  //   });
-  // }, [activeSectionId]);
-
   const activeItemRef = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
     activeItemRef.current?.scrollIntoView({
@@ -208,15 +287,14 @@ export function JourneyPanel({
                 aria-hidden="true"
                 className="h-3.5 w-3.5 text-[var(--ms-success)]"
               />
-              <span className="text-[0.66rem] font-bold uppercase tracking-[0.08em] text-[var(--ms-text-body)]">
-                {phase.label}
-              </span>
+              <span className="text-sm font-bold">{phase.label}</span>
             </div>
 
             {/* Sections */}
             {phase.sections.map((section) => {
               const isCollapsed = collapsedSections.has(section.id);
-              const isThisActive = activeSectionId === section.id;
+              const revisitKey = `revisit-${section.id}`;
+              const isRevisitCollapsed = collapsedSections.has(revisitKey);
               const availableItems = section.items.filter((i) =>
                 availableItemKeys.has(i.key),
               );
@@ -226,125 +304,85 @@ export function JourneyPanel({
               const SectionIcon = SECTION_ICONS[section.id];
 
               return (
-                <div key={section.id}>
-                  <button
-                    onClick={() => toggleSection(section.id)}
-                    className={`appearance-none shadow-none flex w-full items-center gap-2 justify-between rounded-md border-none bg-transparent px-4 py-3 text-left text-[0.775rem] leading-[1.4] font-semibold transition-[background,color] duration-150 outline-none ring-0 hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
-                      isThisActive
-                        ? 'text-[var(--ms-text-body)]'
-                        : 'text-[var(--ms-text-muted)]'
-                    }`}
+                <React.Fragment key={section.id}>
+                  <NavSection
+                    icon={SectionIcon}
+                    label={section.label}
+                    isCollapsed={isCollapsed}
+                    onToggle={() => toggleSection(section.id)}
                   >
-                    {SectionIcon && (
-                      <SectionIcon
-                        aria-hidden="true"
-                        className="h-3.5 w-3.5 shrink-0 text-[var(--ms-text-muted)]"
-                      />
-                    )}
-                    <span className="min-w-0 flex-1 pr-1.5">
-                      {section.label}
-                    </span>
-                    <ChevronRight
-                      aria-hidden="true"
-                      className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${
-                        isCollapsed
-                          ? 'text-[var(--ms-text-faint)]'
-                          : 'rotate-90 text-[var(--ms-text-muted)]'
-                      }`}
-                    />
-                  </button>
-
-                  {!isCollapsed && (
-                    <div className="mb-1 ml-4 border-l border-l-[var(--ms-surface)]">
-                      {/* Fundamentals guide link */}
-                      {section.fundamentalsSlug &&
-                        availableFundamentalsSlugs.has(
-                          section.fundamentalsSlug,
-                        ) &&
-                        (() => {
-                          const isFundActive =
-                            activeFundamentalsSlug === section.fundamentalsSlug;
-                          const fundComplete = isFundamentalsComplete(
-                            section.fundamentalsSlug!,
-                          );
-                          return (
-                            <Link
-                              ref={isFundActive ? activeItemRef : null}
-                              href={getFundamentalsHref(
-                                section.fundamentalsSlug!,
+                    {section.fundamentalsSlug &&
+                      availableFundamentalsSlugs.has(
+                        section.fundamentalsSlug,
+                      ) && (
+                        <NavItem
+                          itemRef={
+                            activeFundamentalsSlug === section.fundamentalsSlug
+                              ? activeItemRef
+                              : undefined
+                          }
+                          href={getFundamentalsHref(section.fundamentalsSlug)}
+                          isActive={
+                            activeFundamentalsSlug === section.fundamentalsSlug
+                          }
+                          mark={
+                            <ProgressMark
+                              completed={isFundamentalsComplete(
+                                section.fundamentalsSlug,
                               )}
-                              className={`flex items-center gap-2 rounded-md px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ms-primary-surface)] ${
-                                isFundActive
-                                  ? 'font-semibold text-[var(--ms-primary)]'
-                                  : 'font-normal text-[var(--ms-text-subtle)]'
-                              }`}
-                            >
-                              <ProgressMark
-                                completed={fundComplete}
-                                fundamentals
-                              />
-                              <span>Fundamentals</span>
-                            </Link>
-                          );
-                        })()}
-
-                      {/* Items */}
-                      {availableItems.map((item) => {
-                        const isActive = activeItemKey === item.key;
-                        const isCompleted = completedProblemIds.has(item.key);
-                        return (
-                          <Link
-                            key={item.key}
-                            ref={isActive ? activeItemRef : null}
-                            href={getItemHref(item.key)}
-                            className={`flex items-center gap-2 rounded-md px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ms-primary-surface)] ${
-                              isActive
-                                ? 'font-semibold text-[var(--ms-primary)]'
-                                : 'font-normal text-[var(--ms-text-subtle)]'
-                            }`}
-                          >
-                            <ProgressMark completed={isCompleted} />
-                            <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-                              {item.label}
-                            </span>
-                          </Link>
-                        );
-                      })}
-
-                      {/* Revisit items */}
-                      {availableRevisits.length > 0 && (
-                        <>
-                          <div className="px-[10px] pb-[3px] pt-2 text-[0.58rem] font-bold uppercase tracking-[0.08em] text-[var(--ms-text-faint)] [font-family:var(--font-body)]">
-                            Also revisit
-                          </div>
-                          {availableRevisits.map((item) => {
-                            const isActive = activeItemKey === item.key;
-                            const isCompleted = completedProblemIds.has(
-                              item.key,
-                            );
-                            return (
-                              <Link
-                                key={item.key}
-                                ref={isActive ? activeItemRef : null}
-                                href={getItemHref(item.key)}
-                                className={`flex items-center gap-2 rounded-md px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ms-primary-surface)] ${
-                                  isActive
-                                    ? 'font-semibold text-[var(--ms-primary)]'
-                                    : 'font-normal text-[var(--ms-text-subtle)]'
-                                }`}
-                              >
-                                <ProgressMark completed={isCompleted} />
-                                <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-                                  {item.label}
-                                </span>
-                              </Link>
-                            );
-                          })}
-                        </>
+                              fundamentals
+                            />
+                          }
+                          label="Fundamentals"
+                        />
                       )}
-                    </div>
+                    {availableItems.map((item) => (
+                      <NavItem
+                        key={item.key}
+                        itemRef={
+                          activeItemKey === item.key ? activeItemRef : undefined
+                        }
+                        href={getItemHref(item.key)}
+                        isActive={activeItemKey === item.key}
+                        mark={
+                          <ProgressMark
+                            completed={completedProblemIds.has(item.key)}
+                          />
+                        }
+                        label={item.label}
+                      />
+                    ))}
+                  </NavSection>
+
+                  {availableRevisits.length > 0 && (
+                    <NavSection
+                      icon={RefreshCw}
+                      label={`Revisit: ${section.revisitFromLabel ?? 'Previous'}`}
+                      isCollapsed={isRevisitCollapsed}
+                      onToggle={() => toggleSection(revisitKey)}
+                      compact
+                    >
+                      {availableRevisits.map((item) => (
+                        <NavItem
+                          key={item.key}
+                          itemRef={
+                            activeItemKey === item.key
+                              ? activeItemRef
+                              : undefined
+                          }
+                          href={getItemHref(item.key)}
+                          isActive={activeItemKey === item.key}
+                          mark={
+                            <ProgressMark
+                              completed={completedProblemIds.has(item.key)}
+                            />
+                          }
+                          label={item.label}
+                        />
+                      ))}
+                    </NavSection>
                   )}
-                </div>
+                </React.Fragment>
               );
             })}
           </div>
