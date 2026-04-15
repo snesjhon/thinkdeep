@@ -48,12 +48,13 @@ export default function TableOfContents({
   const visible = headings.filter((h) => h.level <= 2);
 
   return (
-    <nav>
+    <div>
       <p className="text-xs font-semibold mb-4 text-[var(--ms-text-body)]">
         {title}
       </p>
       <div className="space-y-0.5">
         {visible.map((heading) => {
+          console.log({ heading });
           const isActive = activeId === heading.id;
           const isH3 = heading.level === 3;
           return (
@@ -82,6 +83,6 @@ export default function TableOfContents({
           );
         })}
       </div>
-    </nav>
+    </div>
   );
 }

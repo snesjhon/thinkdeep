@@ -1,0 +1,191 @@
+.tree {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 1.25rem;
+}
+
+.row {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+
+.slot {
+  display: flex;
+  justify-content: center;
+  min-height: 72px;
+}
+
+.nodeWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.node {
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 17px;
+  font-weight: 700;
+  border: 2px solid transparent;
+}
+
+.nodeDefault {
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-body);
+}
+
+.nodeActive {
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
+}
+
+.nodeFocus {
+  background: var(--ms-orange-surface);
+  border-color: var(--ms-orange);
+  color: var(--ms-orange);
+}
+
+.nodeDone {
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
+}
+
+.nodeFrontier {
+  background: var(--ms-purple-surface);
+  border-color: var(--ms-purple);
+  color: var(--ms-purple);
+}
+
+.nodeAnswer {
+  background: var(--ms-mauve-surface);
+  border-color: var(--ms-mauve);
+  color: var(--ms-mauve);
+}
+
+.nodeMuted {
+  background: var(--ms-bg-pane-tertiary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-faint);
+  opacity: 0.55;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 18px;
+}
+
+.index {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  color: var(--ms-text-faint);
+}
+
+.nodeBadge {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ms-text-subtle);
+  background: var(--ms-bg-pane);
+  border: 1px solid var(--ms-surface);
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+
+.empty {
+  width: 54px;
+  height: 54px;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 4px 9px;
+  border: 1px solid var(--ms-surface);
+  font-size: 12px;
+}
+
+.factName {
+  color: var(--ms-text-faint);
+}
+
+.factValue {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-weight: 700;
+}
+
+.factNeutral {
+  background: var(--ms-bg-pane);
+  color: var(--ms-text-body);
+}
+
+.factBlue {
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
+}
+
+.factOrange {
+  background: var(--ms-orange-surface);
+  border-color: var(--ms-orange);
+  color: var(--ms-orange);
+}
+
+.factGreen {
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
+}
+
+.factPurple {
+  background: var(--ms-purple-surface);
+  border-color: var(--ms-purple);
+  color: var(--ms-purple);
+}
+
+.badgeBranch {
+  background: var(--ms-orange-surface);
+  color: var(--ms-orange);
+  border: 1px solid var(--ms-orange);
+}
+
+.badgeQueue {
+  background: var(--ms-purple-surface);
+  color: var(--ms-purple);
+  border: 1px solid var(--ms-purple);
+}
+
+.legendFocus {
+  background: var(--ms-orange-surface);
+  color: var(--ms-orange);
+}
+
+.legendDone {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+}
+
+.legendFrontier {
+  background: var(--ms-purple-surface);
+  color: var(--ms-purple);
+}

@@ -16,6 +16,7 @@ import type {
   SubsetTraceStep,
 } from '../SubsetTrace/SubsetTrace';
 import type { BinarySearchStep } from '../BinarySearchTrace/BinarySearchTrace';
+import type { BinaryTreeTraceStep } from '../BinaryTreeTrace/BinaryTreeTrace';
 import type { ParserTraceStep } from '../ParserTrace/ParserTrace';
 
 const WebContainerEmbed = dynamic(
@@ -48,6 +49,7 @@ const SubsetTrace = dynamic(() => import('../SubsetTrace/SubsetTrace'));
 const BinarySearchTrace = dynamic(
   () => import('../BinarySearchTrace/BinarySearchTrace'),
 );
+const BinaryTreeTrace = dynamic(() => import('../BinaryTreeTrace/BinaryTreeTrace'));
 const ParserTrace = dynamic(() => import('../ParserTrace/ParserTrace'));
 
 interface MarkdownRendererProps {
@@ -94,6 +96,10 @@ type TraceBSSegment = BaseSegment & {
   type: 'trace-bs';
   steps: BinarySearchStep[];
 };
+type TraceTreeSegment = BaseSegment & {
+  type: 'trace-tree';
+  steps: BinaryTreeTraceStep[];
+};
 type TraceParseSegment = BaseSegment & {
   type: 'trace-parse';
   steps: ParserTraceStep[];
@@ -127,6 +133,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       | 'trace-sq'
       | 'trace-subset'
       | 'trace-bs'
+      | 'trace-tree'
       | 'trace-parse';
   }> = [
     { fence: /^:::trace\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace' },
@@ -141,6 +148,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
     { fence: /^:::trace-sq\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-sq' },
     { fence: /^:::trace-subset\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-subset' },
     { fence: /^:::trace-bs\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-bs' },
+    { fence: /^:::trace-tree\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-tree' },
     { fence: /^:::trace-parse\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-parse' },
   ];
 
@@ -166,6 +174,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
         | 'trace-sq'
         | 'trace-subset'
         | 'trace-bs'
+        | 'trace-tree'
         | 'trace-parse';
     };
     const matches: RawMatch[] = [];
@@ -352,6 +361,10 @@ export default function MarkdownRenderer({
         if (seg.type === 'trace-bs')
           return (
             <BinarySearchTrace key={i} steps={(seg as TraceBSSegment).steps} />
+          );
+        if (seg.type === 'trace-tree')
+          return (
+            <BinaryTreeTrace key={i} steps={(seg as TraceTreeSegment).steps} />
           );
         if (seg.type === 'trace-parse')
           return (
