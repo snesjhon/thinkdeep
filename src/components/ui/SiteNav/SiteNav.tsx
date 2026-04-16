@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { AppIcon } from '@/components/dsa/AppIcon/AppIcon';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
@@ -69,11 +69,15 @@ function dsaActiveSection(path: string): string | null {
 interface SiteNavProps {
   availableProblemIds: string[];
   availableFundamentalsSlugs: string[];
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
 }
 
 export function SiteNav({
   availableProblemIds: availableProblemIdsArr,
   availableFundamentalsSlugs: availableDsaFundamentalsArr,
+  collapsed,
+  onToggleCollapsed,
 }: SiteNavProps) {
   const availableProblemIds = new Set(availableProblemIdsArr);
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
@@ -84,34 +88,68 @@ export function SiteNav({
 
   return (
     <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
-      <div className="shrink-0 px-4 pb-[14px] pt-[18px]">
+      <div
+        className={`shrink-0 pb-[14px] pt-[18px] ${collapsed ? 'px-3' : 'px-4'}`}
+      >
         <Link
           href="/"
-          className="no-underline flex items-center gap-[10px] focus:outline-none"
+          className={`no-underline flex items-center focus:outline-none ${collapsed ? 'justify-center' : 'gap-[10px]'}`}
         >
           <span className="text-[var(--ms-text-body)]">
             <AppIcon size={26} />
           </span>
-          <span className="text-[1.05rem] font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">
-            thinkdeep
-          </span>
+          {!collapsed && (
+            <span className="text-[1.05rem] font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">
+              thinkdeep
+            </span>
+          )}
         </Link>
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {isDsaPage && (
           <>
-            <Link
-              href="/dsa/path"
-              className="flex w-full items-center gap-2 px-4 py-3 text-[0.775rem] font-normal text-[var(--ms-text-body)] no-underline transition-colors visited:text-[var(--ms-text-body)] hover:text-[var(--ms-primary)] focus:outline-none focus-visible:outline-none active:outline-none"
+            <div
+              className={`${collapsed ? 'px-3 ' : 'pl-4 pr-2'} py-3`}
               style={{ boxShadow: 'inset 0 -1px 0 var(--ms-surface)' }}
             >
-              <ChevronLeft
-                aria-hidden="true"
-                className="h-3.5 w-3.5 shrink-0"
-              />
-              <span>Back to Path</span>
-            </Link>
+              <div
+                className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between gap-2'}`}
+              >
+                {!collapsed && (
+                  <Link
+                    href="/dsa/path"
+                    className="flex min-w-0 items-center gap-2 text-[0.775rem] font-normal text-[var(--ms-text-body)] no-underline transition-colors visited:text-[var(--ms-text-body)] hover:text-[var(--ms-primary)] focus:outline-none focus-visible:outline-none active:outline-none"
+                  >
+                    <ChevronLeft
+                      aria-hidden="true"
+                      className="h-3.5 w-3.5 shrink-0"
+                    />
+                    <span>Back to Path</span>
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                  }}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onToggleCollapsed();
+                  }}
+                  aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                  title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                  className="appearance-none shadow-none flex items-center justify-between rounded-md border-none bg-transparent font-semibold transition-[background,color] duration-150 outline-none ring-0 hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 p-2 text-[var(--ms-text-fainted)] mb-0"
+                >
+                  {collapsed ? (
+                    <ChevronsRight className="h-3.5 w-3.5" />
+                  ) : (
+                    <ChevronsLeft className="h-3.5 w-3.5" />
+                  )}
+                </button>
+              </div>
+            </div>
             <div className="min-h-0 flex-1 overflow-y-auto">
               <JourneyPanel
                 phases={DSA_PHASES}
@@ -127,6 +165,7 @@ export function SiteNav({
                 availableFundamentalsSlugs={availableDsaFundamentals}
                 getItemHref={(key) => `/dsa/problems/${key}`}
                 getFundamentalsHref={(slug) => `/dsa/fundamentals/${slug}`}
+                compact={collapsed}
               />
             </div>
           </>

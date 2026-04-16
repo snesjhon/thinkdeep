@@ -103,11 +103,11 @@ Consider `["a#b", "cd"]`. At this step, the only thing that matters is how each 
 
 ### Step 2: Read Each Label and Count Out the Package (Decode)
 
-The key idea during decoding is to treat `pos` as the start of the next label, not the start of an arbitrary substring. From that position, the decoder scans to the next `#`, reads the digits before it as the length, and uses that length to determine exactly where the current string ends.
+The decoder keeps a cursor — call it `pos` — that always points to the first digit of the next label. From there it scans right until it finds `#`, reads the digits before it as the length `len`, then takes exactly `len` characters as the payload.
 
-Once the length is known, the next `len` characters are treated as payload, not structure. They are taken as one whole string without inspecting their contents. That is why a value like `"a#b"` does not cause confusion: after reading `3#`, the decoder already knows the next three characters belong together, so the `#` inside the payload is just another character.
+Once the length is known, those `len` characters are treated as cargo, not structure. That is why `"a#b"` does not cause confusion: after reading `3#`, the decoder already knows the next three characters belong together, so the `#` inside is just another item on the belt.
 
-The invariant to keep in mind is that `pos` always lands on the first digit of the next label. After the decoder skips past `#` and consumes exactly `len` characters, it arrives at the next package boundary, which keeps the whole parse aligned from start to finish.
+After consuming the payload, `pos` advances to `hashPos + 1 + len` — the start of the next label. That single invariant keeps the entire parse aligned from beginning to end.
 
 Now use the encoded belt from Step 1: `"3#a#b2#cd"`. This trace shows how the decoder reads that same belt back into `["a#b", "cd"]` by staying aligned from one label boundary to the next.
 

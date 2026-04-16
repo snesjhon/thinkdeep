@@ -13,6 +13,7 @@ import {
   getSectionsForProblem,
   getPhaseForSection,
   getDifficultyForProblem,
+  getAdvancedPrerequisiteForProblem,
 } from '@/lib/dsa/journey';
 import { extractHeadings } from '@/lib/dsa/headings';
 import {
@@ -25,6 +26,7 @@ import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
 import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
 import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
+import AdvancedPrerequisitePanel from '@/components/dsa/AdvancedPrerequisitePanel/AdvancedPrerequisitePanel';
 
 const DIFF_BG: Record<string, string> = {
   easy: 'var(--ms-green-surface)',
@@ -109,6 +111,7 @@ export default function ProblemPage({ params }: Props) {
     ? getPhaseForSection(primarySection.id)
     : undefined;
   const difficulty = getDifficultyForProblem(params.id);
+  const advancedPrerequisite = getAdvancedPrerequisiteForProblem(params.id);
 
   const stepNumbers = getStepNumbers(problem.slug);
 
@@ -133,6 +136,14 @@ export default function ProblemPage({ params }: Props) {
     <ProgressProvider
       items={[
         { itemType: 'problem', itemId: `dsa-${params.id}` },
+        ...(advancedPrerequisite
+          ? [
+              {
+                itemType: 'fundamentals' as const,
+                itemId: `dsa-fundamentals-${advancedPrerequisite.fundamentalsSlug}`,
+              },
+            ]
+          : []),
         ...stepNumbers.map((n) => ({
           itemType: 'step' as const,
           itemId: `dsa-${params.id}-step-${n}`,
@@ -178,7 +189,17 @@ export default function ProblemPage({ params }: Props) {
             stepNumbers={stepNumbers}
           />
         }
-        aside={<TableOfContents headings={headings} title="Contents" />}
+        aside={
+          <>
+            {advancedPrerequisite ? (
+              <AdvancedPrerequisitePanel
+                label={advancedPrerequisite.label}
+                fundamentalsSlug={advancedPrerequisite.fundamentalsSlug}
+              />
+            ) : null}
+            <TableOfContents headings={headings} title="Contents" />
+          </>
+        }
       >
         <section className="space-y-8">
           {mentalModelContent ? (

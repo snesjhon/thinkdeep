@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { AppIcon } from '@/components/dsa/AppIcon/AppIcon';
@@ -21,6 +21,7 @@ export function LayoutShell({
 }: LayoutShellProps) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
 
   useEffect(() => {
@@ -61,13 +62,15 @@ export function LayoutShell({
     <div
       className="grid"
       style={{
-        gridTemplateColumns: 'var(--sidebar-w, 260px) 1fr',
+        gridTemplateColumns: sidebarCollapsed ? '60px 1fr' : '260px 1fr',
         transition: 'grid-template-columns 200ms ease',
       }}
     >
       <SiteNav
         availableProblemIds={availableProblemIds}
         availableFundamentalsSlugs={availableFundamentalsSlugs}
+        collapsed={sidebarCollapsed}
+        onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
       />
       <main
         ref={mainRef}

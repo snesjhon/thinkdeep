@@ -655,3 +655,28 @@ export function getDifficultyForProblem(
   }
   return undefined;
 }
+
+export function getAdvancedPrerequisiteForProblem(problemId: string):
+  | { label: string; fundamentalsSlug: string }
+  | undefined {
+  const allSections = JOURNEY.flatMap((phase) => phase.sections);
+
+  for (let i = 0; i < allSections.length; i++) {
+    const section = allSections[i];
+    const isAdvancedProblem = section.reinforce.some((p) => p.id === problemId);
+
+    if (!isAdvancedProblem) continue;
+
+    for (let j = i + 1; j < allSections.length; j++) {
+      const nextSection = allSections[j];
+      if (!nextSection.fundamentalsSlug) continue;
+
+      return {
+        label: section.reinforcePrerequisiteLabel ?? nextSection.label,
+        fundamentalsSlug: nextSection.fundamentalsSlug,
+      };
+    }
+  }
+
+  return undefined;
+}

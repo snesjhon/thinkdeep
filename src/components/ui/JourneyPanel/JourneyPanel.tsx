@@ -36,6 +36,8 @@ import {
   Code2,
   type LucideIcon,
   CircleChevronRight,
+  ChevronsDownUp,
+  ChevronsUpDown,
 } from 'lucide-react';
 import { pColor } from '../pathUtils';
 import { ProgressMark } from '../ProgressMark/ProgressMark';
@@ -74,6 +76,7 @@ export interface JourneyPanelProps {
   availableFundamentalsSlugs: Set<string>;
   getItemHref: (key: string) => string;
   getFundamentalsHref: (slug: string) => string;
+  compact?: boolean;
 }
 
 function phaseIcon(label: string): LucideIcon {
@@ -211,6 +214,7 @@ export function JourneyPanel({
   availableFundamentalsSlugs,
   getItemHref,
   getFundamentalsHref,
+  compact = false,
 }: JourneyPanelProps) {
   const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -252,6 +256,9 @@ export function JourneyPanel({
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
     () => new Set(),
   );
+  const [collapsedPhases, setCollapsedPhases] = useState<Set<number>>(
+    () => new Set(),
+  );
 
   const [collapsedRevisits, setCollapsedRevisits] = useState<Set<string>>(
     () => new Set(phases.flatMap((p) => p.sections.map((s) => s.id))),
@@ -283,11 +290,21 @@ export function JourneyPanel({
     });
   };
 
+  const togglePhase = (phaseNumber: number) => {
+    setCollapsedPhases((prev) => {
+      const next = new Set(prev);
+      if (next.has(phaseNumber)) next.delete(phaseNumber);
+      else next.add(phaseNumber);
+      return next;
+    });
+  };
+
   return (
     <>
       {phases.map((phase) => {
         const color = pColor(phase.number);
         const PhaseIcon = phaseIcon(phase.label);
+        const isPhaseCollapsed = compact || collapsedPhases.has(phase.number);
 
         return (
           <div
@@ -295,18 +312,46 @@ export function JourneyPanel({
             className="[--phase-accent:var(--ms-primary)]"
             style={{ '--phase-accent': color } as React.CSSProperties}
           >
-            {/* Phase label */}
-            <div className="flex items-center gap-1.5 px-4 pb-1 pt-4">
+            <div
+              className={`flex items-center gap-2 pl-4 pr-2 pb-1 pt-4 ${compact ? 'justify-center' : ''}`}
+            >
               <PhaseIcon
                 aria-hidden="true"
                 className="h-3.5 w-3.5 text-[var(--ms-success)]"
               />
-              <span className="text-sm font-bold">{phase.label}</span>
+              {!compact && (
+                <>
+                  <span className="flex-1 text-sm font-bold">
+                    {phase.label}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => togglePhase(phase.number)}
+                    aria-label={
+                      isPhaseCollapsed
+                        ? `Expand ${phase.label}`
+                        : `Collapse ${phase.label}`
+                    }
+                    aria-expanded={!isPhaseCollapsed}
+                    className="appearance-none shadow-none flex items-center justify-between rounded-md border-none bg-transparent font-semibold transition-[background,color] duration-150 outline-none ring-0 hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 p-2 text-[var(--ms-text-body)] mb-0"
+                  >
+                    {isPhaseCollapsed ? (
+                      <ChevronsUpDown
+                        aria-hidden="true"
+                        className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 text-[var(--ms-text-faint)`}
+                      />
+                    ) : (
+                      <ChevronsDownUp
+                        aria-hidden="true"
+                        className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 text-[var(--ms-text-faint)`}
+                      />
+                    )}
+                  </button>
+                </>
+              )}
             </div>
 
-            {/* Sections */}
             {phase.sections.map((section) => {
-              const isCollapsed = collapsedSections.has(section.id);
               const availableItems = section.items.filter((i) =>
                 availableItemKeys.has(i.key),
               );
@@ -314,6 +359,62 @@ export function JourneyPanel({
                 (i) => availableItemKeys.has(i.key),
               );
               const SectionIcon = SECTION_ICONS[section.id];
+              const sectionHref =
+                section.fundamentalsSlug &&
+                availableFundamentalsSlugs.has(section.fundamentalsSlug)
+                  ? getFundamentalsHref(section.fundamentalsSlug)
+                  : availableItems[0]
+                    ? getItemHref(availableItems[0].key)
+                    : null;
+
+              if (compact) {
+                const compactClasses = `flex h-7 w-7 items-center justify-center rounded-md no-underline transition-colors ${
+                  activeSectionId === section.id
+                    ? 'bg-[var(--ms-primary-surface)] text-[var(--phase-accent)]'
+                    : 'text-[var(--ms-text-muted)] hover:bg-[var(--ms-primary-surface)] hover:text-[var(--ms-primary)]'
+                }`;
+
+                const iconContent = SectionIcon ? (
+                  <SectionIcon
+                    aria-hidden="true"
+                    className="h-3.5 w-3.5"
+                    strokeWidth={2.1}
+                  />
+                ) : (
+                  <span className="text-[0.6rem] font-semibold">
+                    {section.label.slice(0, 2)}
+                  </span>
+                );
+
+                return (
+                  <div key={section.id} className="flex justify-center py-1">
+                    {sectionHref ? (
+                      <Link
+                        href={sectionHref}
+                        title={section.label}
+                        aria-label={section.label}
+                        aria-current={
+                          activeSectionId === section.id ? 'page' : undefined
+                        }
+                        className={compactClasses}
+                      >
+                        {iconContent}
+                      </Link>
+                    ) : (
+                      <span
+                        title={section.label}
+                        aria-label={section.label}
+                        className={compactClasses}
+                      >
+                        {iconContent}
+                      </span>
+                    )}
+                  </div>
+                );
+              }
+
+              const isCollapsed =
+                isPhaseCollapsed || collapsedSections.has(section.id);
 
               return (
                 <NavSection
@@ -373,7 +474,7 @@ export function JourneyPanel({
                       >
                         <CircleChevronRight
                           aria-hidden="true"
-                          className={`h-3.5 w-3.5 shrink-0 text-[var(--ms-text-subtle)] transition-transform duration-200 ${
+                          className={`h-3.5 w-3.5 shrink-0 text-[var(--ms-text-body)] transition-transform duration-200 ${
                             collapsedRevisits.has(section.id) ? '' : 'rotate-90'
                           }`}
                         />
