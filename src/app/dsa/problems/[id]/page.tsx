@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { cache } from 'react';
-import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -23,10 +22,11 @@ import {
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
-import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
+import { TDPageLayout } from '@/components/ui/TDPageLayout/TDPageLayout';
 import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
-import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
-import AdvancedPrerequisitePanel from '@/components/dsa/AdvancedPrerequisitePanel/AdvancedPrerequisitePanel';
+import TDCompletionCTA from '@/components/ui/TDCompletionCTA/TDCompletionCTA';
+import TDPrerequisitePanel from '@/components/ui/TDPrerequisitePanel/TDPrerequisitePanel';
+import TDProgressPanel from '@/components/ui/TDProgressPanel/TDProgressPanel';
 
 const DIFF_BG: Record<string, string> = {
   easy: 'var(--ms-green-surface)',
@@ -39,23 +39,6 @@ const DIFF_FG: Record<string, string> = {
   medium: 'var(--ms-peach)',
   hard: 'var(--ms-red)',
 };
-
-const ProblemProgressPanel = dynamic(
-  () => import('@/components/dsa/ProblemProgressPanel/ProblemProgressPanel'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex flex-col gap-2 rounded-lg border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-4">
-        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-          Your Progress
-        </p>
-        <p className="text-sm text-[var(--ms-text-faint)]">
-          Loading progress...
-        </p>
-      </div>
-    ),
-  },
-);
 
 interface Props {
   params: { id: string };
@@ -150,7 +133,7 @@ export default function ProblemPage({ params }: Props) {
         })),
       ]}
     >
-      <DsaPageLayout
+      <TDPageLayout
         hero={
           <PageHero>
             <h1 className="text-5xl font-display leading-tight text-[var(--ms-text-body)] mb-0">
@@ -184,17 +167,30 @@ export default function ProblemPage({ params }: Props) {
           </PageHero>
         }
         progress={
-          <ProblemProgressPanel
-            problemId={params.id}
-            stepNumbers={stepNumbers}
+          <TDProgressPanel
+            loginHref={`/login?next=${encodeURIComponent(`/dsa/problems/${params.id}`)}`}
+            items={[
+              {
+                itemType: 'problem',
+                itemId: `dsa-${params.id}`,
+                label: 'Problem complete',
+              },
+              ...stepNumbers.map((n) => ({
+                itemType: 'step' as const,
+                itemId: `dsa-${params.id}-step-${n}`,
+                label: `Step ${n} complete`,
+              })),
+            ]}
           />
         }
         aside={
           <>
             {advancedPrerequisite ? (
-              <AdvancedPrerequisitePanel
+              <TDPrerequisitePanel
                 label={advancedPrerequisite.label}
-                fundamentalsSlug={advancedPrerequisite.fundamentalsSlug}
+                href={`/dsa/fundamentals/${advancedPrerequisite.fundamentalsSlug}`}
+                itemType="fundamentals"
+                itemId={`dsa-fundamentals-${advancedPrerequisite.fundamentalsSlug}`}
               />
             ) : null}
             <TableOfContents headings={headings} title="Contents" />
@@ -226,7 +222,7 @@ export default function ProblemPage({ params }: Props) {
             ) : (
               <div />
             )}
-            <CompletionCTA
+            <TDCompletionCTA
               itemType="problem"
               itemId={`dsa-${params.id}`}
               label="Complete Problem"
@@ -245,7 +241,7 @@ export default function ProblemPage({ params }: Props) {
             )}
           </div>
         </section>
-      </DsaPageLayout>
+      </TDPageLayout>
     </ProgressProvider>
   );
 }

@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import {
   getFundamentalsGuide,
   getAllFundamentalsSlugs,
@@ -13,15 +12,10 @@ import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
-import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
+import { TDPageLayout } from '@/components/ui/TDPageLayout/TDPageLayout';
 import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
-import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
-
-const FundamentalsProgressPanel = dynamic(
-  () =>
-    import('@/components/dsa/FundamentalsProgressPanel/FundamentalsProgressPanel'),
-  { ssr: false },
-);
+import TDCompletionCTA from '@/components/ui/TDCompletionCTA/TDCompletionCTA';
+import TDProgressPanel from '@/components/ui/TDProgressPanel/TDProgressPanel';
 
 interface Props {
   params: { slug: string };
@@ -60,12 +54,23 @@ export default function FundamentalsPage({ params }: Props) {
         })),
       ]}
     >
-      <DsaPageLayout
+      <TDPageLayout
         progress={
           stepNumbers.length > 0 ? (
-            <FundamentalsProgressPanel
-              slug={params.slug}
-              stepNumbers={stepNumbers}
+            <TDProgressPanel
+              loginHref={`/login?next=${encodeURIComponent(`/dsa/fundamentals/${params.slug}`)}`}
+              items={[
+                {
+                  itemType: 'fundamentals',
+                  itemId: `dsa-fundamentals-${params.slug}`,
+                  label: 'Fundamentals complete',
+                },
+                ...stepNumbers.map((n) => ({
+                  itemType: 'fundamentals-level' as const,
+                  itemId: `dsa-fundamentals-${params.slug}-step-${n}`,
+                  label: `Step ${n} complete`,
+                })),
+              ]}
             />
           ) : undefined
         }
@@ -131,7 +136,7 @@ export default function FundamentalsPage({ params }: Props) {
             >
               ← Back to Learning Path
             </Link>
-            <CompletionCTA
+            <TDCompletionCTA
               itemType="fundamentals"
               itemId={`dsa-fundamentals-${params.slug}`}
               label="Complete Foundation"
@@ -150,7 +155,7 @@ export default function FundamentalsPage({ params }: Props) {
             )}
           </div>
         </section>
-      </DsaPageLayout>
+      </TDPageLayout>
     </ProgressProvider>
   );
 }

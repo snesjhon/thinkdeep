@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronLeft, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { AppIcon } from '@/components/dsa/AppIcon/AppIcon';
+import { TDIcon } from '@/components/ui/TDIcon/TDIcon';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
 import { JOURNEY as SYSTEM_DESIGN_JOURNEY } from '@/lib/system-design/journey';
@@ -164,7 +164,7 @@ export function SiteNav({
           className={`no-underline flex items-center focus:outline-none ${collapsed ? 'justify-center' : 'gap-[10px]'}`}
         >
           <span className="text-[var(--ms-text-body)]">
-            <AppIcon size={26} />
+            <TDIcon size={26} />
           </span>
           {!collapsed && (
             <span className="text-[1.05rem] font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">

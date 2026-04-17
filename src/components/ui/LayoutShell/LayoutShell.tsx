@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AppIcon } from '@/components/dsa/AppIcon/AppIcon';
+import { TDIcon } from '@/components/ui/TDIcon/TDIcon';
 import { SiteNav } from '@/components/ui/SiteNav/SiteNav';
 
 const FULLWIDTH_ROUTES = new Set([
@@ -57,7 +57,7 @@ export function LayoutShell({
                 className="no-underline flex items-center gap-[10px] focus:outline-none"
               >
                 <span className="text-[var(--ms-text-body)]">
-                  <AppIcon size={22} />
+                  <TDIcon size={22} />
                 </span>
                 <span className="font-normal text-[1.05rem] text-[var(--ms-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
                   thinkdeep.systems

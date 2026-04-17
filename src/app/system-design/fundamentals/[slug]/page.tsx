@@ -9,11 +9,11 @@ import {
 import { extractHeadings } from '@/lib/system-design/headings';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
-import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
+import { TDPageLayout } from '@/components/ui/TDPageLayout/TDPageLayout';
 import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
-import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
+import TDCompletionCTA from '@/components/ui/TDCompletionCTA/TDCompletionCTA';
+import TDProgressPanel from '@/components/ui/TDProgressPanel/TDProgressPanel';
 import MarkdownRenderer from '@/components/system-design/MarkdownRenderer/MarkdownRenderer';
-import FundamentalsProgressPanel from '@/components/system-design/FundamentalsProgressPanel/FundamentalsProgressPanel';
 
 interface Props {
   params: { slug: string };
@@ -49,11 +49,22 @@ export default function FundamentalsPage({ params }: Props) {
         })),
       ]}
     >
-      <DsaPageLayout
+      <TDPageLayout
         progress={
-          <FundamentalsProgressPanel
-            slug={params.slug}
-            levelNumbers={levelNumbers}
+          <TDProgressPanel
+            loginHref={`/login?next=${encodeURIComponent(`/system-design/fundamentals/${params.slug}`)}`}
+            items={[
+              {
+                itemType: 'fundamentals',
+                itemId: `sd-fundamentals-${params.slug}`,
+                label: 'Fundamentals complete',
+              },
+              ...levelNumbers.map((n) => ({
+                itemType: 'fundamentals-level' as const,
+                itemId: `sd-fundamentals-${params.slug}-step-${n}`,
+                label: `Level ${n} complete`,
+              })),
+            ]}
           />
         }
         hero={
@@ -121,7 +132,7 @@ export default function FundamentalsPage({ params }: Props) {
             >
               ← Back to Learning Path
             </Link>
-            <CompletionCTA
+            <TDCompletionCTA
               itemType="fundamentals"
               itemId={`sd-fundamentals-${params.slug}`}
               label="Complete Foundation"
@@ -140,7 +151,7 @@ export default function FundamentalsPage({ params }: Props) {
             )}
           </div>
         </section>
-      </DsaPageLayout>
+      </TDPageLayout>
     </ProgressProvider>
   );
 }

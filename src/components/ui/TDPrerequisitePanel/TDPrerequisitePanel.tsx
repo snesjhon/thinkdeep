@@ -2,20 +2,26 @@
 
 import Link from 'next/link';
 import { useOptionalProgress } from '@/components/ui/ProgressProvider/ProgressProvider';
+import type { ItemType } from '@/lib/progress/actions';
 
-interface AdvancedPrerequisitePanelProps {
+interface TDPrerequisitePanelProps {
   label: string;
-  fundamentalsSlug: string;
+  href: string;
+  itemType: ItemType;
+  itemId: string;
+  itemLabel?: string;
 }
 
-export default function AdvancedPrerequisitePanel({
+export default function TDPrerequisitePanel({
   label,
-  fundamentalsSlug,
-}: AdvancedPrerequisitePanelProps) {
+  href,
+  itemType,
+  itemId,
+  itemLabel = 'Fundamentals',
+}: TDPrerequisitePanelProps) {
   const progress = useOptionalProgress();
-  const itemId = `dsa-fundamentals-${fundamentalsSlug}`;
-  const completed = progress?.isCompleted('fundamentals', itemId) ?? false;
-  const isLoading = progress?.isLoading('fundamentals') ?? false;
+  const completed = progress?.isCompleted(itemType, itemId) ?? false;
+  const isLoading = progress?.isLoading(itemType) ?? false;
 
   return (
     <div className="mb-5 rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-4">
@@ -25,10 +31,10 @@ export default function AdvancedPrerequisitePanel({
       <p className="m-0 text-xs leading-6 text-[var(--ms-text-subtle)]">
         Complete{' '}
         <Link
-          href={`/dsa/fundamentals/${fundamentalsSlug}`}
+          href={href}
           className="font-medium text-[var(--ms-primary)] no-underline hover:underline"
         >
-          {label} Fundamentals
+          {label} {itemLabel}
         </Link>{' '}
         first.
       </p>

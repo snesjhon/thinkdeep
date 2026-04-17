@@ -4,16 +4,23 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { ProgressToggleAsync } from '@/components/ui/ProgressToggleAsync/ProgressToggleAsync';
+import type { ItemType } from '@/lib/progress/actions';
 
-interface ProblemProgressPanelProps {
-  problemId: string;
-  stepNumbers: number[];
+interface ProgressEntry {
+  itemType: ItemType;
+  itemId: string;
+  label: string;
 }
 
-export default function ProblemProgressPanel({
-  problemId,
-  stepNumbers,
-}: ProblemProgressPanelProps) {
+interface TDProgressPanelProps {
+  loginHref: string;
+  items: ProgressEntry[];
+}
+
+export default function TDProgressPanel({
+  loginHref,
+  items,
+}: TDProgressPanelProps) {
   const [isReady, setIsReady] = useState(false);
   const [hasSession, setHasSession] = useState(false);
   const [resolved, setResolved] = useState(false);
@@ -84,7 +91,7 @@ export default function ProblemProgressPanel({
           Your Progress
         </p>
         <Link
-          href={`/login?next=${encodeURIComponent(`/dsa/problems/${problemId}`)}`}
+          href={loginHref}
           className="text-xs leading-relaxed text-[var(--ms-text-subtle)] transition-colors no-underline hover:text-[var(--ms-text-body)]"
         >
           Sign in to track progress →
@@ -99,17 +106,12 @@ export default function ProblemProgressPanel({
         Your Progress
       </p>
       <div className="space-y-0.5">
-        <ProgressToggleAsync
-          itemType="problem"
-          itemId={`dsa-${problemId}`}
-          label="Problem complete"
-        />
-        {stepNumbers.map((n) => (
+        {items.map((item) => (
           <ProgressToggleAsync
-            key={n}
-            itemType="step"
-            itemId={`dsa-${problemId}-step-${n}`}
-            label={`Step ${n} complete`}
+            key={`${item.itemType}:${item.itemId}`}
+            itemType={item.itemType}
+            itemId={item.itemId}
+            label={item.label}
           />
         ))}
       </div>

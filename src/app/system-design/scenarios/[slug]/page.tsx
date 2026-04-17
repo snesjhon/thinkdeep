@@ -8,11 +8,11 @@ import { getScenarioBySlug } from '@/lib/system-design/journey';
 import { extractHeadings } from '@/lib/system-design/headings';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
-import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
+import { TDPageLayout } from '@/components/ui/TDPageLayout/TDPageLayout';
 import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
-import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
+import TDCompletionCTA from '@/components/ui/TDCompletionCTA/TDCompletionCTA';
+import TDProgressPanel from '@/components/ui/TDProgressPanel/TDProgressPanel';
 import MarkdownRenderer from '@/components/system-design/MarkdownRenderer/MarkdownRenderer';
-import ScenarioProgressPanel from '@/components/system-design/ScenarioProgressPanel/ScenarioProgressPanel';
 
 interface Props {
   params: { slug: string };
@@ -49,7 +49,7 @@ export default function ScenarioPage({ params }: Props) {
     <ProgressProvider
       items={[{ itemType: 'problem', itemId: `sd-${params.slug}` }]}
     >
-      <DsaPageLayout
+      <TDPageLayout
         hero={
           <PageHero>
             <h1 className="text-5xl font-display leading-tight text-[var(--ms-text-body)] mb-0">
@@ -69,7 +69,18 @@ export default function ScenarioPage({ params }: Props) {
             </div>
           </PageHero>
         }
-        progress={<ScenarioProgressPanel scenarioSlug={params.slug} />}
+        progress={
+          <TDProgressPanel
+            loginHref={`/login?next=${encodeURIComponent(`/system-design/scenarios/${params.slug}`)}`}
+            items={[
+              {
+                itemType: 'problem',
+                itemId: `sd-${params.slug}`,
+                label: 'Scenario complete',
+              },
+            ]}
+          />
+        }
         aside={
           <>
             <TableOfContents headings={headings} title="Contents" />
@@ -136,7 +147,7 @@ export default function ScenarioPage({ params }: Props) {
                 ← {section.label} Fundamentals
               </Link>
             )}
-            <CompletionCTA
+            <TDCompletionCTA
               itemType="problem"
               itemId={`sd-${params.slug}`}
               label="Complete Scenario"
@@ -155,7 +166,7 @@ export default function ScenarioPage({ params }: Props) {
             )}
           </div>
         </section>
-      </DsaPageLayout>
+      </TDPageLayout>
     </ProgressProvider>
   );
 }

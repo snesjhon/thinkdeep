@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useProgress } from '@/components/ui/ProgressProvider/ProgressProvider';
 import type { ItemType } from '@/lib/progress/actions';
 
-interface CompletionCTAProps {
+interface TDCompletionCTAProps {
   itemType: ItemType;
   itemId: string;
   label: string;
@@ -15,13 +15,13 @@ interface CompletionCTAProps {
   loginHref: string;
 }
 
-export default function CompletionCTA({
+export default function TDCompletionCTA({
   itemType,
   itemId,
   label,
   completedLabel,
   loginHref,
-}: CompletionCTAProps) {
+}: TDCompletionCTAProps) {
   const { isCompleted, toggle, isLoading } = useProgress();
   const [isPending, startTransition] = useTransition();
   const [isReady, setIsReady] = useState(false);
