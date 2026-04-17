@@ -6,23 +6,41 @@ import { usePathname } from 'next/navigation';
 import { AppIcon } from '@/components/dsa/AppIcon/AppIcon';
 import { SiteNav } from '@/components/ui/SiteNav/SiteNav';
 
-const FULLWIDTH_ROUTES = new Set(['/', '/dsa', '/dsa/path']);
+const FULLWIDTH_ROUTES = new Set([
+  '/',
+  '/dsa',
+  '/dsa/path',
+  '/system-design',
+  '/system-design/path',
+]);
 
 interface LayoutShellProps {
   children: React.ReactNode;
-  availableProblemIds: string[];
-  availableFundamentalsSlugs: string[];
+  availableDsaProblemIds: string[];
+  availableDsaFundamentalsSlugs: string[];
+  availableSystemDesignScenarioSlugs: string[];
+  availableSystemDesignFundamentalsSlugs: string[];
 }
 
 export function LayoutShell({
   children,
-  availableProblemIds,
-  availableFundamentalsSlugs,
+  availableDsaProblemIds,
+  availableDsaFundamentalsSlugs,
+  availableSystemDesignScenarioSlugs,
+  availableSystemDesignFundamentalsSlugs,
 }: LayoutShellProps) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
+  const topLevelNavLinks = [
+    { href: '/dsa', label: 'DSA', active: pathname.startsWith('/dsa') },
+    {
+      href: '/system-design',
+      label: 'System Design',
+      active: pathname.startsWith('/system-design'),
+    },
+  ];
 
   useEffect(() => {
     mainRef.current?.focus({ preventScroll: true });
@@ -32,18 +50,39 @@ export function LayoutShell({
     return (
       <>
         <header className="sticky top-0 z-50 bg-[var(--ms-bg-pane-secondary)] border-b border-b-[var(--ms-surface)]">
-          <div className="max-w-[1152px] mx-auto px-6 h-14 flex items-center">
-            <Link
-              href="/"
-              className="no-underline flex items-center gap-[10px] focus:outline-none"
-            >
-              <span className="text-[var(--ms-text-body)]">
-                <AppIcon size={22} />
-              </span>
-              <span className="font-normal text-[1.05rem] text-[var(--ms-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
-                thinkdeep.systems
-              </span>
-            </Link>
+          <div className="max-w-[1152px] mx-auto px-6 min-h-14 py-3 flex items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              <Link
+                href="/"
+                className="no-underline flex items-center gap-[10px] focus:outline-none"
+              >
+                <span className="text-[var(--ms-text-body)]">
+                  <AppIcon size={22} />
+                </span>
+                <span className="font-normal text-[1.05rem] text-[var(--ms-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
+                  thinkdeep.systems
+                </span>
+              </Link>
+
+              <nav
+                aria-label="Primary"
+                className="flex items-center gap-4 text-sm"
+              >
+                {topLevelNavLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`no-underline transition-colors focus:outline-none ${
+                      link.active
+                        ? 'text-[var(--ms-text-body)]'
+                        : 'text-[var(--ms-text-faint)] hover:text-[var(--ms-text-body)]'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
           </div>
         </header>
         <main
@@ -67,8 +106,12 @@ export function LayoutShell({
       }}
     >
       <SiteNav
-        availableProblemIds={availableProblemIds}
-        availableFundamentalsSlugs={availableFundamentalsSlugs}
+        availableDsaProblemIds={availableDsaProblemIds}
+        availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
+        availableSystemDesignScenarioSlugs={availableSystemDesignScenarioSlugs}
+        availableSystemDesignFundamentalsSlugs={
+          availableSystemDesignFundamentalsSlugs
+        }
         collapsed={sidebarCollapsed}
         onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
       />

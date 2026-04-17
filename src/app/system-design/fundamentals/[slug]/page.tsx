@@ -9,8 +9,11 @@ import {
 import { extractHeadings } from '@/lib/system-design/headings';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
-import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
+import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
+import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
+import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
 import MarkdownRenderer from '@/components/system-design/MarkdownRenderer/MarkdownRenderer';
+import FundamentalsProgressPanel from '@/components/system-design/FundamentalsProgressPanel/FundamentalsProgressPanel';
 
 interface Props {
   params: { slug: string };
@@ -28,45 +31,60 @@ export default function FundamentalsPage({ params }: Props) {
   const section = context?.section;
   const phase = context?.phase;
   const prereq = getPrecedingSection(params.slug);
-  const color = phase ? 'var(--ms-blue)' : null;
+  const levelNumbers = guide.levelPrompts.map((_, index) => index + 1);
 
-  // Strip the leading # h1 from the markdown so it doesn't duplicate the page header
   const strippedContent = guide.content.replace(/^#[^#].*\n+/, '').trimStart();
-
   const headings = extractHeadings(strippedContent);
 
   return (
-    <>
-      <PageHero>
-        <div className="flex items-center gap-2 mb-3">
-          {phase && (
-            <span className="text-xs text-[var(--ms-text-faint)]">
-              {phase.emoji} {phase.label}
-            </span>
-          )}
-        </div>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--ms-text-body)] font-display">
-          {section?.label ?? guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
-        </h1>
-        {section && (
-          <p className="mt-3 text-lg italic leading-snug text-[var(--ms-blue)]">
-            &quot;{section.mentalModelHook}&quot;
-          </p>
-        )}
-      </PageHero>
-
-      <PageLayout
-        accentColor={color}
-        aside={
-          <>
-            <TableOfContents headings={headings} title="Contents" />
-          </>
+    <ProgressProvider
+      items={[
+        {
+          itemType: 'fundamentals' as const,
+          itemId: `sd-fundamentals-${params.slug}`,
+        },
+        ...levelNumbers.map((n) => ({
+          itemType: 'fundamentals-level' as const,
+          itemId: `sd-fundamentals-${params.slug}-step-${n}`,
+        })),
+      ]}
+    >
+      <DsaPageLayout
+        progress={
+          <FundamentalsProgressPanel
+            slug={params.slug}
+            levelNumbers={levelNumbers}
+          />
         }
+        hero={
+          <PageHero>
+            <h1 className="text-5xl leading-tight text-[var(--ms-text-body)] font-display mb-0">
+              {section?.label ??
+                guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
+            </h1>
+            {section && (
+              <p className="text-lg italic leading-snug text-[var(--ms-primary)] mb-6">
+                &ldquo;{section.mentalModelHook}&rdquo;
+              </p>
+            )}
+
+            <div className="flex items-center gap-2">
+              {phase && (
+                <mark className="text-xs bg-transparent border border-[var(--ms-surface)] rounded text-[var(--ms-text-muted)]">
+                  {phase.emoji} {phase.label}
+                </mark>
+              )}
+              <mark className="text-xs bg-transparent border border-[var(--ms-surface)] rounded text-[var(--ms-text-muted)]">
+                Fundamentals
+              </mark>
+            </div>
+          </PageHero>
+        }
+        aside={<TableOfContents headings={headings} title="Contents" />}
       >
-        <section className="space-y-8">
-          {/* Prerequisites */}
-          <div className="rounded-xl p-5 bg-[var(--ms-bg-pane-secondary)] border border-[var(--ms-surface)]">
-            <p className="text-sm mb-1 text-[var(--ms-text-muted)]">
+        <section className="space-y-8 py-2">
+          <div className="rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-5">
+            <p className="mb-1 text-sm text-[var(--ms-text-muted)]">
               <span className="font-semibold text-[var(--ms-text-body)]">
                 Prerequisites:
               </span>
@@ -75,15 +93,15 @@ export default function FundamentalsPage({ params }: Props) {
               <Link
                 href={
                   prereq.fundamentalsSlug
-                    ? `/fundamentals/${prereq.fundamentalsSlug}`
-                    : '/path'
+                    ? `/system-design/fundamentals/${prereq.fundamentalsSlug}`
+                    : '/system-design/path'
                 }
-                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--ms-blue-surface)] text-[var(--ms-blue)] border border-[var(--ms-blue)]"
+                className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--ms-blue)] bg-[var(--ms-blue-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ms-blue)] transition-opacity no-underline hover:opacity-80"
               >
                 {prereq.label} Fundamentals
               </Link>
             ) : (
-              <p className="text-sm italic mb-1 text-[var(--ms-text-subtle)]">
+              <p className="mb-0 mt-1 text-sm italic text-[var(--ms-text-subtle)]">
                 None — this is the starting point of the path.
               </p>
             )}
@@ -96,25 +114,33 @@ export default function FundamentalsPage({ params }: Props) {
             storageKeyPrefix={`chat:${params.slug}`}
           />
 
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-8 border-t border-t-[var(--ms-surface)]">
+          <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-8">
             <Link
               href="/system-design/path"
-              className="text-sm transition-opacity hover:opacity-70 text-[var(--ms-text-subtle)]"
+              className="text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
             >
               ← Back to Learning Path
             </Link>
-            {section && section.firstPass.length > 0 && (
+            <CompletionCTA
+              itemType="fundamentals"
+              itemId={`sd-fundamentals-${params.slug}`}
+              label="Complete Foundation"
+              completedLabel="Foundation Completed"
+              loginHref={`/login?next=${encodeURIComponent(`/system-design/fundamentals/${params.slug}`)}`}
+            />
+            {section && section.firstPass.length > 0 ? (
               <Link
                 href={`/system-design/scenarios/${section.firstPass[0].slug}`}
-                className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--ms-blue)]"
+                className="rounded-lg bg-[var(--ms-blue)] px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
               >
                 Start First Scenario →
               </Link>
+            ) : (
+              <div />
             )}
           </div>
         </section>
-      </PageLayout>
-    </>
+      </DsaPageLayout>
+    </ProgressProvider>
   );
 }

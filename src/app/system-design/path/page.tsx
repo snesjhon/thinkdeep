@@ -3,7 +3,6 @@ import { JOURNEY } from '@/lib/system-design/journey';
 import { createClient } from '@/lib/supabase/server';
 import type { JourneySection, Phase } from '@/lib/system-design/types';
 import {
-  PathTOC,
   PhaseBannerContent,
   StepGuideCard,
   PlaceholderGuideCard,
@@ -88,7 +87,6 @@ export default async function PathPage() {
 
   const phaseGroups = buildPhaseGroups();
 
-  // Fetch progress
   const supabase = createClient();
   const { data: progressRows } = await supabase
     .from('progress')
@@ -96,194 +94,183 @@ export default async function PathPage() {
 
   const completedProblems = new Set(
     progressRows
-      ?.filter((r: { item_type: string; item_id: string }) => r.item_type === 'problem')
+      ?.filter(
+        (r: { item_type: string; item_id: string }) => r.item_type === 'problem',
+      )
       .map((r: { item_type: string; item_id: string }) => r.item_id) ?? [],
   );
   const completedSections = new Set(
     progressRows
-      ?.filter((r: { item_type: string; item_id: string }) => r.item_type === 'section')
+      ?.filter(
+        (r: { item_type: string; item_id: string }) => r.item_type === 'section',
+      )
       .map((r: { item_type: string; item_id: string }) => r.item_id) ?? [],
   );
 
   return (
     <>
       <PageHero>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--ms-text-body)]">
+        <h1 className="text-5xl text-[var(--ms-text-body)] font-display">
           The Path
         </h1>
-        <p className="text-sm text-[var(--ms-text-faint)] mt-2">
+        <p className="text-sm text-[var(--ms-text-faint)] mb-0">
           {totalSections} mental models · {totalScenarios} scenarios
         </p>
       </PageHero>
-
-      {/* ─────────────────────────────────────────── PHASE ZONES + sticky TOC */}
-      <div className="relative">
-        {/* Sticky TOC — absolutely spans all phase zones */}
-        <aside
-          className="absolute left-0 top-0 hidden h-full w-[calc(314px+2.5rem)] bg-[var(--ms-bg-pane-secondary)] pl-10 pt-10 transition-[background-color] duration-300 lg:block"
-        >
-          <div className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <PathTOC phases={phaseGroups.map((g) => g.phase)} />
-          </div>
-        </aside>
-
+      <div>
         {phaseGroups.map(({ phase, entries }, groupIdx) => {
           const color = pColor(phase.number);
           void groupIdx;
           const chapterLabel = String(phase.number).padStart(2, '0');
 
           return (
-            <div key={phase.number} id={`phase-zone-${phase.number}`} className="bg-[var(--ms-bg-pane-secondary)]">
-              <div className="block lg:grid items-start gap-12 px-10 py-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)] xl:grid-cols-[0.3fr_1fr_0.2fr]">
-                <div className="hidden lg:block" /> {/* TOC column spacer */}
-                <div className="min-w-0">
-                  <PhaseBannerContent
-                    phase={phase}
-                    color={color}
-                    chapterLabel={chapterLabel}
-                  />
+            <div
+              key={phase.number}
+              id={`phase-zone-${phase.number}`}
+              className="bg-[var(--ms-bg-pane-secondary)]"
+            >
+              <div className="max-w-[1152px] mx-auto px-6">
+                <PhaseBannerContent
+                  phase={phase}
+                  color={color}
+                  chapterLabel={chapterLabel}
+                />
 
-                  {entries.map((entry, entryIdx) => {
-                    const { section, revisitSlugs, revisitFromLabel, stepNum } =
-                      entry;
-                    const accent = color;
-                    const stepLabel = String(stepNum).padStart(2, '0');
-                    const hasNewScenarios = section.firstPass.length > 0;
-                    const hasRevisits = revisitSlugs.length > 0;
-                    const hasAnyScenarios = hasNewScenarios || hasRevisits;
-                    const isLast = entryIdx === entries.length - 1;
+                {entries.map((entry, entryIdx) => {
+                  const { section, revisitSlugs, revisitFromLabel, stepNum } =
+                    entry;
+                  const stepLabel = String(stepNum).padStart(2, '0');
+                  const hasNewScenarios = section.firstPass.length > 0;
+                  const hasRevisits = revisitSlugs.length > 0;
+                  const hasAnyScenarios = hasNewScenarios || hasRevisits;
+                  const isLast = entryIdx === entries.length - 1;
 
-                    const firstPassItemIds = section.firstPass.map((s) => `sd-${s.slug}`);
+                  const firstPassItemIds = section.firstPass.map(
+                    (s) => `sd-${s.slug}`,
+                  );
 
-                    return (
-                      <div
-                        key={section.id}
-                        className={`grid grid-cols-2 items-start gap-7 ${
-                          isLast ? 'pb-6' : 'pb-12'
-                        }`}
-                      >
-                        {/* LEFT: Guide card + section progress */}
-                        <div>
-                          {section.fundamentalsSlug ? (
-                            <StepGuideCard
-                              href={`/system-design/fundamentals/${section.fundamentalsSlug}`}
-                              label={section.label}
-                              hook={section.mentalModelHook}
-                              stepNum={stepLabel}
-                              color={accent}
-                            />
-                          ) : (
-                            <PlaceholderGuideCard
-                              label={section.label}
-                              hook={section.mentalModelHook}
-                              stepNum={stepLabel}
-                            />
-                          )}
-                          <SectionProgress
-                            sectionItemId={`sd-section-${section.id}`}
-                            problemItemIds={firstPassItemIds}
-                            initialCompletedProblemIds={firstPassItemIds.filter((id) =>
-                              completedProblems.has(id),
-                            )}
-                            initialSectionCompleted={completedSections.has(
-                              `sd-section-${section.id}`,
-                            )}
+                  return (
+                    <div
+                      key={section.id}
+                      className={`grid grid-cols-2 items-start gap-7 ${
+                        isLast ? 'pb-6' : 'pb-12'
+                      }`}
+                    >
+                      <div>
+                        {section.fundamentalsSlug ? (
+                          <StepGuideCard
+                            href={`/system-design/fundamentals/${section.fundamentalsSlug}`}
+                            label={section.label}
+                            hook={section.mentalModelHook}
+                            stepNum={stepLabel}
+                            color={color}
                           />
-                        </div>
-
-                        {/* RIGHT: Practice scenarios + revisit */}
-                        <div className="pt-1">
-                          {!hasAnyScenarios && (
-                            <p
-                              className="m-0 text-sm italic text-[var(--ms-text-faint)] [font-family:var(--font-display)]"
-                            >
-                              Scenarios coming soon.
-                            </p>
+                        ) : (
+                          <PlaceholderGuideCard
+                            label={section.label}
+                            hook={section.mentalModelHook}
+                            stepNum={stepLabel}
+                          />
+                        )}
+                        <SectionProgress
+                          sectionItemId={`sd-section-${section.id}`}
+                          problemItemIds={firstPassItemIds}
+                          initialCompletedProblemIds={firstPassItemIds.filter((id) =>
+                            completedProblems.has(id),
                           )}
-
-                          {hasNewScenarios && (
-                            <div className={hasRevisits ? 'mb-5' : ''}>
-                              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ms-text-faint)]">
-                                Practice
-                              </p>
-                              {section.firstPass.map(({ slug, label }) => {
-                                const itemId = `sd-${slug}`;
-                                return (
-                                  <div key={slug} className="flex items-center gap-1 py-[5px]">
-                                    <ProgressToggle
-                                      itemType="problem"
-                                      itemId={itemId}
-                                      initialCompleted={completedProblems.has(itemId)}
-                                    />
-                                    <Link
-                                      href={`/system-design/scenarios/${slug}`}
-                                      className={`${pathStyles.problemLink} flex items-baseline`}
-                                    >
-                                      <span className="shrink-0 w-5" />
-                                      <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--ms-text-muted)]`}>
-                                        {label}
-                                      </span>
-                                    </Link>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                          initialSectionCompleted={completedSections.has(
+                            `sd-section-${section.id}`,
                           )}
-
-                          {hasRevisits && (
-                            <div>
-                              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ms-peach)]">
-                                Also revisit — from {revisitFromLabel}
-                              </p>
-                              {revisitSlugs.map(({ slug, label }) => {
-                                const itemId = `sd-${slug}`;
-                                return (
-                                  <div key={`r-${slug}`} className="flex items-center gap-1 py-[5px]">
-                                    <ProgressToggle
-                                      itemType="problem"
-                                      itemId={itemId}
-                                      initialCompleted={completedProblems.has(itemId)}
-                                    />
-                                    <Link
-                                      href={`/system-design/scenarios/${slug}`}
-                                      className={`${pathStyles.problemLink} flex items-baseline`}
-                                    >
-                                      <span className="text-xs shrink-0 w-5 leading-none text-[var(--ms-peach)]">
-                                        ↩
-                                      </span>
-                                      <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--ms-text-subtle)]`}>
-                                        {label}
-                                      </span>
-                                    </Link>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
+                        />
                       </div>
-                    );
-                  })}
-                </div>
+
+                      <div className="pt-1">
+                        {!hasAnyScenarios && (
+                          <p className="font-display italic text-sm text-[var(--ms-text-faint)] m-0">
+                            Scenarios coming soon.
+                          </p>
+                        )}
+
+                        {hasNewScenarios && (
+                          <div className={hasRevisits ? 'mb-5' : ''}>
+                            <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ms-text-faint)]">
+                              Practice
+                            </p>
+                            {section.firstPass.map(({ slug, label }) => {
+                              const itemId = `sd-${slug}`;
+                              return (
+                                <div
+                                  key={slug}
+                                  className="flex items-center gap-1 py-[5px]"
+                                >
+                                  <ProgressToggle
+                                    itemType="problem"
+                                    itemId={itemId}
+                                    initialCompleted={completedProblems.has(itemId)}
+                                  />
+                                  <Link
+                                    href={`/system-design/scenarios/${slug}`}
+                                    className={`${pathStyles.problemLink} flex items-baseline`}
+                                  >
+                                    <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--ms-text-faint)]">
+                                      SD
+                                    </span>
+                                    <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--ms-text-muted)]`}>
+                                      {label}
+                                    </span>
+                                  </Link>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+
+                        {hasRevisits && (
+                          <div>
+                            <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ms-peach)]">
+                              Revisit from {revisitFromLabel}
+                            </p>
+                            {revisitSlugs.map(({ slug, label }) => {
+                              const itemId = `sd-${slug}`;
+                              return (
+                                <div
+                                  key={slug}
+                                  className="flex items-center gap-1 py-[5px]"
+                                >
+                                  <ProgressToggle
+                                    itemType="problem"
+                                    itemId={itemId}
+                                    initialCompleted={completedProblems.has(itemId)}
+                                  />
+                                  <Link
+                                    href={`/system-design/scenarios/${slug}`}
+                                    className={`${pathStyles.problemLink} flex items-baseline`}
+                                  >
+                                    <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--ms-peach)]">
+                                      ↺
+                                    </span>
+                                    <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--ms-text-muted)]`}>
+                                      {label}
+                                    </span>
+                                  </Link>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
         })}
 
-        {/* Footer strip */}
-        <div className="block lg:grid gap-12 px-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)]">
-          <div className="hidden lg:block" />
-          <div className="flex items-center gap-4 pt-8 pb-16">
-            <div className="flex-1 h-px bg-[var(--ms-surface)]" />
-            <span className="text-[0.8rem] italic text-[var(--ms-text-faint)] shrink-0 font-[var(--font-display)]">
-              More mental models coming
-            </span>
-            <div className="flex-1 h-px bg-[var(--ms-surface)]" />
-          </div>
+        <div className="max-w-[1152px] mx-auto px-6 py-4">
+          <PhaseTracker phaseCount={phaseGroups.length} />
         </div>
       </div>
-
-      <PhaseTracker phaseCount={phaseGroups.length} />
     </>
   );
 }

@@ -1,12 +1,18 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { loadScenario, getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
+import {
+  loadScenario,
+  getAllScenarioSlugsFromDisk,
+} from '@/lib/system-design/content';
 import { getScenarioBySlug } from '@/lib/system-design/journey';
 import { extractHeadings } from '@/lib/system-design/headings';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
-import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
+import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
+import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
+import CompletionCTA from '@/components/dsa/CompletionCTA/CompletionCTA';
 import MarkdownRenderer from '@/components/system-design/MarkdownRenderer/MarkdownRenderer';
+import ScenarioProgressPanel from '@/components/system-design/ScenarioProgressPanel/ScenarioProgressPanel';
 
 interface Props {
   params: { slug: string };
@@ -24,19 +30,15 @@ export default function ScenarioPage({ params }: Props) {
   if (!match) notFound();
 
   const { scenario, section, phase } = match;
-  const color = 'var(--ms-blue)';
 
-  // Strip leading h1 from brief and walkthrough
   const strippedBrief = content.brief.replace(/^#[^#].*\n+/, '').trimStart();
   const strippedWalkthrough = content.walkthrough
     ? content.walkthrough.replace(/^#[^#].*\n+/, '').trimStart()
     : null;
 
-  // TOC: prefer walkthrough headings, fall back to brief
   const tocContent = strippedWalkthrough ?? strippedBrief;
   const headings = extractHeadings(tocContent);
 
-  // Find prev/next scenario within section
   const allScenarios = [...section.firstPass, ...section.reinforce];
   const idx = allScenarios.findIndex((s) => s.slug === params.slug);
   const prevScenario = idx > 0 ? allScenarios[idx - 1] : null;
@@ -44,18 +46,30 @@ export default function ScenarioPage({ params }: Props) {
     idx < allScenarios.length - 1 ? allScenarios[idx + 1] : null;
 
   return (
-    <>
-      <PageHero>
-        <p className="text-xs font-mono mb-2 text-[var(--ms-text-faint)]">
-          {section.label}
-        </p>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--ms-text-body)]">
-          {scenario.label}
-        </h1>
-      </PageHero>
+    <ProgressProvider
+      items={[{ itemType: 'problem', itemId: `sd-${params.slug}` }]}
+    >
+      <DsaPageLayout
+        hero={
+          <PageHero>
+            <h1 className="text-5xl font-display leading-tight text-[var(--ms-text-body)] mb-0">
+              {scenario.label}
+            </h1>
+            <p className="text-md italic leading-snug text-[var(--ms-primary)] mb-6">
+              &ldquo;{section.mentalModelHook}&rdquo;
+            </p>
 
-      <PageLayout
-        accentColor={color}
+            <div className="flex items-center gap-2">
+              <mark className="text-xs bg-transparent border border-[var(--ms-surface)] rounded text-[var(--ms-text-muted)]">
+                {phase.emoji} {phase.label}
+              </mark>
+              <mark className="text-xs bg-transparent border border-[var(--ms-surface)] rounded text-[var(--ms-text-muted)]">
+                Scenario
+              </mark>
+            </div>
+          </PageHero>
+        }
+        progress={<ScenarioProgressPanel scenarioSlug={params.slug} />}
         aside={
           <>
             <TableOfContents headings={headings} title="Contents" />
@@ -69,7 +83,7 @@ export default function ScenarioPage({ params }: Props) {
                     <Link
                       key={slug}
                       href={`/system-design/fundamentals/${slug}`}
-                      className="block text-sm py-1.5 px-2 rounded-md transition-colors hover:opacity-80 text-[var(--ms-text-subtle)] no-underline"
+                      className="block rounded-md px-2 py-1.5 text-sm text-[var(--ms-text-subtle)] transition-colors no-underline hover:opacity-80"
                     >
                       {slug.replace(/-/g, ' ')}
                     </Link>
@@ -81,14 +95,14 @@ export default function ScenarioPage({ params }: Props) {
         }
       >
         <section className="space-y-8">
-          <div className="rounded-xl p-6 bg-[var(--ms-bg-pane-secondary)] border border-[var(--ms-surface)]">
-            <p className="text-xs font-semibold uppercase mb-4 text-[var(--ms-text-faint)] font-[ui-monospace,monospace] tracking-[0.08em]">
+          <div className="rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-6">
+            <p className="mb-4 font-[ui-monospace,monospace] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ms-text-faint)]">
               Requirements
             </p>
             <MarkdownRenderer
               content={strippedBrief}
               prompts={content.promptContent}
-              phase={phase?.number ?? 1}
+              phase={phase.number}
               storageKeyPrefix={`chat:${params.slug}`}
             />
           </div>
@@ -102,12 +116,11 @@ export default function ScenarioPage({ params }: Props) {
             />
           )}
 
-          {/* Prev / Next */}
-          <div className="flex items-center justify-between pt-6 border-t border-t-[var(--ms-surface)]">
+          <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-6">
             {prevScenario ? (
               <Link
                 href={`/system-design/scenarios/${prevScenario.slug}`}
-                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--ms-text-subtle)]"
+                className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
               >
                 ← {prevScenario.label}
               </Link>
@@ -118,15 +131,22 @@ export default function ScenarioPage({ params }: Props) {
                     ? `/system-design/fundamentals/${section.fundamentalsSlug}`
                     : '/system-design/path'
                 }
-                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--ms-text-subtle)]"
+                className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
               >
                 ← {section.label} Fundamentals
               </Link>
             )}
+            <CompletionCTA
+              itemType="problem"
+              itemId={`sd-${params.slug}`}
+              label="Complete Scenario"
+              completedLabel="Scenario Completed"
+              loginHref={`/login?next=${encodeURIComponent(`/system-design/scenarios/${params.slug}`)}`}
+            />
             {nextScenario ? (
               <Link
                 href={`/system-design/scenarios/${nextScenario.slug}`}
-                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--ms-text-subtle)]"
+                className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
               >
                 {nextScenario.label} →
               </Link>
@@ -135,7 +155,7 @@ export default function ScenarioPage({ params }: Props) {
             )}
           </div>
         </section>
-      </PageLayout>
-    </>
+      </DsaPageLayout>
+    </ProgressProvider>
   );
 }

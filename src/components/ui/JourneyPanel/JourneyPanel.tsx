@@ -76,6 +76,8 @@ export interface JourneyPanelProps {
   availableFundamentalsSlugs: Set<string>;
   getItemHref: (key: string) => string;
   getFundamentalsHref: (slug: string) => string;
+  progressItemIdPrefix?: string;
+  progressFundamentalsIdPrefix?: string;
   compact?: boolean;
 }
 
@@ -214,6 +216,8 @@ export function JourneyPanel({
   availableFundamentalsSlugs,
   getItemHref,
   getFundamentalsHref,
+  progressItemIdPrefix = 'dsa-',
+  progressFundamentalsIdPrefix = 'dsa-fundamentals-',
   compact = false,
 }: JourneyPanelProps) {
   const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -221,7 +225,9 @@ export function JourneyPanel({
   // Problem progress
   const problemIds = Array.from(availableItemKeys).sort();
   const progressParams = new URLSearchParams({ itemType: 'problem' });
-  problemIds.forEach((id) => progressParams.append('itemId', `dsa-${id}`));
+  problemIds.forEach((id) =>
+    progressParams.append('itemId', `${progressItemIdPrefix}${id}`),
+  );
   const progressKey = problemIds.length
     ? `/api/progress?${progressParams.toString()}`
     : null;
@@ -231,7 +237,11 @@ export function JourneyPanel({
   );
   const completedProblemIds = new Set(
     (progressData?.completedIds ?? [])
-      .map((id) => id.match(/^dsa-(.+)$/)?.[1] ?? null)
+      .map((id) =>
+        id.startsWith(progressItemIdPrefix)
+          ? id.slice(progressItemIdPrefix.length)
+          : null,
+      )
       .filter((id): id is string => Boolean(id)),
   );
 
@@ -239,7 +249,7 @@ export function JourneyPanel({
   const fundSlugs = Array.from(availableFundamentalsSlugs).sort();
   const fundParams = new URLSearchParams({ itemType: 'fundamentals' });
   fundSlugs.forEach((slug) =>
-    fundParams.append('itemId', `dsa-fundamentals-${slug}`),
+    fundParams.append('itemId', `${progressFundamentalsIdPrefix}${slug}`),
   );
   const fundKey = fundSlugs.length
     ? `/api/progress?${fundParams.toString()}`
@@ -251,7 +261,7 @@ export function JourneyPanel({
   const completedFundIds = new Set(fundData?.completedIds ?? []);
 
   const isFundamentalsComplete = (slug: string) =>
-    completedFundIds.has(`dsa-fundamentals-${slug}`);
+    completedFundIds.has(`${progressFundamentalsIdPrefix}${slug}`);
 
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
     () => new Set(),

@@ -3,6 +3,8 @@ import { Newsreader, Plus_Jakarta_Sans } from 'next/font/google';
 import { LayoutShell } from '@/components/ui/LayoutShell/LayoutShell';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
+import { getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
+import { getAllFundamentalsSlugs as getAllSystemDesignFundamentalsSlugs } from '@/lib/system-design/fundamentals';
 import { DEFAULT_THEME_FLAVOR, getThemeInitScript } from '@/lib/theme';
 import '../styles/globals.css';
 
@@ -31,8 +33,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const availableProblemIds = getAllProblems().map((p) => p.id);
-  const availableFundamentalsSlugs = getAllFundamentalsSlugs();
+  const availableDsaProblemIds = getAllProblems().map((p) => p.id);
+  const availableDsaFundamentalsSlugs = getAllFundamentalsSlugs();
+  const availableSystemDesignScenarioSlugs = getAllScenarioSlugsFromDisk();
+  const availableSystemDesignFundamentalsSlugs =
+    getAllSystemDesignFundamentalsSlugs();
 
   return (
     <html
@@ -45,8 +50,12 @@ export default async function RootLayout({
       </head>
       <body className="min-h-screen bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)]">
         <LayoutShell
-          availableProblemIds={availableProblemIds}
-          availableFundamentalsSlugs={availableFundamentalsSlugs}
+          availableDsaProblemIds={availableDsaProblemIds}
+          availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
+          availableSystemDesignScenarioSlugs={availableSystemDesignScenarioSlugs}
+          availableSystemDesignFundamentalsSlugs={
+            availableSystemDesignFundamentalsSlugs
+          }
         >
           {children}
         </LayoutShell>
