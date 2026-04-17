@@ -48,6 +48,28 @@ function headingId(children: React.ReactNode): string {
     .replace(/^-|-$/g, '');
 }
 
+const ALERT_LABELS: Record<string, string> = {
+  NOTE: 'Note',
+  TIP: 'Tip',
+  IMPORTANT: 'Important',
+  WARNING: 'Warning',
+  CAUTION: 'Caution',
+};
+
+function preprocessAlerts(text: string): string {
+  return text.replace(
+    /^> \[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][^\n]*\n((?:^>[ \t]?[^\n]*\n?)*)/gim,
+    (_, type: string, body: string) => {
+      const content = body
+        .split('\n')
+        .map((line) => line.replace(/^>[ \t]?/, ''))
+        .join('\n')
+        .trim();
+      return `<blockquote class="markdown-alert markdown-alert-${type.toLowerCase()}">\n<p class="markdown-alert-title">${ALERT_LABELS[type]}</p>\n\n${content}\n\n</blockquote>\n\n`;
+    },
+  );
+}
+
 function splitMermaid(content: string): Segment[] {
   const segments: Segment[] = [];
   const fence = /^```mermaid[ \t]*\r?\n([\s\S]*?)\n```[ \t]*$/gm;
@@ -121,7 +143,7 @@ export default function MarkdownRenderer({
   extraPreprocessors = [],
   renderExtraSegment,
 }: MarkdownRendererProps) {
-  let segments: BaseSegment[] = splitMermaid(content);
+  let segments: BaseSegment[] = splitMermaid(preprocessAlerts(content));
   for (const preprocess of extraPreprocessors) {
     segments = preprocess(segments);
   }

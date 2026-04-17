@@ -274,6 +274,66 @@ blockquote > p {
   color: var(--ms-text-muted);
 }
 
+.dfh-prose .markdown-alert {
+  border-left-width: 4px;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin: 1.5rem 0;
+  color: var(--ms-text-body);
+}
+
+.dfh-prose .markdown-alert-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem;
+}
+
+.dfh-prose .markdown-alert p:last-child {
+  margin-bottom: 0;
+}
+
+.dfh-prose .markdown-alert-note {
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+}
+.dfh-prose .markdown-alert-note .markdown-alert-title {
+  color: var(--ms-blue);
+}
+
+.dfh-prose .markdown-alert-tip {
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+}
+.dfh-prose .markdown-alert-tip .markdown-alert-title {
+  color: var(--ms-green);
+}
+
+.dfh-prose .markdown-alert-important {
+  background: var(--ms-mauve-surface);
+  border-color: var(--ms-mauve);
+}
+.dfh-prose .markdown-alert-important .markdown-alert-title {
+  color: var(--ms-mauve);
+}
+
+.dfh-prose .markdown-alert-warning {
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-yellow);
+}
+.dfh-prose .markdown-alert-warning .markdown-alert-title {
+  color: var(--ms-yellow);
+}
+
+.dfh-prose .markdown-alert-caution {
+  background: var(--ms-red-surface);
+  border-color: var(--ms-red);
+}
+.dfh-prose .markdown-alert-caution .markdown-alert-title {
+  color: var(--ms-red);
+}
+
 .dfh-prose blockquote p,
 .dfh-prose blockquote li {
   color: inherit;

@@ -6,6 +6,7 @@ yarn.lock
 
 # Claude Code — ignore personal settings, keep shared skills
 .claude
+.claudian
 .agents
 docs/superpowers/
 .superpowers/
