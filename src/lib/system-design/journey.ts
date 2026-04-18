@@ -29,7 +29,18 @@ export const JOURNEY: Phase[] = [
             relatedFundamentalsSlugs: ['data-modeling'],
           },
         ],
-        reinforce: [],
+        reinforce: [
+          {
+            slug: 'permissions-roles-schema',
+            label: 'Design a Permissions and Roles Schema (RBAC)',
+            relatedFundamentalsSlugs: ['data-modeling'],
+          },
+          {
+            slug: 'multi-tenant-saas-schema',
+            label: 'Design a Multi-Tenant SaaS Schema',
+            relatedFundamentalsSlugs: ['data-modeling'],
+          },
+        ],
       },
       {
         id: 'api-design',
