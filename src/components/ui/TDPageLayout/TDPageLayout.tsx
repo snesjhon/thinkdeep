@@ -15,7 +15,7 @@ export function TDPageLayout({
   children,
 }: TDPageLayoutProps) {
   return (
-    <div className="grid min-h-screen grid-cols-[minmax(0,1fr)_260px]">
+    <div className="grid min-h-screen grid-cols-[minmax(0,1fr)_auto]">
       <div className="min-w-0">
         {hero}
         <div className="px-10 py-10 2xl:px-24">{children}</div>

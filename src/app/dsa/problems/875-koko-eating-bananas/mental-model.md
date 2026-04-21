@@ -28,60 +28,49 @@ Input: piles = [30,11,23,4,20], h = 6
 Output: 23
 ```
 
-## The Thermostat Testing Analogy
+## The Guard's Deadline
 
-Imagine a building manager trying to find the lowest thermostat setting that still warms every room before dawn. If he sets the thermostat too low, the building stays cold when the deadline arrives. If he sets it high enough, the whole building is warm on time.
+Koko wants to eat as slowly as possible. That sounds simple, but it changes how you think about the search. She is not looking for a specific speed that was decided in advance. She is asking: what is the minimum speed where I still finish before the guards return?
 
-The important part is monotonicity. A setting of `10` might be enough. If it is, then every higher setting also works because more heat never makes the building slower to warm up. If `10` is not enough, then every lower setting also fails for the same reason.
+That reframes the problem. The question is not "does speed 7 work?" It is "where does 'works' first become true on the speed range?" Every speed that works has one property: every faster speed also works. Every speed that fails has one property: every slower speed also fails. The boundary between them flips exactly once.
 
-So this is not an exact-hit search like "find the room already at 72 degrees." It is a boundary search. The manager is testing thermostat settings and asking one question each time: does this setting finish the job before the deadline? Binary Search works because the answers flip only once, from "too low" to "works."
+That single flip is what makes Binary Search the right tool. Koko does not need to test every speed from 1 upward. She probes the middle of the remaining range, checks whether it finishes in time, and cuts the range in half. The boundary she is hunting always survives in one half or the other.
 
 ## Understanding the Analogy
 
 ### The Setup
 
-The candidate speeds form an ordered line from `1` banana per hour up to `max(piles)` bananas per hour. Koko never needs to eat faster than the largest pile, because at that speed she can finish any single pile in one hour.
+The speed range runs from 1 banana per hour up to `max(piles)`. Koko never needs to eat faster than the largest pile, because at that speed she clears any single pile in one hour. Going faster wastes the constraint.
 
-That gives a clean search range:
+That gives the search range: `left = 1`, `right = max(piles)`. Koko does not need to find any working speed. She needs the slowest one, so the search always squeezes from the fast end toward the slow end.
 
-- `left = 1`
-- `right = Math.max(...piles)`
+### Testing One Speed
 
-The real question is not whether some speed is possible. Many speeds may work. The real question is where the first working speed begins.
+To test a candidate speed, total the hours each pile would cost at that rate. A pile of size `pile` at speed `k` costs `Math.ceil(pile / k)` hours, because Koko works on one pile per hour and any leftover capacity in that hour is gone. Adding that cost across every pile gives the total hours needed at this speed.
 
-### Testing One Setting
+That total is the test:
 
-To test one speed `k`, I simulate how many hours it would take to clear every pile at that speed.
-
-One pile of size `pile` costs `Math.ceil(pile / k)` hours, because Koko can only work on one pile per hour. If I add that cost across all piles, I get the total hours needed for speed `k`.
-
-That total acts like the thermostat test:
-
-- if `hoursNeeded(k) <= h`, this setting works
-- if `hoursNeeded(k) > h`, this setting is too low
+- if total hours <= `h`, this speed finishes in time
+- if total hours > `h`, this speed is too slow
 
 ### Why This Approach
 
-A linear search would try speeds `1, 2, 3, ...` until it found the first one that works. That solves the problem, but it wastes the monotone structure and can take `O(max(piles) * n)` time.
+Testing every speed from 1 upward works but ignores the structure of the problem. If speed `k` finishes in time, every faster speed also does. If speed `k` fails, every slower speed also fails. Feasibility only moves in one direction.
 
-Binary Search uses the fact that feasibility moves in one direction. If speed `k` works, every faster speed also works. If speed `k` fails, every slower speed also fails. That lets each midpoint test eliminate half the remaining speed settings, so the runtime becomes `O(n log max(piles))`.
+Binary Search uses that structure. Each probe cuts the remaining range in half, which is why the search takes `O(n log max(piles))` instead of `O(n * max(piles))`.
 
 ## How I Think Through This
 
-I translate the problem into: "find the first eating speed where `hoursNeeded(speed) <= h` becomes true." `left` and `right` surround the speeds that could still contain that first working setting. I am not searching banana piles directly. I am searching the answer space.
+I think of Koko starting in the middle of the speed range rather than the slow end. At each candidate speed, I total the hours across every pile. If the total fits the deadline, I try something slower. If it does not fit, I have to speed up.
 
-Inside the loop, I test `mid` by summing `Math.ceil(pile / mid)` across all piles. If that total fits within `h`, then `mid` is a certified working speed, but there may still be a slower working speed. So I squeeze left by moving `right` to `mid - 1`. If the total is too large, then `mid` is too slow, so every slower speed is also too slow and I move `left` to `mid + 1`.
-
-When the boundaries cross, the first working speed has been pinned down. `left` ends up parked on the smallest speed that still finishes on time.
+The shift from a normal binary search is that I am not looking for a specific value. I am hunting for where "finishes in time" first becomes true, starting from the fast side and squeezing left. So when a speed works, I do not stop. I keep searching slower. When the boundaries cross, the pointer lands on the slowest speed that survived every test.
 
 Take `piles = [3, 6, 7, 11]`, `h = 8`.
 
 :::trace-bs
 [
-  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":0,"mid":5,"right":10,"action":"check","label":"Clamp the full speed dial from 1 through 11. Probe speed 6. It needs 1 + 1 + 2 + 2 = 6 hours, so this setting works."},
-  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":0,"mid":2,"right":4,"action":"candidate","label":"A working setting might still be higher than necessary, so squeeze left. Probe speed 3. It needs 1 + 2 + 3 + 4 = 10 hours, so that setting is too low."},
-  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":3,"mid":3,"right":4,"action":"check","label":"Now only speeds 4 and 5 are still alive. Probe speed 4. It needs exactly 8 hours, so speed 4 works."},
-  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":3,"mid":null,"right":2,"action":"done","label":"The boundaries cross with the answer pointer on speed 4. That is the first working setting, so return 4."}
+  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":0,"mid":5,"right":10,"action":"check","label":"Probe speed 6. Hours needed: 1 + 1 + 2 + 2 = 6, which fits within 8. A slower speed might also work, so search left."},
+  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":0,"mid":2,"right":4,"action":"candidate","label":"The window now covers only speeds 1 through 5. Building the Algorithm walks through the rest."}
 ]
 :::
 
