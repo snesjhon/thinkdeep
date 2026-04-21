@@ -1,6 +1,4 @@
-// =============================================================================
-// Remove Duplicates from Sorted Array — Complete Solution
-// =============================================================================
+// Goal: Complete solution — writing hand catalogs every unique title in-place.
 
 function removeDuplicates(nums: number[]): number {
   // Writing hand starts at 1 — the first book is always the first unique title

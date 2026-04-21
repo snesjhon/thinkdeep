@@ -58,21 +58,29 @@ The librarian's two-hands technique costs no extra shelf space at all. Because t
 
 ## How I Think Through This
 
-I start by recognizing the problem is asking me to partition the array in-place: unique elements go to the front, and I need to report how many there are. I use two variables: `k` (the writing hand, my write-cursor) and `i` (the reading hand, my scanner). Both start at `1` because the element at index 0 is always the first unique title — nothing comes before it to duplicate. The one invariant I maintain is: everything from index `0` up to but not including `k` is already deduplicated and in its final position. When the reading hand finds `nums[i] !== nums[k-1]`, I copy `nums[i]` into `nums[k]` and increment `k`. At the end, `k` holds exactly the count of unique titles.
+The one question I ask at every position: **"Is the book in my reading hand a title I haven't yet catalogued?"** If it is, the writing hand records it and steps forward. If it is not, only the reading hand advances.
 
-Take `[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`.
+**When the reading hand finds a duplicate title:** the book matches the last title the writing hand placed. The curated section does not grow. Only the reading hand moves on; `k` stays.
+
+Take `[1, 1, 2]` with both hands at position 1.
 
 :::trace-lr
 [
-{"chars":[0,0,1,1,1,2,2,3,3,4],"L":1,"R":1,"action":null,"label":"`k=1` (writing hand), `i=1` (reading hand). \n `nums[i] = 0` matches `nums[k-1] = 0` \n skip."},
-{"chars":[0,1,1,1,1,2,2,3,3,4],"L":1,"R":2,"action":"null","label":"`i = 2` \n `nums[i] = 1` does not equal `nums[k-1] = 0` → write `1` to `nums[1]` \n `k = 2`."},
-{"chars":[0,1,1,1,1,2,2,3,3,4],"L":2,"R":3,"action":null,"label":"`i = 3` \n `nums[i] = 1` matches `nums[k-1] = 1` — skip."},
-{"chars":[0,1,2,1,1,2,2,3,3,4],"L":2,"R":5,"action":"match","label":"i=5: nums[i]=2 ≠ nums[k-1]=1 → write 2 to nums[2], k=3."},
-{"chars":[0,1,2,3,1,2,2,3,3,4],"L":3,"R":7,"action":"match","label":"i=7: nums[i]=3 ≠ nums[k-1]=2 → write 3 to nums[3], k=4."},
-{"chars":[0,1,2,3,4,2,2,3,3,4],"L":4,"R":9,"action":"match","label":"i=9: nums[i]=4 ≠ nums[k-1]=3 → write 4 to nums[4], k=5."},
-{"chars":[0,1,2,3,4,2,2,3,3,4],"L":4,"R":9,"action":"done","label":"Loop ends. Return k=5. Front: [0,1,2,3,4,...] ✓"}
+{"chars":[1,1,2],"L":1,"R":1,"action":null,"label":"k=1, i=1. nums[i]=1 matches nums[k-1]=1 — duplicate. Reading hand advances, writing hand stays."}
 ]
 :::
+
+**When the reading hand finds a new title:** the book differs from the last catalogued entry. The writing hand copies it into the next open slot and steps forward. `k` increments.
+
+Take `[1, 1, 2]` at i=2, k still at 1.
+
+:::trace-lr
+[
+{"chars":[1,2,2],"L":2,"R":2,"action":"match","label":"k=1, i=2. nums[i]=2 ≠ nums[k-1]=1 — new title. Write 2 to nums[1], k=2."}
+]
+:::
+
+Both hands start at `1` because the first book is always kept. The invariant is: everything from index `0` up to but not including `k` is already deduplicated and in its final position. At the end, `k` is the size of the curated section.
 
 ---
 
@@ -84,6 +92,21 @@ Each step introduces one concept from the Librarian's Two Hands, then a StackBli
 
 Before scanning anything, we set up the writing hand. The first book on the shelf is always unique — there's nothing before it to duplicate. So the writing hand starts at position `1`, meaning "the curated section already contains one book, and the next open slot is at index 1."
 
+:::trace-lr
+[
+{"chars":[1,1,2],"L":1,"R":1,"action":null,"label":"Writing hand (k) starts at 1. The first book is already in the curated section. Reading hand (i) is ready to scan from position 1."}
+]
+:::
+
+<details>
+<summary>Hints</summary>
+
+- The first element is always unique by definition — nothing precedes it to be a duplicate of.
+- Starting the writing hand at `0` would overwrite `nums[0]` on the first new title found, discarding the very first element.
+- Returning `k` gives the caller the count of unique elements in the front portion.
+
+</details>
+
 :::stackblitz{file="step1-problem.ts" step=1 total=2 solution="step1-solution.ts"}
 
 ### Step 2: Scan and Catalogue New Titles
@@ -93,27 +116,40 @@ Now the reading hand sweeps through every book from index `1` to the end. At eac
 - **Same title**: duplicate — skip. Reading hand moves on; writing hand stays.
 - **Different title**: new entry — copy to `nums[k]`, advance writing hand, then return the final count.
 
+:::trace-lr
+[
+{"chars":[1,1,2],"L":1,"R":1,"action":null,"label":"k=1, i=1. nums[i]=1 matches nums[k-1]=1 — duplicate. Skip."},
+{"chars":[1,2,2],"L":2,"R":2,"action":"match","label":"k=1, i=2. nums[i]=2 ≠ nums[k-1]=1 — new title. Write to nums[1], k=2."},
+{"chars":[1,2,2],"L":2,"R":2,"action":"done","label":"Loop ends. Return k=2."}
+]
+:::
+
+<details>
+<summary>Hints</summary>
+
+- Compare `nums[i]` against `nums[k-1]`, not `nums[i-1]`. The writing hand's last-placed book may be several positions behind the reading hand.
+- The writing hand can never overtake the reading hand — `i >= k` always holds, so `nums[k] = nums[i]` is always a safe overwrite.
+- The loop runs from `1`; position `0` is already handled by the initialization step.
+
+</details>
+
 :::stackblitz{file="step2-problem.ts" step=2 total=2 solution="step2-solution.ts"}
 
 ---
 
 ## Tracing through an Example
 
-Input: `[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`
+Input: `[1, 1, 2, 3, 3, 4]`
 
-| Step  | Reading Hand (i) | nums[i] | Writing Hand (k) | Last Placed (nums[k-1]) | New Title? | Action                 | Curated Section   |
-| ----- | ---------------- | ------- | ---------------- | ----------------------- | ---------- | ---------------------- | ----------------- |
-| Start | 1                | 0       | 1                | 0                       | —          | initialize             | [0, ...]          |
-| i=1   | 1                | 0       | 1                | 0                       | No         | skip                   | [0, ...]          |
-| i=2   | 2                | 1       | 1                | 0                       | Yes        | write 1 → nums[1], k=2 | [0, 1, ...]       |
-| i=3   | 3                | 1       | 2                | 1                       | No         | skip                   | [0, 1, ...]       |
-| i=4   | 4                | 1       | 2                | 1                       | No         | skip                   | [0, 1, ...]       |
-| i=5   | 5                | 2       | 2                | 1                       | Yes        | write 2 → nums[2], k=3 | [0, 1, 2, ...]    |
-| i=6   | 6                | 2       | 3                | 2                       | No         | skip                   | [0, 1, 2, ...]    |
-| i=7   | 7                | 3       | 3                | 2                       | Yes        | write 3 → nums[3], k=4 | [0, 1, 2, 3, ...] |
-| i=8   | 8                | 3       | 4                | 3                       | No         | skip                   | [0, 1, 2, 3, ...] |
-| i=9   | 9                | 4       | 4                | 3                       | Yes        | write 4 → nums[4], k=5 | [0, 1, 2, 3, 4]   |
-| Done  | —                | —       | 5                | —                       | —          | return 5               | [0, 1, 2, 3, 4]   |
+| Step  | Reading Hand (i) | nums[i] | Writing Hand (k) | Last Placed (nums[k-1]) | New Title? | Action                  | Curated Section      |
+| ----- | ---------------- | ------- | ---------------- | ----------------------- | ---------- | ----------------------- | -------------------- |
+| Start | 1                | 1       | 1                | 1                       | —          | initialize              | [1, ...]             |
+| i=1   | 1                | 1       | 1                | 1                       | No         | skip                    | [1, ...]             |
+| i=2   | 2                | 2       | 1                | 1                       | Yes        | write 2 → nums[1], k=2  | [1, 2, ...]          |
+| i=3   | 3                | 3       | 2                | 2                       | Yes        | write 3 → nums[2], k=3  | [1, 2, 3, ...]       |
+| i=4   | 4                | 3       | 3                | 3                       | No         | skip                    | [1, 2, 3, ...]       |
+| i=5   | 5                | 4       | 3                | 3                       | Yes        | write 4 → nums[3], k=4  | [1, 2, 3, 4]         |
+| Done  | —                | —       | 4                | —                       | —          | return 4                | [1, 2, 3, 4]         |
 
 ---
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { CircleChevronRight } from 'lucide-react';
 import { pColor } from '../pathUtils';
 import styles from './PathComponents.module.css';
 
@@ -131,6 +132,30 @@ export function PlaceholderGuideCard({
       <div className="self-start py-[7px] px-4 rounded-[6px] text-[0.8rem] font-semibold select-none bg-[var(--ms-bg-pane-tertiary)] border border-[var(--ms-surface)] text-[var(--ms-text-faint)]">
         Coming soon
       </div>
+    </div>
+  );
+}
+
+// ── Adv section toggle ────────────────────────────────────────────────────────
+
+export function AdvSection({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="appearance-none flex items-center gap-2 rounded-md border-none bg-transparent px-0 py-[6px] text-left outline-none hover:opacity-80 focus:outline-none focus:ring-0 focus-visible:outline-none"
+      >
+        <CircleChevronRight
+          aria-hidden="true"
+          className={`h-3.5 w-3.5 shrink-0 text-[var(--ms-text-body)] transition-transform duration-200 ${open ? 'rotate-90' : ''}`}
+        />
+        <span className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--ms-text-muted)]">
+          Advanced
+        </span>
+      </button>
+      {open && <div>{children}</div>}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   PhaseBannerContent,
   StepGuideCard,
   PlaceholderGuideCard,
+  AdvSection,
 } from '@/components/ui/PathComponents/PathComponents';
 import { ProgressToggle } from '@/components/ui/ProgressToggle/ProgressToggle';
 import { SectionProgress } from '@/components/ui/SectionProgress/SectionProgress';
@@ -19,40 +20,20 @@ type PMap = Record<string, { title: string; hasMentalModel: boolean }>;
 type SectionEntry = {
   section: JourneySection;
   phase: Phase;
-  revisitIds: string[];
-  revisitFromLabel: string;
   stepNum: number;
 };
 
 function buildCurriculum(): SectionEntry[] {
   const entries: SectionEntry[] = [];
-  let pendingIds: string[] = [];
-  let pendingFrom = '';
   let stepNum = 0;
 
   JOURNEY.forEach((phase) => {
     phase.sections.forEach((section) => {
       stepNum++;
-      entries.push({
-        section,
-        phase,
-        revisitIds: pendingIds,
-        revisitFromLabel: pendingFrom,
-        stepNum,
-      });
-      pendingIds = section.reinforce.map((p) => p.id);
-      pendingFrom = section.label;
+      entries.push({ section, phase, stepNum });
     });
   });
 
-  if (pendingIds.length > 0 && entries.length > 0) {
-    const last = entries[entries.length - 1];
-    entries[entries.length - 1] = {
-      ...last,
-      revisitIds: [...last.revisitIds, ...pendingIds],
-      revisitFromLabel: last.revisitFromLabel || pendingFrom,
-    };
-  }
   return entries;
 }
 
@@ -124,13 +105,12 @@ export default async function PathPage() {
                 />
 
                 {entries.map((entry, entryIdx) => {
-                  const { section, revisitIds, revisitFromLabel, stepNum } =
-                    entry;
+                  const { section, stepNum } = entry;
                   const accent = color;
                   const stepLabel = String(stepNum).padStart(2, '0');
                   const hasNewProblems = section.firstPass.length > 0;
-                  const hasRevisits = revisitIds.length > 0;
-                  const hasAnyProblems = hasNewProblems || hasRevisits;
+                  const hasAdvProblems = section.reinforce.length > 0;
+                  const hasAnyProblems = hasNewProblems || hasAdvProblems;
                   const isLast = entryIdx === entries.length - 1;
 
                   const firstPassItemIds = section.firstPass.map((p) => `dsa-${p.id}`);
@@ -180,7 +160,7 @@ export default async function PathPage() {
                         )}
 
                         {hasNewProblems && (
-                          <div className={hasRevisits ? 'mb-5' : ''}>
+                          <div className={hasAdvProblems ? 'mb-5' : ''}>
                             <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ms-text-faint)]">
                               Practice
                             </p>
@@ -215,18 +195,15 @@ export default async function PathPage() {
                           </div>
                         )}
 
-                        {hasRevisits && (
-                          <div>
-                            <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ms-peach)]">
-                              Also revisit — from {revisitFromLabel}
-                            </p>
-                            {revisitIds.map((id) => {
+                        {hasAdvProblems && (
+                          <AdvSection>
+                            {section.reinforce.map(({ id }) => {
                               const p = problemMap[id];
                               if (!p) return null;
                               const itemId = `dsa-${id}`;
                               return (
                                 <div
-                                  key={`r-${id}`}
+                                  key={`adv-${id}`}
                                   className="flex items-center gap-1 py-[5px]"
                                 >
                                   <ProgressToggle
@@ -238,9 +215,6 @@ export default async function PathPage() {
                                     href={`/dsa/problems/${id}`}
                                     className={`${pathStyles.problemLink} flex items-baseline`}
                                   >
-                                    <span className="text-xs shrink-0 w-5 leading-none text-[var(--ms-peach)]">
-                                      ↩
-                                    </span>
                                     <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--ms-text-faint)]">
                                       {id}
                                     </span>
@@ -251,7 +225,7 @@ export default async function PathPage() {
                                 </div>
                               );
                             })}
-                          </div>
+                          </AdvSection>
                         )}
                       </div>
                     </div>

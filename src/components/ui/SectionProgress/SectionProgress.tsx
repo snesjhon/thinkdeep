@@ -48,11 +48,11 @@ export function SectionProgress({
         onClick={handleSectionToggle}
         disabled={isPending}
         aria-label={sectionDone ? 'Mark section incomplete' : 'Mark section complete'}
-        className={`shrink-0 bg-transparent p-0 transition-opacity ${isPending ? 'opacity-50' : 'opacity-100'}`}
+        className={`shrink-0 border-none bg-transparent p-0 outline-none transition-opacity focus:outline-none focus-visible:outline-none ${isPending ? 'opacity-50' : 'opacity-100'}`}
       >
         <Icon
           aria-hidden="true"
-          className={`h-3.5 w-3.5 shrink-0 ${sectionDone ? 'text-[var(--ms-primary)]' : ''}`}
+          className={`h-3.5 w-3.5 shrink-0 ${sectionDone ? 'text-[var(--ms-primary)]' : 'text-[var(--ms-text-subtle)]'}`}
         />
       </button>
     </div>

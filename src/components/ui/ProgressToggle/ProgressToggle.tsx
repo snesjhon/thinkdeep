@@ -32,7 +32,7 @@ export function ProgressToggle({ itemType, itemId, initialCompleted }: Props) {
       onClick={handleToggle}
       disabled={isPending}
       aria-label={completed ? 'Mark incomplete' : 'Mark complete'}
-      className={`shrink-0 bg-transparent p-0 transition-opacity ${isPending ? 'opacity-50' : 'opacity-100'}`}
+      className={`shrink-0 border-none bg-transparent p-0 outline-none transition-opacity focus:outline-none focus-visible:outline-none ${isPending ? 'opacity-50' : 'opacity-100'}`}
     >
       <Icon
         aria-hidden="true"
