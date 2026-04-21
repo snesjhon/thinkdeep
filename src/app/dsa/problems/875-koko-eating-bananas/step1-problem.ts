@@ -1,28 +1,19 @@
-// Goal: Probe the midpoint eating speed and return it only when that speed
-//       works and the next slower speed fails.
+// Goal: Build a helper that tests whether a given eating k can finish
+//       all piles within h hours.
 
-function minEatingSpeed(piles: number[], h: number): number {
+function canFinishAtSpeed(piles: number[], h: number, k: number): boolean {
   throw new Error('not implemented');
 }
 
 // ---Tests
-runCase('single pile with one hour needs speed 1', () => minEatingSpeed([1], 1), 1);
-runCase('the first midpoint can already be the answer', () => minEatingSpeed([8, 8, 8, 8], 8), 4);
-runCase('another direct certification at the midpoint', () => minEatingSpeed([10, 10, 10, 10], 8), 5);
-runCase('mixed piles can still certify the first midpoint', () => minEatingSpeed([4, 4, 4, 4], 8), 2);
+runCase('k 4 finishes [3,6,7,11] in exactly 8 hours', () => canFinishAtSpeed([3, 6, 7, 11], 8, 4), true);
+runCase('k 3 needs 10 hours for [3,6,7,11], so it fails', () => canFinishAtSpeed([3, 6, 7, 11], 8, 3), false);
+runCase('k equal to pile size clears uniform piles in n hours', () => canFinishAtSpeed([8, 8, 8, 8], 8, 8), true);
+runCase('k 4 also works for uniform piles of 8 in 8 hours', () => canFinishAtSpeed([8, 8, 8, 8], 8, 4), true);
+runCase('k 1 fails when total bananas exceed h', () => canFinishAtSpeed([5, 5, 5, 5], 4, 1), false);
 // ---End Tests
 
 // ---Helpers
-function canFinishAtSpeed(piles: number[], h: number, speed: number): boolean {
-  let hoursNeeded = 0;
-
-  for (const pile of piles) {
-    hoursNeeded += Math.ceil(pile / speed);
-  }
-
-  return hoursNeeded <= h;
-}
-
 function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
