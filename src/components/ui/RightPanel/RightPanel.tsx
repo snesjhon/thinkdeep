@@ -1,9 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { ThemeSwitcher } from '../ThemeSwitcher/ThemeSwitcher';
 import { UserAvatarDropdown } from '../UserAvatarDropdown/UserAvatarDropdown';
+import {
+  RIGHT_PANEL_COLLAPSED_STORAGE_KEY,
+  readStoredBoolean,
+  writeStoredBoolean,
+} from '@/lib/sidebarState';
 
 interface RightPanelProps {
   progress?: React.ReactNode;
@@ -11,7 +16,19 @@ interface RightPanelProps {
 }
 
 export function RightPanel({ progress, toc }: RightPanelProps) {
+  const hasLoadedCollapsedState = useRef(false);
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    setCollapsed(readStoredBoolean(RIGHT_PANEL_COLLAPSED_STORAGE_KEY, false));
+    hasLoadedCollapsedState.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!hasLoadedCollapsedState.current) return;
+
+    writeStoredBoolean(RIGHT_PANEL_COLLAPSED_STORAGE_KEY, collapsed);
+  }, [collapsed]);
 
   return (
     <aside

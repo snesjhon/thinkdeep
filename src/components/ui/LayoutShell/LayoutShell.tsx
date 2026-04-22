@@ -5,6 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { TDIcon } from '@/components/ui/TDIcon/TDIcon';
 import { SiteNav } from '@/components/ui/SiteNav/SiteNav';
+import {
+  LEFT_SIDEBAR_COLLAPSED_STORAGE_KEY,
+  readStoredBoolean,
+  writeStoredBoolean,
+} from '@/lib/sidebarState';
 
 const FULLWIDTH_ROUTES = new Set([
   '/',
@@ -31,6 +36,7 @@ export function LayoutShell({
 }: LayoutShellProps) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement | null>(null);
+  const hasLoadedSidebarState = useRef(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
@@ -49,12 +55,28 @@ export function LayoutShell({
   }, [pathname]);
 
   useEffect(() => {
+    setSidebarCollapsed(
+      readStoredBoolean(LEFT_SIDEBAR_COLLAPSED_STORAGE_KEY, false),
+    );
+    hasLoadedSidebarState.current = true;
+  }, []);
+
+  useEffect(() => {
     setScrolled(false);
     const onScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!hasLoadedSidebarState.current) return;
+
+    writeStoredBoolean(
+      LEFT_SIDEBAR_COLLAPSED_STORAGE_KEY,
+      sidebarCollapsed,
+    );
+  }, [sidebarCollapsed]);
 
   if (isFullwidth) {
     return (
