@@ -28,49 +28,54 @@ Input: piles = [30,11,23,4,20], h = 6
 Output: 23
 ```
 
-## The Guard's Deadline
+## The Analogy: The Guard's Deadline
 
-Koko wants to eat as slowly as possible. That sounds simple, but it changes how you think about the search. She is not looking for a specific speed that was decided in advance. She is asking: what is the minimum speed where I still finish before the guards return?
+### What are we actually searching for?
 
-That reframes the problem. The question is not "does speed 7 work?" It is "where does 'works' first become true on the speed range?" Every speed that works has one property: every faster speed also works. Every speed that fails has one property: every slower speed also fails. The boundary between them flips exactly once.
+Koko wants to eat as slowly as possible, but she has a hard deadline. She is not looking for a speed that was decided in advance — she is asking: what is the minimum speed where I still finish before the guards return?
 
-That single flip is what makes Binary Search the right tool. Koko does not need to test every speed from 1 upward. She probes the middle of the remaining range, checks whether it finishes in time, and cuts the range in half. The boundary she is hunting always survives in one half or the other.
+That reframes the problem. The question is not "does speed 7 work?" It is "where does 'works' first become true?" Once you see it that way, you are not solving a calculation problem. You are searching for a boundary.
 
-## Understanding the Analogy
+### The Speed Dial
 
-### The Setup
+Think of every possible eating speed as a dial with numbered notches. Turn it all the way left and Koko barely eats anything per hour — she will never finish in time. Turn it all the way right and she tears through every pile as fast as possible.
 
-The speed range runs from 1 banana per hour up to `max(piles)`. Koko never needs to eat faster than the largest pile, because at that speed she already clears any single pile in one hour. Going faster would not reduce the hour count any further.
+Somewhere on that dial there is a boundary. Every notch to the left of it is too slow. Every notch at or to the right of it is fast enough. Your job is to find that boundary — specifically the leftmost notch that still works.
 
-That gives the search range: `left = 1`, `right = max(piles)`. Koko does not need to find any working speed. She needs the slowest one, so the search always squeezes from the fast end toward the slow end.
+### How we define the range
 
-### Testing One Speed
+Each pile has a floor: one hour. Koko works on one pile per hour and cannot do less than that, no matter how fast she eats.
 
-To test a candidate speed, total the hours each pile would cost at that rate. A pile of size `pile` at speed `k` costs `Math.ceil(pile / k)` hours, because Koko works on one pile per hour and any leftover capacity in that hour is gone. Adding that cost across every pile gives the total hours needed at this speed.
+The bigger a pile is, the faster she needs to eat to clear it in that one hour. A small pile hits its floor at a low speed. A large pile needs a higher speed to get there. The biggest pile is the hardest — it needs the highest speed. But once her speed reaches the size of that pile, every smaller pile already fits in one hour too.
 
-That total is the test:
+That is why `max(piles)` is the ceiling. It is the speed at which every pile — including the hardest one — has hit its floor. Searching beyond it changes nothing.
 
-- if total hours <= `h`, this speed finishes in time
-- if total hours > `h`, this speed is too slow
+So the range we search is every candidate speed from `1` to `max(piles)`. That range is just a sorted list of integers — not the pile array. `piles` never gets searched. It only appears when we evaluate a candidate speed to see how many total hours it would take.
 
-### Why This Approach
+### The one flip that makes binary search valid
 
-Testing every speed from 1 upward works but ignores the structure of the problem. If `k` finishes in time, every faster speed also does. If `k` fails, every slower speed also fails. Feasibility only moves in one direction.
+Every speed that works has one property: every faster speed also works. Every speed that fails has one property: every slower speed also fails. The boundary between them flips exactly once — from "too slow" to "fast enough" — and never flips back.
 
-Binary Search uses that structure. Each probe cuts the remaining range in half, which is why the search takes `O(n log max(piles))` instead of `O(n * max(piles))`.
+That single flip is what makes Binary Search the right tool. You do not need to test every notch. You probe the middle of the remaining range, check whether it finishes in time, and cut the range in half. The boundary always survives in one half or the other.
 
-## How I Think Through This
+### Testing a speed
 
-I think of Koko starting in the middle of the speed range rather than the slow end. At each candidate speed, I total the hours across every pile. If the total fits the deadline, I try something slower. If it does not fit, I have to speed up.
+To test any candidate speed, you walk every pile and calculate how many hours that pile would take at that speed. A pile rarely divides evenly — any leftover bananas still cost a full hour, so you always round up. Sum those hours across every pile. If the total fits within `h`, the speed works. If not, it fails. That check is all you need to decide which half of the dial to keep searching.
 
-The shift from a normal binary search is that I am not looking for a specific value. I am hunting for where "finishes in time" first becomes true, starting from the fast side and squeezing left. So when a speed works, I do not stop. I keep searching slower. When the boundaries cross, the pointer lands on the slowest speed that survived every test.
+### How I Think Through This
+
+I picture Koko starting in the middle of the dial rather than the slow end. I probe that midpoint, total the hours across every pile, and ask: does this fit the deadline?
+
+If it does, I do not stop — there might be a slower notch that also works. I squeeze left. If it does not, I move right. Each probe cuts the remaining dial in half.
+
+When the two cursors cross, `left` is sitting on the first notch that survived every test. That is the answer.
 
 Take `piles = [3, 6, 7, 11]`, `h = 8`.
 
 :::trace-bs
 [
-  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":0,"mid":5,"right":10,"action":"check","label":"Probe speed 6. Hours needed: 1 + 1 + 2 + 2 = 6, which fits within 8. A slower speed might also work, so search left."},
-  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":0,"mid":2,"right":4,"action":"candidate","label":"The window now covers only speeds 1 through 5. Building the Algorithm walks through the rest."}
+  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":0,"mid":5,"right":10,"action":"check","label":"Probe speed 6. Hours needed: ceil(3/6) + ceil(6/6) + ceil(7/6) + ceil(11/6) = 1 + 1 + 2 + 2 = 6. Fits within 8 — a slower speed might also work, so squeeze left."},
+  {"values":[1,2,3,4,5,6,7,8,9,10,11],"left":0,"mid":2,"right":4,"action":"candidate","label":"Speed 6 worked, so the boundary must lie somewhere in speeds 1 through 5. The window has been cut in half — keep probing."}
 ]
 :::
 
@@ -80,9 +85,9 @@ Take `piles = [3, 6, 7, 11]`, `h = 8`.
 
 ### Step 1: Build the Hours Helper
 
-Before the search can begin, you need a way to test any candidate speed. Write `canFinishAtSpeed` — walk each pile in `piles`, figure out how many hours that pile costs at speed `k`, and return whether the total stays within `h`.
+Before you can probe any notch on the dial, you need a way to test it. Write `canFinishAtSpeed` — walk each pile in `piles`, figure out how many hours that pile costs at speed `k`, and return whether the total stays within `h`.
 
-The key detail: Koko works on one pile per hour and any leftover capacity in that hour is gone. A pile she cannot clear in one sitting still costs a full hour per sitting.
+Why `Math.ceil(pile / k)`? Koko works on one pile per hour and any leftover capacity in that hour is gone. A pile of 7 bananas at speed 3 takes 3 hours, not 2.33 — the partial third sitting still costs a full hour. Rounding up captures that.
 
 :::stackblitz{file="step1-problem.ts" step=1 total=3 solution="step1-solution.ts"}
 
@@ -96,7 +101,9 @@ The key detail: Koko works on one pile per hour and any leftover capacity in tha
 
 ### Step 2: Find a Working Speed
 
-Set up a [Binary Search](/fundamentals/binary-search) over the range of possible speeds — from `1` to `max(piles)` — probe the midpoint, and call `canFinishAtSpeed`. If the midpoint works, return it. For now, don't worry about whether it is the minimum.
+Now set up the dial. The left edge is `1` — the slowest speed that makes any progress. The right edge is `max(piles)` — at that speed, Koko clears the biggest pile in exactly one hour, so going faster would not reduce the total hour count any further. Those two ends define the only notches worth searching.
+
+Set up a [Binary Search](/fundamentals/binary-search) over that range, probe the midpoint, and call `canFinishAtSpeed`. If the midpoint works, return it. For now, don't worry about whether it is the minimum.
 
 Take `piles = [8, 8, 8, 8]`, `h = 8`.
 
@@ -119,7 +126,7 @@ Take `piles = [8, 8, 8, 8]`, `h = 8`.
 
 ### Step 3: Squeeze to the Minimum Working Speed
 
-Returning `mid` finds a working speed, but not necessarily the minimum. Replace `return mid` with `right = mid - 1` to keep searching left for a slower option. Fill in the failing branch with `left = mid + 1`. After the loop ends, `left` holds the minimum speed that passed every test.
+Finding *a* working speed is not the goal — finding the *minimum* working speed is. When a notch works, you cannot stop; there might be a slower one that also works. Replace `return mid` with `right = mid - 1` to keep squeezing left. Fill in the failing branch with `left = mid + 1`. After the loop, `left` is sitting on the leftmost notch that survived every test — the boundary you were hunting for.
 
 Take `piles = [30, 11, 23, 4, 20]`, `h = 6`.
 
@@ -159,7 +166,7 @@ Take `piles = [25, 10, 23, 4]`, `h = 7`.
 ]
 :::
 
-## Thermostat Boundary at a Glance
+## Speed Dial at a Glance
 
 ```mermaid
 flowchart TD
@@ -174,12 +181,15 @@ flowchart TD
     H --> B
 ```
 
-## Common Misconceptions
+## Recognizing This Pattern
 
-- **"Binary Search is over the pile array"**: no. The sorted thing here is the speed dial from `1` to `max(piles)`, not the input array.
-- **"If one speed works, return it immediately"**: that can miss a slower speed that also works. The correct mental model is to keep squeezing left until you find the first working setting.
-- **"`pile / speed` is already the number of hours"**: only after rounding up. A pile with 7 bananas at speed 3 still costs 3 hours, not 2.33.
-- **"The answer needs a separate `answer` variable"**: it can, but it does not have to. In this lower-bound pattern, `left` lands on the minimum working speed after the loop.
+Reach for binary search on an answer space when three things are true:
+
+- The problem asks for a minimum or maximum value, not a position in an array.
+- That value lives in a natural sorted range — here, every integer from `1` to `max(piles)`.
+- There is a monotonic condition: if speed `k` works, then `k + 1` also works; if `k` fails, `k - 1` also fails. One flip, never two.
+
+The tell is when you catch yourself thinking "I need to check every possible value" — that is the brute-force instinct. When checking one candidate is cheap (one pass through `piles`) but the range is large, binary search on that range collapses the work from O(n · max) to O(n · log max).
 
 ## Complete Solution
 
