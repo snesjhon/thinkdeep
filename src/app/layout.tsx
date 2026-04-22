@@ -3,6 +3,7 @@ import { Newsreader, Plus_Jakarta_Sans, JetBrains_Mono, Caveat } from 'next/font
 import { LayoutShell } from '@/components/ui/LayoutShell/LayoutShell';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
+import { getSidebarStateInitScript } from '@/lib/sidebarState';
 import { getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
 import { getAllFundamentalsSlugs as getAllSystemDesignFundamentalsSlugs } from '@/lib/system-design/fundamentals';
 import { DEFAULT_THEME_FLAVOR, getThemeInitScript } from '@/lib/theme';
@@ -59,6 +60,7 @@ export default async function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: getThemeInitScript() }} />
+        <script dangerouslySetInnerHTML={{ __html: getSidebarStateInitScript() }} />
       </head>
       <body className="min-h-screen bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)]">
         <LayoutShell

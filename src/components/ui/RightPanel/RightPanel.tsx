@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { ThemeSwitcher } from '../ThemeSwitcher/ThemeSwitcher';
 import { UserAvatarDropdown } from '../UserAvatarDropdown/UserAvatarDropdown';
@@ -16,27 +16,27 @@ interface RightPanelProps {
 }
 
 export function RightPanel({ progress, toc }: RightPanelProps) {
-  const hasLoadedCollapsedState = useRef(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [hasLoadedCollapsedState, setHasLoadedCollapsedState] = useState(false);
 
   useEffect(() => {
     setCollapsed(readStoredBoolean(RIGHT_PANEL_COLLAPSED_STORAGE_KEY, false));
-    hasLoadedCollapsedState.current = true;
+    setHasLoadedCollapsedState(true);
   }, []);
 
   useEffect(() => {
-    if (!hasLoadedCollapsedState.current) return;
+    if (!hasLoadedCollapsedState) return;
 
     writeStoredBoolean(RIGHT_PANEL_COLLAPSED_STORAGE_KEY, collapsed);
-  }, [collapsed]);
+  }, [collapsed, hasLoadedCollapsedState]);
 
   return (
     <aside
-      className={`sticky top-0 flex h-screen flex-col border-l border-l-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] transition-[width] duration-200 ease-out ${
-        collapsed ? 'w-[60px]' : 'w-[260px]'
-      }`}
+      className="sticky top-0 flex h-screen flex-col border-l border-l-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] transition-[width] duration-200 ease-out"
+      style={{ width: 'var(--right-panel-width, 260px)' }}
     >
       <div
+        data-right-panel-toggle-row
         className={`${collapsed ? 'px-2' : 'px-4'} shrink-0 py-2`}
         style={{ boxShadow: 'inset 0 -1px 0 var(--ms-surface)' }}
       >
@@ -68,8 +68,13 @@ export function RightPanel({ progress, toc }: RightPanelProps) {
 
       {!collapsed ? (
         <>
-          <div className="min-h-0 overflow-y-auto p-4">{toc}</div>
-          <div className="flex-1 border-t border-t-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-4">
+          <div data-right-panel-body className="min-h-0 overflow-y-auto p-4">
+            {toc}
+          </div>
+          <div
+            data-right-panel-progress
+            className="flex-1 border-t border-t-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-4"
+          >
             {progress ? progress : null}
           </div>
         </>
@@ -79,6 +84,7 @@ export function RightPanel({ progress, toc }: RightPanelProps) {
 
       <div className="shrink-0 border-t border-t-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
         <div
+          data-right-panel-footer
           className={`flex items-center ${collapsed ? 'flex-col justify-center gap-3 px-2 py-3' : 'justify-between p-4'}`}
         >
           <UserAvatarDropdown compact />

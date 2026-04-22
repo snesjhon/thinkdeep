@@ -157,17 +157,22 @@ export function SiteNav({
   return (
     <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
       <div
+        data-left-sidebar-brand
         className={`shrink-0 pb-[14px] pt-[18px] ${collapsed ? 'px-3' : 'px-4'}`}
       >
         <Link
           href="/"
+          data-left-sidebar-brand-link
           className={`no-underline flex items-center focus:outline-none ${collapsed ? 'justify-center' : 'gap-[10px]'}`}
         >
           <span className="text-[var(--ms-text-body)]">
             <TDIcon size={26} />
           </span>
           {!collapsed && (
-            <span className="text-[1.05rem] font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">
+            <span
+              data-left-sidebar-brand-text
+              className="text-[1.05rem] font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]"
+            >
               thinkdeep
             </span>
           )}
@@ -178,15 +183,18 @@ export function SiteNav({
         {(isDsaPage || isSystemDesignPage) && (
           <>
             <div
+              data-left-sidebar-header
               className={`${collapsed ? 'px-3 ' : 'pl-4 pr-2'} py-3`}
               style={{ boxShadow: 'inset 0 -1px 0 var(--ms-surface)' }}
             >
               <div
+                data-left-sidebar-header-row
                 className={`flex items-center ${collapsed ? 'justify-center' : 'justify-between gap-2'}`}
               >
                 {!collapsed && (
                   <Link
                     href={isSystemDesignPage ? '/system-design/path' : '/dsa/path'}
+                    data-left-sidebar-back-link
                     className="flex min-w-0 items-center gap-2 text-[0.775rem] font-normal text-[var(--ms-text-body)] no-underline transition-colors visited:text-[var(--ms-text-body)] hover:text-[var(--ms-primary)] focus:outline-none focus-visible:outline-none active:outline-none"
                   >
                     <ChevronLeft

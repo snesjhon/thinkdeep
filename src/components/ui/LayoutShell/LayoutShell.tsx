@@ -36,8 +36,8 @@ export function LayoutShell({
 }: LayoutShellProps) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement | null>(null);
-  const hasLoadedSidebarState = useRef(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [hasLoadedSidebarState, setHasLoadedSidebarState] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
   const isHome = pathname === '/';
@@ -58,7 +58,7 @@ export function LayoutShell({
     setSidebarCollapsed(
       readStoredBoolean(LEFT_SIDEBAR_COLLAPSED_STORAGE_KEY, false),
     );
-    hasLoadedSidebarState.current = true;
+    setHasLoadedSidebarState(true);
   }, []);
 
   useEffect(() => {
@@ -70,13 +70,13 @@ export function LayoutShell({
   }, [pathname]);
 
   useEffect(() => {
-    if (!hasLoadedSidebarState.current) return;
+    if (!hasLoadedSidebarState) return;
 
     writeStoredBoolean(
       LEFT_SIDEBAR_COLLAPSED_STORAGE_KEY,
       sidebarCollapsed,
     );
-  }, [sidebarCollapsed]);
+  }, [hasLoadedSidebarState, sidebarCollapsed]);
 
   if (isFullwidth) {
     return (
@@ -146,7 +146,7 @@ export function LayoutShell({
     <div
       className="grid"
       style={{
-        gridTemplateColumns: sidebarCollapsed ? '60px 1fr' : '260px 1fr',
+        gridTemplateColumns: 'var(--layout-shell-columns, 260px 1fr)',
         transition: 'grid-template-columns 200ms ease',
       }}
     >
