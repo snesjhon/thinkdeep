@@ -18,6 +18,9 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'data-modeling',
         fundamentalsBlurb: 'Entity identification, relationship mapping, normalization trade-offs, and constraints as data integrity guarantees — before any system can scale, it needs a solid schema.',
         practiceSlug: 'data-modeling',
+        concepts: [
+          { slug: 'business-rule-enforcement', label: 'Business Rule Enforcement' },
+        ],
         firstPass: [
           {
             slug: 'yogurt-ordering-system',

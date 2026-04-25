@@ -27,6 +27,7 @@ interface LayoutShellProps {
   availableSystemDesignScenarioSlugs: string[];
   availableSystemDesignFundamentalsSlugs: string[];
   availableSystemDesignPracticeSlugs: string[];
+  availableSystemDesignConceptSlugs: string[];
 }
 
 export function LayoutShell({
@@ -36,6 +37,7 @@ export function LayoutShell({
   availableSystemDesignScenarioSlugs,
   availableSystemDesignFundamentalsSlugs,
   availableSystemDesignPracticeSlugs,
+  availableSystemDesignConceptSlugs,
 }: LayoutShellProps) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement | null>(null);
@@ -161,6 +163,7 @@ export function LayoutShell({
           availableSystemDesignFundamentalsSlugs
         }
         availableSystemDesignPracticeSlugs={availableSystemDesignPracticeSlugs}
+        availableSystemDesignConceptSlugs={availableSystemDesignConceptSlugs}
         collapsed={sidebarCollapsed}
         onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
       />

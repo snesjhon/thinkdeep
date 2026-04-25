@@ -49,11 +49,17 @@ export interface JourneyPanelItem {
   prefix?: string;
 }
 
+export interface JourneyPanelConcept {
+  slug: string;
+  label: string;
+}
+
 export interface JourneyPanelSection {
   id: string;
   label: string;
   fundamentalsSlug?: string;
   practiceSlug?: string;
+  concepts?: JourneyPanelConcept[];
   items: JourneyPanelItem[];
   revisitItems?: JourneyPanelItem[];
   revisitFromLabel?: string;
@@ -74,12 +80,15 @@ export interface JourneyPanelProps {
   activeItemKey: string | null;
   activeFundamentalsSlug: string | null;
   activePracticeSlug: string | null;
+  activeConceptSlug: string | null;
   availableItemKeys: Set<string>;
   availableFundamentalsSlugs: Set<string>;
   availablePracticeSlugs: Set<string>;
+  availableConceptSlugs: Set<string>;
   getItemHref: (key: string) => string;
   getFundamentalsHref: (slug: string) => string;
   getPracticeHref: (slug: string) => string;
+  getConceptHref: (slug: string) => string;
   progressItemIdPrefix?: string;
   progressFundamentalsIdPrefix?: string;
   compact?: boolean;
@@ -217,12 +226,15 @@ export function JourneyPanel({
   activeItemKey,
   activeFundamentalsSlug,
   activePracticeSlug,
+  activeConceptSlug,
   availableItemKeys,
   availableFundamentalsSlugs,
   availablePracticeSlugs,
+  availableConceptSlugs,
   getItemHref,
   getFundamentalsHref,
   getPracticeHref,
+  getConceptHref,
   progressItemIdPrefix = 'dsa-',
   progressFundamentalsIdPrefix = 'dsa-fundamentals-',
   compact = false,
@@ -515,6 +527,22 @@ export function JourneyPanel({
                         label="Practice"
                       />
                     )}
+                  {(section.concepts ?? [])
+                    .filter((c) => availableConceptSlugs.has(c.slug))
+                    .map((concept) => (
+                      <NavItem
+                        key={concept.slug}
+                        itemRef={
+                          activeConceptSlug === concept.slug
+                            ? activeItemRef
+                            : undefined
+                        }
+                        href={getConceptHref(concept.slug)}
+                        isActive={activeConceptSlug === concept.slug}
+                        mark={<ProgressMark completed={false} fundamentals />}
+                        label={concept.label}
+                      />
+                    ))}
                   {availableItems.map((item) => (
                     <NavItem
                       key={item.key}

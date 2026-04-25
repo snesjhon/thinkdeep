@@ -8,6 +8,7 @@ import { TDIcon } from '@/components/ui/TDIcon/TDIcon';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
 import { JOURNEY as SYSTEM_DESIGN_JOURNEY } from '@/lib/system-design/journey';
+import type { JourneyPanelConcept } from '../JourneyPanel/JourneyPanel';
 import { JourneyPanel } from '../JourneyPanel/JourneyPanel';
 import type { JourneyPanelPhase } from '../JourneyPanel/JourneyPanel';
 
@@ -58,6 +59,7 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
 const SYSTEM_DESIGN_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
 const SYSTEM_DESIGN_SCENARIO_TO_SECTION: Record<string, string> = {};
 const SYSTEM_DESIGN_PRACTICE_TO_SECTION: Record<string, string> = {};
+const SYSTEM_DESIGN_CONCEPT_TO_SECTION: Record<string, string> = {};
 for (const phase of SYSTEM_DESIGN_JOURNEY) {
   for (const section of phase.sections) {
     if (section.fundamentalsSlug) {
@@ -66,6 +68,9 @@ for (const phase of SYSTEM_DESIGN_JOURNEY) {
     }
     if (section.practiceSlug) {
       SYSTEM_DESIGN_PRACTICE_TO_SECTION[section.practiceSlug] = section.id;
+    }
+    for (const concept of section.concepts ?? []) {
+      SYSTEM_DESIGN_CONCEPT_TO_SECTION[concept.slug] = section.id;
     }
     for (const scenario of section.firstPass) {
       SYSTEM_DESIGN_SCENARIO_TO_SECTION[scenario.slug] = section.id;
@@ -88,6 +93,7 @@ const SYSTEM_DESIGN_PHASES: JourneyPanelPhase[] = SYSTEM_DESIGN_JOURNEY.map(
         label: section.label,
         fundamentalsSlug: section.fundamentalsSlug,
         practiceSlug: section.practiceSlug,
+        concepts: section.concepts as JourneyPanelConcept[] | undefined,
         items: section.firstPass.map((scenario) => ({
           key: scenario.slug,
           label: scenario.label,
@@ -120,6 +126,8 @@ function systemDesignActiveSection(path: string): string | null {
   if (practice) return SYSTEM_DESIGN_PRACTICE_TO_SECTION[practice] ?? null;
   const fund = path.match(/^\/system-design\/fundamentals\/([^/]+)/)?.[1];
   if (fund) return SYSTEM_DESIGN_FUNDAMENTALS_TO_SECTION[fund] ?? null;
+  const concept = path.match(/^\/system-design\/concepts\/([^/]+)/)?.[1];
+  if (concept) return SYSTEM_DESIGN_CONCEPT_TO_SECTION[concept] ?? null;
   const scenario = path.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1];
   if (scenario) return SYSTEM_DESIGN_SCENARIO_TO_SECTION[scenario] ?? null;
   return null;
@@ -133,6 +141,7 @@ interface SiteNavProps {
   availableSystemDesignScenarioSlugs: string[];
   availableSystemDesignFundamentalsSlugs: string[];
   availableSystemDesignPracticeSlugs: string[];
+  availableSystemDesignConceptSlugs: string[];
   collapsed: boolean;
   onToggleCollapsed: () => void;
 }
@@ -144,6 +153,7 @@ export function SiteNav({
   availableSystemDesignFundamentalsSlugs:
     availableSystemDesignFundamentalsSlugsArr,
   availableSystemDesignPracticeSlugs: availableSystemDesignPracticeSlugsArr,
+  availableSystemDesignConceptSlugs: availableSystemDesignConceptSlugsArr,
   collapsed,
   onToggleCollapsed,
 }: SiteNavProps) {
@@ -157,6 +167,9 @@ export function SiteNav({
   );
   const availableSystemDesignPractice = new Set(
     availableSystemDesignPracticeSlugsArr,
+  );
+  const availableSystemDesignConcepts = new Set(
+    availableSystemDesignConceptSlugsArr,
   );
 
   const pathname = usePathname();
@@ -261,6 +274,12 @@ export function SiteNav({
                       null
                     : null
                 }
+                activeConceptSlug={
+                  isSystemDesignPage
+                    ? pathname.match(/^\/system-design\/concepts\/([^/]+)/)?.[1] ??
+                      null
+                    : null
+                }
                 availableItemKeys={
                   isSystemDesignPage
                     ? availableSystemDesignScenarios
@@ -276,6 +295,11 @@ export function SiteNav({
                     ? availableSystemDesignPractice
                     : new Set<string>()
                 }
+                availableConceptSlugs={
+                  isSystemDesignPage
+                    ? availableSystemDesignConcepts
+                    : new Set<string>()
+                }
                 getItemHref={(key) =>
                   isSystemDesignPage
                     ? `/system-design/scenarios/${key}`
@@ -288,6 +312,9 @@ export function SiteNav({
                 }
                 getPracticeHref={(slug) =>
                   `/system-design/fundamentals/practice/${slug}`
+                }
+                getConceptHref={(slug) =>
+                  `/system-design/concepts/${slug}`
                 }
                 progressItemIdPrefix={isSystemDesignPage ? 'sd-' : 'dsa-'}
                 progressFundamentalsIdPrefix={

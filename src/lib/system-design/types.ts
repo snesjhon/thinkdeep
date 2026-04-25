@@ -4,6 +4,11 @@ export interface JourneyScenario {
   relatedFundamentalsSlugs: string[]  // ["caching-fundamentals", "scalability-fundamentals"]
 }
 
+export interface JourneyConcept {
+  slug: string   // "business-rule-enforcement"
+  label: string  // "Business Rule Enforcement"
+}
+
 export interface JourneySection {
   id: string
   label: string
@@ -12,6 +17,7 @@ export interface JourneySection {
   fundamentalsSlug?: string
   fundamentalsBlurb?: string
   practiceSlug?: string
+  concepts?: JourneyConcept[]
   firstPass: JourneyScenario[]
   reinforce: JourneyScenario[]
 }
