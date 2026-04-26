@@ -8,121 +8,166 @@ You already know how arrays give you indexed storage, how hash maps remember wha
 
 ### The City Map
 
-Picture a city transit board pinned to a wall. Each **intersection** is a place you can stand. Each **street** connects one intersection to another. Some streets work both ways. Some are one-way arrows. Your job is never to wander randomly. Your job is to read the map, decide what counts as "already covered," and move through the city without walking the same district from scratch.
+A **node** is the basic unit of a graph — a location, a state, or an entity. Nodes have no inherent order; what matters is what they connect to. In the city map, a node is an intersection: a place you can stand.
 
-- intersection -> graph node
-- street -> graph edge
-- street ledger -> adjacency list
-- stamped intersection -> visited marker
-- district sweep -> one traversal through a connected component
-- dispatch line -> queue or stack controlling visit order
-- one-way arrow -> directed edge
+An **edge** is a connection between two nodes. Edges can be **undirected** (the connection works both ways) or **directed** (the connection only works one way). In the city map, edges are streets — some run both ways, some are one-way arrows.
 
-The map stays efficient because once an intersection is stamped, every street decision that depends on it is settled. No district has to be rediscovered from zero.
+A graph is **unweighted** when edges simply exist or don't — every connection is treated equally, with no associated cost. A graph is **weighted** when each edge carries a numeric value (distance, time, fee). Most of the problems in this guide use unweighted graphs. BFS finds the shortest path only in unweighted graphs; weighted shortest paths require different algorithms (Dijkstra's, Bellman-Ford). In the city map, an unweighted street just connects two intersections. A weighted street has a travel time posted on it.
 
-### Understanding the Analogy
+An **adjacency list** is the standard way to store a graph in code. Rather than keeping a flat edge list you have to scan repeatedly, each node gets its own list of neighbors. Building it is O(V + E). Looking up a node's neighbors is O(degree). In the city map, it is the street ledger: each intersection has a list of the streets leaving it.
 
-#### The Setup
+A **visited set** tracks which nodes have already been processed so traversal never revisits them. Without it, traversal on any graph with cycles loops forever. This is the core invariant that makes graph traversal linear instead of exponential. In the city map, it is the stamp sheet: once an intersection is stamped, you do not send another expedition there.
 
-The transit board does not hand you a neat route. It hands you local choices. At one intersection you only know which streets leave that point. To move intelligently, you keep a street ledger listing each intersection's neighbors and a stamp sheet showing which intersections have already been covered. The rule is simple: a stamped intersection does not need a fresh expedition.
+A **connected component** is a maximal set of nodes where every node is reachable from every other. A graph can have one component or many — if it has more than one, no edge crosses the gap. In the city map, a component is a district: all the intersections reachable from one starting point.
 
-#### Following Streets
+**In-degree** is the count of directed edges pointing *into* a node. Each edge `A → B` adds 1 to B's in-degree. A node with in-degree 0 has no incoming edges — nothing points to it, so nothing needs to happen before it. In dependency graphs (course prerequisites, build steps, install order), a node's in-degree is the number of tasks that must finish before this one can start. Those tasks are its **prerequisites**. When all prerequisites are done, in-degree drops to zero and the node becomes safe to process. In the city map, in-degree counts the one-way arrows arriving at an intersection.
 
-When the question is about one reachable district, the main job is disciplined expansion. Start at one known intersection, stamp it the moment you commit to exploring it, then use the dispatch line to keep pulling the next intersection whose outgoing streets still matter. Every unstamped neighbor gets added exactly once. That single rule is what prevents loops from turning into infinite wandering.
+A **queue or stack** determines the order in which nodes are expanded. A queue (FIFO) gives BFS: nodes are processed level by level. A stack (LIFO) gives DFS: traversal goes as deep as possible before backtracking. In the city map, it is the dispatch line — the queue of intersections waiting to be explored.
 
-#### Sweeping Every District
+### The Adjacency List
 
-Sometimes the city is not one connected place. There may be several separate districts with no street between them. In that case, one clean sweep from a starting intersection can only tell you about that one district. The outer job changes: you scan the entire map for an unstamped intersection, launch one new district sweep there, finish that whole district, then continue scanning. The city count grows by whole districts, not by individual streets.
+Graphs are usually given as an edge list: `[[0,1],[1,2],[2,3]]`. Scanning that list every time you need a node's neighbors costs O(E) per lookup. The adjacency list fixes this: build it once in O(V + E), then each neighbor lookup takes O(degree) time.
 
-#### Why These Approaches
+For an undirected graph, each edge `[a, b]` produces two entries — push `b` into `adj[a]` and push `a` into `adj[b]`. For a directed graph, only push `b` into `adj[from]`.
 
-Brute force treats every intersection as if it were brand new every time you arrive there. On a dense map that means revisiting the same district through many different streets and paying the same exploration cost repeatedly. The graph structure gives you a stronger guarantee: once an intersection has been stamped, every path that reaches it in the future is redundant for reachability questions. That is why one stamp per intersection is enough for traversal, and why one outer scan plus district sweeps is enough for disconnected maps. For one-way streets, direction adds another guarantee: an intersection with no unfinished incoming streets is safe to dispatch now because nothing upstream still depends on it.
+```mermaid
+graph TD
+    Input["edge list: [[0,1],[0,2],[1,3],[2,3]]"] --> Build["build adjacency list — O(V + E)"]
+    Build --> A0["adj[0] = [1, 2]"]
+    Build --> A1["adj[1] = [0, 3]"]
+    Build --> A2["adj[2] = [0, 3]"]
+    Build --> A3["adj[3] = [1, 2]"]
+```
 
-#### How I Think Through This
+### Mark at Discovery, Not at Dispatch
 
-Before I touch code, I ask one question: **am I exploring one district, sweeping the whole city, or respecting one-way arrows that create dependencies?**
+The visited set works correctly only if nodes are marked when they enter the queue or stack — at discovery time — not when they are removed and processed. Marking at dispatch (pop time) lets the same node be enqueued once per incoming edge before it is ever processed. On any graph with multiple paths to the same node this produces duplicate work. On cyclic graphs it produces an infinite loop.
 
-**When the question starts from one known intersection:** I think in terms of a single district sweep. The hard part is not movement, it is discipline. I stamp an intersection before I let any street bring me back to it, and I keep pulling work from the dispatch line until that district is exhausted.
+The fix is one line earlier: mark the node before pushing it, not after popping it.
 
-**When the map may be disconnected:** I stop expecting one sweep to answer the whole question. The real move is an outer scan over every intersection. Each unstamped starting point means I have discovered a brand-new district, so I launch one full sweep there and count or measure that district once.
+```mermaid
+graph LR
+    Discover["discover neighbor"] --> Check{already visited?}
+    Check -- No --> Mark["mark visited\nthen enqueue"]
+    Check -- Yes --> Skip["skip"]
+    Mark --> Process["dequeue and expand later"]
+    Process --> Discover
+```
 
-**When the streets are one-way and order matters:** I stop asking only "what can I reach?" and start asking "what is allowed to happen next?" The safest places to dispatch are the intersections with no unfinished incoming arrows. If I process all such places and some intersections still remain, the city contains a loop of mutual dependency.
+### BFS, DFS, and Kahn's Algorithm
 
-The building blocks below work through those three situations where the same city map demands different control rules.
+The same mark-and-expand loop powers three different traversal algorithms. The difference is the data structure driving the expansion and what the algorithm is trying to answer.
 
-**Scenario 1 — One district from one starting point:** Starting from intersection A, a single sweep stamps everything reachable in that district and ignores already stamped streets.
+**BFS** uses a queue — FIFO — so it processes nodes in order of their discovery distance from the start. Every node at distance `d` is processed before any node at distance `d + 1`. This level-by-level guarantee is why BFS finds the shortest path in unweighted graphs: the first time a target node is dequeued, it was reached by the fewest possible edges.
+
+**DFS** uses a stack — LIFO, or equivalently recursion — so it goes as deep as possible before backtracking. No shortest-path guarantee, but DFS is simpler to implement recursively and works well for reachability, cycle detection, and connected components.
+
+**Kahn's algorithm** is a BFS variant for directed graphs with dependencies. Instead of seeding from a start node, it seeds the queue with every node whose in-degree is zero — no unresolved prerequisites. Processing a node decrements the in-degree of each of its neighbors. Any neighbor that hits zero joins the queue. If the total number of processed nodes equals `n`, the graph is acyclic and the processing order is valid. If any nodes remain unprocessed, they are locked in a cycle.
+
+```mermaid
+graph TD
+    Q["Graph problem"] --> Q1{Shortest path in unweighted graph?}
+    Q1 -- Yes --> BFS["BFS — queue, O(V+E)"]
+    Q1 -- No --> Q2{Directed with prerequisites?}
+    Q2 -- Yes --> Kahn["Kahn's — in-degree queue, O(V+E)"]
+    Q2 -- No --> Q3{Single component or all components?}
+    Q3 -- Single --> DFS["DFS or BFS from one start"]
+    Q3 -- All --> Scan["outer scan + component sweeps"]
+```
+
+### How I Think Through This
+
+Before I touch code, I ask one question: **am I finding what is reachable from one node, counting or measuring components across the whole graph, or ordering nodes in a directed graph that may have cycles?**
+
+**When the problem gives me a start node:** One BFS or DFS sweep handles it. The only discipline is marking nodes at discovery, not dispatch, and keeping the queue or stack fed until it empties.
+
+**When the graph may have multiple components:** One traversal from one node only covers one component. I add an outer loop over every node: if a node is already visited, skip it; if not, launch a full sweep from it. Each launch means I found a new component.
+
+**When edges are directed and create dependencies:** I shift from reachability thinking to ordering thinking. Nodes with in-degree zero are safe to process immediately — nothing upstream is blocking them. Kahn's algorithm maintains that invariant as it processes each node and decrements the in-degrees of its neighbors. Processed count equal to `n` means the graph is a valid DAG. Less than `n` means a cycle is blocking the remainder.
+
+The building blocks below work through those three situations.
+
+**Scenario 1 — BFS from one start node**
+
+**Graph:** undirected, unweighted
+**Input:** `n = 5`, `edges = [[0,1],[0,2],[1,3],[2,3]]`, `start = 0`
+
+Node 4 is isolated — no edges connect it. Nodes 0–3 form one component. Node 3 is reachable by two paths (0→1→3 and 0→2→3), but the visited set ensures node 3 is only enqueued once regardless of how many edges point to it.
 
 :::trace-graph
 [
   {
     "nodes": [
-      {"id": "A", "label": "A", "x": 18, "y": 48, "tone": "current", "badge": "start"},
-      {"id": "B", "label": "B", "x": 40, "y": 24, "tone": "frontier"},
-      {"id": "C", "label": "C", "x": 40, "y": 66, "tone": "frontier"},
-      {"id": "D", "label": "D", "x": 66, "y": 48, "tone": "default"},
-      {"id": "E", "label": "E", "x": 86, "y": 48, "tone": "muted"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "current", "badge": "start"},
+      {"id": "B", "label": "1", "x": 40, "y": 24, "tone": "frontier"},
+      {"id": "C", "label": "2", "x": 40, "y": 66, "tone": "frontier"},
+      {"id": "D", "label": "3", "x": 66, "y": 48, "tone": "default"},
+      {"id": "E", "label": "4", "x": 86, "y": 48, "tone": "muted"}
     ],
     "edges": [
       {"from": "A", "to": "B", "tone": "active"},
       {"from": "A", "to": "C", "tone": "active"},
       {"from": "B", "to": "D", "tone": "queued"},
-      {"from": "C", "to": "D", "tone": "default"},
-      {"from": "D", "to": "E", "tone": "muted"}
+      {"from": "C", "to": "D", "tone": "default"}
     ],
     "facts": [
-      {"name": "dispatch line", "value": "[A]", "tone": "orange"},
-      {"name": "stamped", "value": "{A}", "tone": "green"}
+      {"name": "queue", "value": "[0]", "tone": "orange"},
+      {"name": "visited", "value": "{0}", "tone": "green"}
     ],
     "action": "visit",
-    "label": "Start at A. The district sweep stamps A immediately, then lines up B and C as the next streets to expand."
+    "label": "Start at 0. Mark visited, enqueue neighbors 1 and 2."
   },
   {
     "nodes": [
-      {"id": "A", "label": "A", "x": 18, "y": 48, "tone": "visited"},
-      {"id": "B", "label": "B", "x": 40, "y": 24, "tone": "visited"},
-      {"id": "C", "label": "C", "x": 40, "y": 66, "tone": "visited"},
-      {"id": "D", "label": "D", "x": 66, "y": 48, "tone": "current", "badge": "new"},
-      {"id": "E", "label": "E", "x": 86, "y": 48, "tone": "muted"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "visited"},
+      {"id": "B", "label": "1", "x": 40, "y": 24, "tone": "visited"},
+      {"id": "C", "label": "2", "x": 40, "y": 66, "tone": "visited"},
+      {"id": "D", "label": "3", "x": 66, "y": 48, "tone": "current", "badge": "once"},
+      {"id": "E", "label": "4", "x": 86, "y": 48, "tone": "muted"}
     ],
     "edges": [
       {"from": "A", "to": "B", "tone": "traversed"},
       {"from": "A", "to": "C", "tone": "traversed"},
       {"from": "B", "to": "D", "tone": "active"},
-      {"from": "C", "to": "D", "tone": "traversed"},
-      {"from": "D", "to": "E", "tone": "muted"}
+      {"from": "C", "to": "D", "tone": "traversed"}
     ],
     "facts": [
-      {"name": "dispatch line", "value": "[D]", "tone": "orange"},
-      {"name": "stamped", "value": "{A,B,C,D}", "tone": "green"}
+      {"name": "queue", "value": "[3]", "tone": "orange"},
+      {"name": "visited", "value": "{0,1,2,3}", "tone": "green"}
     ],
     "action": "mark",
-    "label": "D is discovered from B. When C later points at D, that street is redundant because D is already stamped."
+    "label": "3 discovered via 1, marked visited. When 2's neighbor check reaches 3, it is already visited — skip. 3 enters the queue exactly once."
   },
   {
     "nodes": [
-      {"id": "A", "label": "A", "x": 18, "y": 48, "tone": "done"},
-      {"id": "B", "label": "B", "x": 40, "y": 24, "tone": "done"},
-      {"id": "C", "label": "C", "x": 40, "y": 66, "tone": "done"},
-      {"id": "D", "label": "D", "x": 66, "y": 48, "tone": "done"},
-      {"id": "E", "label": "E", "x": 86, "y": 48, "tone": "muted"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "done"},
+      {"id": "B", "label": "1", "x": 40, "y": 24, "tone": "done"},
+      {"id": "C", "label": "2", "x": 40, "y": 66, "tone": "done"},
+      {"id": "D", "label": "3", "x": 66, "y": 48, "tone": "done"},
+      {"id": "E", "label": "4", "x": 86, "y": 48, "tone": "muted"}
     ],
     "edges": [
       {"from": "A", "to": "B", "tone": "traversed"},
       {"from": "A", "to": "C", "tone": "traversed"},
       {"from": "B", "to": "D", "tone": "traversed"},
-      {"from": "C", "to": "D", "tone": "traversed"},
-      {"from": "D", "to": "E", "tone": "muted"}
+      {"from": "C", "to": "D", "tone": "traversed"}
     ],
     "facts": [
-      {"name": "covered district", "value": "{A,B,C,D}", "tone": "green"}
+      {"name": "visited", "value": "{0,1,2,3}", "tone": "green"},
+      {"name": "unreachable", "value": "{4}", "tone": "muted"}
     ],
     "action": "done",
-    "label": "The sweep ends with one whole district covered. E stays untouched because no street from this district reaches it."
+    "label": "Queue empty. {0,1,2,3} are reachable from node 0. Node 4 is isolated — BFS from 0 never reaches it."
   }
 ]
 :::
 
-**Scenario 2 — The city is disconnected:** One sweep only covers one district, so the outer scan must launch a second sweep from the first unstamped intersection it finds.
+**Scenario 2 — Multiple components, outer scan**
+
+**Graph:** undirected, unweighted
+**Input:** `n = 5`, `edges = [[0,1],[0,2],[3,4]]`
+
+No edge crosses between {0,1,2} and {3,4} — two separate components. The outer scan loops over all nodes 0–4. It skips any node already visited. When it reaches 3 and finds it unvisited, that signals a new component. Each launch of the inner BFS covers exactly one component.
 
 :::trace-graph
 [
@@ -188,7 +233,14 @@ The building blocks below work through those three situations where the same cit
 ]
 :::
 
-**Scenario 3 — One-way streets create dependency order:** When arrows matter, intersections with no unfinished incoming arrows are the only safe next dispatch points.
+**Scenario 3 — Directed graph, Kahn's topological sort**
+
+**Graph:** directed, unweighted
+**Input:** `n = 4`, `edges = [[0,1],[0,2],[1,3],[2,3]]` (directed: `[from, to]`)
+
+In-degrees: node 0 = 0, node 1 = 1, node 2 = 1, node 3 = 2. Kahn's seeds the queue with every node whose in-degree is 0 — only node 0. Processing node 0 removes its two outgoing edges, decrementing nodes 1 and 2 to in-degree 0. Both become ready. When they are processed, node 3 drops to 0 and becomes the final dispatch.
+
+The trace uses task labels (P, C, K, S) to make the dependency relationship easier to read — P must happen before C and K, and both must finish before S.
 
 :::trace-graph
 [
@@ -340,19 +392,54 @@ Use intersections `0-1`, `0-2`, `1-3`, `2-3`, `3-4` and start from `0`.
 
 #### **Exercise 1**
 
-Draw the street ledger for an undirected city map. The key move is adding both directions for every two-way road so each intersection can see the neighbors it can actually reach.
+You're given `n` nodes (labeled `0` to `n-1`) and a flat edge list like `[[0,1],[0,2],[1,3]]`. The goal is a structure where `adj[node]` gives you all of that node's neighbors directly, without scanning the whole edge list.
+
+Start by allocating `n` empty arrays — one bucket per node:
+
+```typescript
+const adj: number[][] = Array.from({ length: n }, () => []);
+```
+
+Then walk every edge. For each `[a, b]`, `b` is a neighbor of `a`. Because this graph is undirected, the reverse is also true. What does the push into `adj[b]` look like?
 
 :::stackblitz{step=1 total=3 exercises="step1-exercise1-problem.ts" solutions="step1-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Now use the ledger to sweep one district from a start intersection. The loop structure is one dispatch line, one stamped set, and one repeated neighbor expansion until the line is empty.
+The BFS loop needs three pieces of state before it starts: a visited array, a queue seeded with the start node, and a result collector. The order of operations at setup matters — start must be marked visited before the loop, not inside it.
+
+```typescript
+const visited = new Array(n).fill(false);
+const queue = [start];
+visited[start] = true;  // mark at enqueue time, not dequeue
+const result: number[] = [];
+```
+
+The loop itself has a fixed shape: pull one node off the front, record it, then look at its neighbors. You do not need to decide what to do with neighbors yet — just get the loop running first.
+
+```typescript
+while (queue.length > 0) {
+  const node = queue.shift();
+  result.push(node);
+  // expand neighbors here
+}
+```
+
+For each neighbor, the question is one check: has it been visited? If not, two things happen — in a specific order. What is the right order, and why does it matter?
 
 :::stackblitz{step=1 total=3 exercises="step1-exercise2-problem.ts" solutions="step1-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-Shift the goal from "list everything reachable" to "decide whether one destination is inside this district." The traversal stays the same, but now you can stop as soon as the target intersection is stamped.
+The loop from Exercise 2 does not change. One line is added: after dequeuing a node, check whether it is the target before expanding neighbors. If it matches, you are done.
+
+```typescript
+const node = queue.shift();
+if (node === target) return true;
+// neighbor expansion same as Exercise 2
+```
+
+If the queue empties without a match, what do you return?
 
 :::stackblitz{step=1 total=3 exercises="step1-exercise3-problem.ts" solutions="step1-exercise3-solution.ts"}
 
@@ -442,19 +529,41 @@ Use districts `0-1-2`, `3-4`, and isolated `5`.
 
 #### **Exercise 1**
 
-Count how many separate districts exist in a two-way city map. The direct application is the exact outer-scan plus inner-sweep pattern from the level narrative.
+The BFS from Level 1 does not change. What changes is the frame around it — an outer loop that scans every node and decides whether to launch a fresh sweep.
+
+```typescript
+for (let i = 0; i < n; i++) {
+  if (visited[i]) continue;  // already covered by a previous sweep
+  // what happens when you find an unvisited node?
+}
+```
+
+Each time you reach an unvisited node, that is a new component. Launch the full BFS from it. The BFS will mark everything reachable, so the next iteration of the outer loop will skip all of those nodes automatically.
 
 :::stackblitz{step=2 total=3 exercises="step2-exercise1-problem.ts" solutions="step2-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Remove the simple counting goal and measure the largest district instead. You still launch one sweep per new district, but now each sweep returns a size that the outer scan compares against the current best.
+The outer loop is identical to Exercise 1. The difference is what you measure during each BFS sweep: the number of nodes visited. Add a counter inside the BFS and increment it each time you dequeue a node — dequeue, not enqueue, because each node is processed exactly once.
+
+```typescript
+let size = 0;
+while (queue.length > 0) {
+  const node = queue.shift();
+  size++;  // count here — after pulling from queue
+  // neighbor expansion same as Level 1
+}
+```
+
+After each sweep finishes, how do you decide whether this component is larger than any you've seen before?
 
 :::stackblitz{step=2 total=3 exercises="step2-exercise2-problem.ts" solutions="step2-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-Shift from one summary number to a summary per district. Each time the outer scan discovers a new district, run one sweep, record that district's size, and keep going until every intersection belongs to exactly one recorded group.
+Same outer loop and same size-counting BFS as Exercise 2. The only change: instead of keeping a single running maximum, push each component's size into an array. Sort the array before returning.
+
+What replaces `largest = Math.max(largest, size)`?
 
 :::stackblitz{step=2 total=3 exercises="step2-exercise3-problem.ts" solutions="step2-exercise3-solution.ts"}
 
@@ -538,19 +647,54 @@ Use arrows `0 -> 1`, `0 -> 2`, `1 -> 3`, `2 -> 3`.
 
 #### **Exercise 1**
 
-Detect whether a one-way city contains a dependency loop. The decisive check is whether the zero-indegree dispatch process can actually remove every intersection.
+Kahn's setup differs from Levels 1 and 2 in one structural way: edges are directed, so you only push one direction into the adjacency list. You also need a second array — `indegree` — that tracks how many edges point into each node.
+
+```typescript
+const indegree = new Array(n).fill(0);
+for (const [from, to] of edges) {
+  adj[from].push(to);  // directed: no reverse entry
+  indegree[to]++;      // one more arrow pointing into "to"
+}
+```
+
+Before the loop starts, seed the queue with every node whose `indegree` is 0 — nothing is blocking them. Inside the loop, each time you process a node, decrement the indegree of each of its neighbors. If a neighbor hits 0, it becomes ready.
+
+After the loop ends, how do you know whether a cycle exists?
 
 :::stackblitz{step=3 total=3 exercises="step3-exercise1-problem.ts" solutions="step3-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Return one legal delivery order for a one-way city. The queue logic is the same as the cycle detector, but now you must record the dispatch sequence and return an empty list if the city locks itself into a loop.
+The setup is the same as Exercise 1. The only difference is what you track during the loop: instead of just counting processed nodes, collect them in the order they are dequeued.
+
+```typescript
+const order: number[] = [];
+// inside the loop, alongside your indegree decrement:
+order.push(node);
+```
+
+At the end, the length of `order` tells you whether a cycle blocked any nodes. What do you return in each case?
 
 :::stackblitz{step=3 total=3 exercises="step3-exercise2-problem.ts" solutions="step3-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-Extend the same idea into batches of work that can happen in parallel. Each round consists of the intersections currently at zero indegree, and finishing a whole round may unlock the next one.
+Instead of processing one node per loop iteration, process all currently-ready nodes as a group — a wave. Every node in a wave has in-degree 0 at the same moment, so they could all run in parallel.
+
+```typescript
+let current = /* nodes with indegree 0 at the start */;
+
+while (current.length > 0) {
+  // record this wave, then compute the next one
+  const next: number[] = [];
+  for (const node of current) {
+    // decrement neighbors — if any hit 0, add to next
+  }
+  current = next;
+}
+```
+
+The outer `while` loop advances one wave at a time. After it finishes, check whether all nodes were processed before returning your waves.
 
 :::stackblitz{step=3 total=3 exercises="step3-exercise3-problem.ts" solutions="step3-exercise3-solution.ts"}
 
