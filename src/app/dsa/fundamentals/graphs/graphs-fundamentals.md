@@ -385,7 +385,7 @@ Graph traversal is local: at any node, the only thing that matters is its immedi
 
 To run a BFS, build the adjacency list, allocate the visited array, push the start node, and mark it visited immediately — before the loop, not inside it. Then loop: dequeue a node, and for each neighbor check the visited array. If unvisited, mark it and enqueue it right there. That one-line-earlier mark is what keeps duplicates out of the queue. When the queue empties, every node that was marked is reachable from the start.
 
-Use intersections `0-1`, `0-2`, `1-3`, `2-3`, `3-4` and start from `0`.
+`n = 5`, `edges = [[0,1],[0,2],[1,3],[2,3],[3,4]]`, `start = 0`
 
 :::trace-graph
 [
@@ -459,6 +459,8 @@ Use intersections `0-1`, `0-2`, `1-3`, `2-3`, `3-4` and start from `0`.
 
 #### **Exercise 1**
 
+Every step of graph traversal needs to know a node's neighbors. Scanning the full edge list each time costs O(E) per lookup — on a graph with many nodes, that compounds traversal from O(V + E) to O(V × E). The adjacency list eliminates that: build it once in O(V + E), and each neighbor lookup costs only O(degree).
+
 You're given `n` nodes (labeled `0` to `n-1`) and a flat edge list like `[[0,1],[0,2],[1,3]]`. The goal is a structure where `adj[node]` gives you all of that node's neighbors directly, without scanning the whole edge list.
 
 Start by allocating `n` empty arrays — one bucket per node:
@@ -473,7 +475,9 @@ Then walk every edge. For each `[a, b]`, `b` is a neighbor of `a`. Because this 
 
 #### **Exercise 2**
 
-You're given `n` nodes, a road list, and a `start` intersection — the node to sweep from. The goal is to return every intersection reachable from `start`.
+Reachability is the foundation of graph problems: "are these two users connected?", "can this packet reach its destination?", "which cells belong to this island?" all reduce to the same sweep. The visited set and the mark-at-discovery rule are what keep that sweep from looping forever on cyclic graphs — getting those two invariants right is the foundation everything else in this guide builds on.
+
+You're given `n` nodes, a road list, and a `start` intersection. The goal is to return every intersection reachable from `start`.
 
 The BFS loop needs three pieces of state before it starts: a visited array, a queue seeded with `start`, and a result collector. The order of operations at setup matters — start must be marked visited before the loop, not inside it.
 
@@ -500,9 +504,11 @@ For each neighbor, the question is one check: has it been visited? If not, two t
 
 #### **Exercise 3**
 
-You're given the same inputs as Exercise 2, plus a `target` — the destination intersection you want to reach. The goal is to return `true` if `target` is reachable from `start`, `false` otherwise.
+"List everything reachable" rarely appears in interviews on its own — "can I get from A to B?" is the real question behind routing, prerequisite checking, and access control. Early termination also matters: once the target is found, continuing the sweep wastes time that compounds badly on large graphs.
 
-The loop from Exercise 2 does not change. One line is added: after dequeuing a node, check whether it is the target before expanding neighbors. If it matches, you are done.
+You're given `n` nodes, a road list, a `start` intersection, and a `target` — the destination you want to reach. The goal is to return `true` if `target` is reachable from `start`, `false` otherwise.
+
+The loop shape is identical to Exercise 2. One line is added: after dequeuing a node, check whether it is the target before expanding neighbors. If it matches, you are done.
 
 ```typescript
 const node = queue.shift();
@@ -520,36 +526,101 @@ If the queue empties without a match, what do you return?
 
 ### Level 2: Connected Components
 
-Level 1 gives you full coverage of one connected component — every node reachable from a single start. But if the graph is disconnected, BFS from node 0 never touches the other components. The naive fix is to restart BFS from every node, but that re-traverses already-visited components. On a graph with one large component and many small ones, that's redundant work proportional to the number of already-settled nodes.
+Level 1 covers every node reachable from a single start — one component, fully swept. But a disconnected graph has multiple components, and BFS from node 0 never reaches the others. You need a way to cover every component exactly once.
 
-The key insight is that BFS marks every node it visits as visited — and that marking is globally valid. Those nodes are settled for the rest of the algorithm. So the only starts that actually matter are nodes that are still unvisited when the outer loop reaches them. Each unvisited node at that moment is the entry point to a component you haven't explored yet. In the city map, each such node is the first intersection of a new district.
+The solution is an outer loop over every node `0` to `n - 1`, paired with the same visited set from Level 1. When the outer loop reaches a node that is already marked, a prior BFS already covered its entire component — skip it. When it reaches a node that is still unvisited, that node belongs to a component no sweep has touched yet. Launch a full BFS from it, let it mark every reachable node, then continue the outer loop. The visited set is shared across all launches, so no node is ever swept twice. Each launch corresponds to exactly one component — count it.
 
-The inner BFS does not change. Add an outer loop from `0` to `n - 1`. At each step: if the node is already visited, skip it. If it's unvisited, increment the component count, launch a full BFS from it, and let that BFS mark everything reachable before the outer loop continues. The component count at the end is exact — each launch corresponds to exactly one component.
-
-Use districts `0-1-2`, `3-4`, and isolated `5`.
+`n = 6`, `edges = [[0,1],[1,2],[3,4]]`
 
 :::trace-graph
 [
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "current", "badge": "start"},
+      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "default"},
+      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "default"},
+      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "default"},
+      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "default"},
+      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "default"},
+      {"from": "1", "to": "2", "tone": "default"},
+      {"from": "3", "to": "4", "tone": "default"}
+    ],
+    "facts": [
+      {"name": "districts", "value": 1, "tone": "purple"},
+      {"name": "queue", "value": "[0]", "tone": "orange"},
+      {"name": "visited", "value": "{0}", "tone": "green"}
+    ],
+    "action": "queue",
+    "label": "Outer scan starts at 0. It's unvisited — district 1 begins. Mark and enqueue."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "visited"},
+      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "frontier"},
+      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "default"},
+      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "default"},
+      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "default"},
+      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "active"},
+      {"from": "1", "to": "2", "tone": "default"},
+      {"from": "3", "to": "4", "tone": "default"}
+    ],
+    "facts": [
+      {"name": "districts", "value": 1, "tone": "purple"},
+      {"name": "queue", "value": "[1]", "tone": "orange"},
+      {"name": "visited", "value": "{0, 1}", "tone": "green"}
+    ],
+    "action": "expand",
+    "label": "Dequeue 0. Neighbor 1 is unvisited — mark and enqueue."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "done"},
+      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "visited"},
+      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "frontier"},
+      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "default"},
+      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "default"},
+      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "traversed"},
+      {"from": "1", "to": "2", "tone": "active"},
+      {"from": "3", "to": "4", "tone": "default"}
+    ],
+    "facts": [
+      {"name": "districts", "value": 1, "tone": "purple"},
+      {"name": "queue", "value": "[2]", "tone": "orange"},
+      {"name": "visited", "value": "{0, 1, 2}", "tone": "green"}
+    ],
+    "action": "expand",
+    "label": "Dequeue 1. Neighbor 0 already visited — skip. Neighbor 2 is unvisited — mark and enqueue."
+  },
   {
     "nodes": [
       {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "done"},
       {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "done"},
       {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "done"},
       {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "current", "badge": "new"},
-      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "frontier"},
+      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "default"},
       {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
     ],
     "edges": [
       {"from": "0", "to": "1", "tone": "traversed"},
       {"from": "1", "to": "2", "tone": "traversed"},
-      {"from": "3", "to": "4", "tone": "active"}
+      {"from": "3", "to": "4", "tone": "default"}
     ],
     "facts": [
       {"name": "districts", "value": 2, "tone": "purple"},
-      {"name": "outer scan", "value": "first unstamped = 3", "tone": "blue"}
+      {"name": "outer scan", "value": "first unstamped = 3", "tone": "blue"},
+      {"name": "queue", "value": "[3]", "tone": "orange"}
     ],
     "action": "queue",
-    "label": "The outer scan skips 0, 1, and 2 because their district is already finished. Hitting 3 means a second district begins."
+    "label": "Dequeue 2. Neighbor 1 already visited — skip. Queue empties. Component {0,1,2} done. Outer scan advances past 1 and 2, finds 3 unvisited — district 2 begins."
   },
   {
     "nodes": [
@@ -570,7 +641,7 @@ Use districts `0-1-2`, `3-4`, and isolated `5`.
       {"name": "outer scan", "value": "first unstamped = 5", "tone": "blue"}
     ],
     "action": "expand",
-    "label": "Intersection 5 has no roads, but it is still its own district. One empty sweep counts it exactly once."
+    "label": "Dequeue 3, discover 4. Dequeue 4, neighbor 3 already visited. Component {3,4} done. Outer scan finds 5 unvisited — district 3. Node 5 has no roads, but it is still its own district."
   },
   {
     "nodes": [
@@ -590,7 +661,7 @@ Use districts `0-1-2`, `3-4`, and isolated `5`.
       {"name": "final districts", "value": 3, "tone": "green"}
     ],
     "action": "done",
-    "label": "Outer scan plus district sweeps counts all components, including isolated intersections."
+    "label": "Outer scan finds no more unvisited nodes. 3 districts total — including the isolated intersection."
   }
 ]
 :::
@@ -600,7 +671,11 @@ Use districts `0-1-2`, `3-4`, and isolated `5`.
 
 #### **Exercise 1**
 
-The BFS from Level 1 does not change. What changes is the frame around it — an outer loop that scans every node and decides whether to launch a fresh sweep.
+Real graphs are almost never fully connected. Social networks have isolated users, road maps have disconnected regions, dependency graphs have independent modules. A single BFS from one node answers one island and silently ignores the rest — no error, just a quiet miss. The outer scan is what ensures every node gets visited exactly once across all components, not just the one you started on.
+
+You're given `n` nodes and an edge list that may describe multiple disconnected components. The goal is to count how many components exist.
+
+The BFS from Level 1 does not change. What changes is the frame around it — an outer loop that scans every node and decides whether to launch a fresh sweep:
 
 ```typescript
 for (let i = 0; i < n; i++) {
@@ -615,7 +690,11 @@ Each time you reach an unvisited node, that is a new component. Launch the full 
 
 #### **Exercise 2**
 
-The outer loop is identical to Exercise 1. The difference is what you measure during each BFS sweep: the number of nodes visited. Add a counter inside the BFS and increment it each time you dequeue a node — dequeue, not enqueue, because each node is processed exactly once.
+Knowing a component exists tells you nothing about its size — and size is what most real questions care about. "What is the largest island?", "which subnet has the most machines?", "how big is the biggest cluster?" all need a count per component, not just a total. Measuring during the sweep rather than after is the pattern for any per-component metric: it costs nothing extra since you're already visiting every node.
+
+You're given the same input as Exercise 1. The goal is to return the size of the largest component.
+
+Add a counter inside the BFS and increment it each time you dequeue a node — dequeue, not enqueue, because each node is processed exactly once.
 
 ```typescript
 let size = 0;
@@ -632,9 +711,11 @@ After each sweep finishes, how do you decide whether this component is larger th
 
 #### **Exercise 3**
 
-Same outer loop and same size-counting BFS as Exercise 2. The only change: instead of keeping a single running maximum, push each component's size into an array. Sort the array before returning.
+A single running maximum tells you how big the biggest group is, but it loses the rest of the picture. Problems that ask "return all component sizes sorted", "how many groups have at least k members?", or "are all components the same size?" need the full distribution — a max discards that. Collecting all sizes gives you the flexibility to answer any of those questions after a single pass.
 
-What replaces `largest = Math.max(largest, size)`?
+You're given the same input as Exercise 2. Instead of returning the largest size, return all component sizes sorted in ascending order.
+
+The outer loop and size-counting BFS are unchanged. What replaces `largest = Math.max(largest, size)`?
 
 :::stackblitz{step=2 total=3 exercises="step2-exercise3-problem.ts" solutions="step2-exercise3-solution.ts"}
 
@@ -650,7 +731,7 @@ A node is safe to process the moment all of its predecessors have already been p
 
 Build the adjacency list directed — only push `b` into `adj[a]`, not the reverse — and simultaneously increment `indegree[b]` for each edge `[a, b]`. Seed the queue with every node whose in-degree is already zero. Dequeue one node at a time, record it in the output, then for each outgoing neighbor decrement its in-degree and enqueue it if it hits zero. After the loop, if processed count equals `n`, the output is a valid topological order. If it's less than `n`, at least one cycle exists and the remaining nodes are stuck waiting for each other indefinitely.
 
-Use arrows `0 -> 1`, `0 -> 2`, `1 -> 3`, `2 -> 3`.
+`n = 4`, `edges = [[0,1],[0,2],[1,3],[2,3]]` (directed: `[from, to]`)
 
 :::trace-graph
 [
@@ -718,7 +799,11 @@ Use arrows `0 -> 1`, `0 -> 2`, `1 -> 3`, `2 -> 3`.
 
 #### **Exercise 1**
 
-Kahn's setup differs from Levels 1 and 2 in one structural way: edges are directed, so you only push one direction into the adjacency list. You also need a second array — `indegree` — that tracks how many edges point into each node.
+Dependency graphs appear everywhere — course prerequisites, package managers, build systems. The challenge is that "which node is safe to process now?" changes after every step: completing a node may unblock several others. Without a way to track this incrementally, you'd rescan all edges on every iteration to find newly ready nodes, costing O(V × E). The in-degree array is what eliminates that: one decrement per edge is enough to unlock the next ready nodes, keeping the whole algorithm at O(V + E).
+
+You're given `n` nodes and a directed edge list. The goal is to detect whether a valid processing order exists — that is, whether the graph contains a cycle.
+
+Edges are directed, so you only push one direction into the adjacency list. You also need a second array — `indegree` — that tracks how many edges point into each node.
 
 ```typescript
 const indegree = new Array(n).fill(0);
@@ -736,7 +821,11 @@ After the loop ends, how do you know whether a cycle exists?
 
 #### **Exercise 2**
 
-The setup is the same as Exercise 1. The only difference is what you track during the loop: instead of just counting processed nodes, collect them in the order they are dequeued.
+Knowing that a valid order exists is useful, but knowing what that order is is what systems actually need. Package managers produce an install sequence. Course schedulers produce a curriculum. Build pipelines produce a step list. The collected topological order is the deliverable — the list downstream systems consume, not just a boolean.
+
+You're given `n` nodes and a directed edge list. The goal is to return the nodes in a valid topological order, or an empty array if a cycle exists.
+
+The setup — directed adjacency list, in-degree array, zero-in-degree seed — is identical to Exercise 1. The only difference is what you track during the loop: instead of just counting processed nodes, collect them in the order they are dequeued.
 
 ```typescript
 const order: number[] = [];
@@ -750,7 +839,11 @@ At the end, the length of `order` tells you whether a cycle blocked any nodes. W
 
 #### **Exercise 3**
 
-Instead of processing one node per loop iteration, process all currently-ready nodes as a group — a wave. Every node in a wave has in-degree 0 at the same moment, so they could all run in parallel.
+A sequential topological order is one valid execution sequence, but it doesn't tell you which steps could run simultaneously. In real systems — CI pipelines, parallel build graphs, multi-stage deployments — the goal is to minimize total wall-clock time by identifying which nodes share no dependencies at the same moment. Wave-based processing exposes exactly that structure: every node in a wave has in-degree 0 at the same moment, can execute in parallel with the others in that wave, and the number of waves is the minimum number of sequential stages the dependency structure requires.
+
+You're given `n` nodes and a directed edge list. The goal is to return the nodes grouped into waves — each wave containing every node that became ready at the same step.
+
+Instead of processing one node per loop iteration, process all currently-ready nodes as a group.
 
 ```typescript
 let current = /* nodes with indegree 0 at the start */;
