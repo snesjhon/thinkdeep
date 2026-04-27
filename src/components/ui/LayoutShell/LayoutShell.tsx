@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { GlobalSearch } from '@/components/ui/GlobalSearch/GlobalSearch';
 import { TDIcon } from '@/components/ui/TDIcon/TDIcon';
 import { SiteNav } from '@/components/ui/SiteNav/SiteNav';
+import type { SearchEntry } from '@/lib/search';
 import {
   LEFT_SIDEBAR_COLLAPSED_STORAGE_KEY,
   readStoredBoolean,
@@ -28,6 +30,7 @@ interface LayoutShellProps {
   availableSystemDesignFundamentalsSlugs: string[];
   availableSystemDesignPracticeSlugs: string[];
   availableSystemDesignConceptSlugs: string[];
+  searchEntries: SearchEntry[];
 }
 
 export function LayoutShell({
@@ -38,6 +41,7 @@ export function LayoutShell({
   availableSystemDesignFundamentalsSlugs,
   availableSystemDesignPracticeSlugs,
   availableSystemDesignConceptSlugs,
+  searchEntries,
 }: LayoutShellProps) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement | null>(null);
@@ -46,12 +50,18 @@ export function LayoutShell({
   const [scrolled, setScrolled] = useState(false);
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
   const isHome = pathname === '/';
+  const isFullstackPage = pathname.startsWith('/fullstack');
   const topLevelNavLinks = [
     { href: '/dsa', label: 'DSA', active: pathname.startsWith('/dsa') },
     {
       href: '/system-design',
       label: 'System Design',
       active: pathname.startsWith('/system-design'),
+    },
+    {
+      href: '/fullstack',
+      label: 'Fullstack',
+      active: pathname.startsWith('/fullstack'),
     },
   ];
 
@@ -143,6 +153,7 @@ export function LayoutShell({
         >
           {children}
         </main>
+        {!isFullstackPage && <GlobalSearch entries={searchEntries} />}
       </>
     );
   }
@@ -175,6 +186,7 @@ export function LayoutShell({
       >
         {children}
       </main>
+      {!isFullstackPage && <GlobalSearch entries={searchEntries} />}
     </div>
   );
 }

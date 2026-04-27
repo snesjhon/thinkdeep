@@ -3,6 +3,7 @@ import { Newsreader, Plus_Jakarta_Sans, JetBrains_Mono, Caveat } from 'next/font
 import { LayoutShell } from '@/components/ui/LayoutShell/LayoutShell';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
+import { getSearchEntries } from '@/lib/search';
 import { getSidebarStateInitScript } from '@/lib/sidebarState';
 import { getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
 import { getAllFundamentalsSlugs as getAllSystemDesignFundamentalsSlugs, getAllPracticeSlugs } from '@/lib/system-design/fundamentals';
@@ -54,6 +55,7 @@ export default async function RootLayout({
     getAllSystemDesignFundamentalsSlugs();
   const availableSystemDesignPracticeSlugs = getAllPracticeSlugs();
   const availableSystemDesignConceptSlugs = getAllConceptSlugs();
+  const searchEntries = getSearchEntries();
 
   return (
     <html
@@ -75,6 +77,7 @@ export default async function RootLayout({
           }
           availableSystemDesignPracticeSlugs={availableSystemDesignPracticeSlugs}
           availableSystemDesignConceptSlugs={availableSystemDesignConceptSlugs}
+          searchEntries={searchEntries}
         >
           {children}
         </LayoutShell>
