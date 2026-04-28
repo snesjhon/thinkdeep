@@ -725,11 +725,80 @@ The outer loop and size-counting BFS are unchanged. What replaces `largest = Mat
 
 ### Level 3: Directed Graphs and Topological Order
 
-Level 2 handled undirected graphs — edges that work both ways. Directed graphs break that symmetry: an edge `A → B` means B depends on A, not the reverse. BFS reachability no longer answers the useful question, which is: in what order can you safely process all nodes respecting those dependencies? Scanning every edge on every pass to check "is this node unblocked yet?" is O(E) per node at worst — the same repeated-scan problem the adjacency list was built to avoid.
+Level 2 handled undirected graphs — edges that work both ways. Directed graphs break that symmetry: an edge `A → B` means B depends on A, not the reverse. BFS reachability no longer answers the useful question: in what order can you safely process all nodes respecting those dependencies? Scanning every edge on every pass to check "is this node unblocked yet?" is O(E) per node at worst — the same repeated-scan problem the adjacency list was built to avoid.
 
-A node is safe to process the moment all of its predecessors have already been processed. In-degree tracks this exactly: it's the count of edges still pointing into a node. When in-degree reaches zero, the node has no remaining prerequisites. Instead of checking every node on every iteration, you maintain a queue of zero-in-degree nodes. Process one, decrement each of its neighbors' in-degrees, and immediately enqueue any that hit zero. The work is O(V + E) — each edge causes exactly one decrement. In the city map, zero incoming arrows means the one-way street system has cleared every prerequisite for that intersection.
+A node is safe to process the moment all of its predecessors have been processed. In-degree is the count of edges currently pointing into a node — think of it as a prerequisites-remaining counter. When it reaches zero, the node is unblocked. Each time you process a node, you consume one incoming arrow for each of its neighbors, decrementing their counts. Any neighbor that hits zero joins the ready queue immediately.
 
-The build pattern is the same one from Level 1 — walk every edge and record neighbors — with two small additions: only push `b` into `adj[a]` (no reverse entry, because this graph is directed), and while building, also increment `indegree[b]`. That second array is the only new piece of state. Seeding the queue is a small variation on Level 1's BFS start: instead of one starting node, scan all nodes and enqueue every one whose `indegree` is already zero. The loop itself runs just like BFS: dequeue a node, record it, then expand its neighbors. The only difference is what happens per neighbor — instead of checking a visited array, decrement `indegree[neighbor]`. If it hits zero, enqueue it immediately. That decrement does the same gating job the visited set did in Level 1: it prevents a node from entering the queue before all of its prerequisites are done. After the loop, check the count: `processed === n` means no cycle blocked anything; `processed < n` means some nodes were locked in a mutual wait and never became ready.
+The trace below shows the prerequisite countdown for node 3 across `edges = [[0,1],[0,2],[1,3],[2,3]]`. Nodes 0, 1, and 2 have already been seeded or freed by earlier steps — watch how node 3's in-degree drops each time a predecessor finishes.
+
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
+      {"id": "1", "label": "1", "x": 40, "y": 24, "tone": "current", "badge": "processing"},
+      {"id": "2", "label": "2", "x": 40, "y": 72, "tone": "frontier"},
+      {"id": "3", "label": "3", "x": 78, "y": 50, "tone": "default", "badge": "in: 2"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
+      {"from": "0", "to": "2", "tone": "traversed", "directed": true},
+      {"from": "1", "to": "3", "tone": "active", "directed": true},
+      {"from": "2", "to": "3", "tone": "default", "directed": true}
+    ],
+    "facts": [
+      {"name": "indegree[3]", "value": 2, "tone": "blue"},
+      {"name": "queue", "value": "[1, 2]", "tone": "orange"}
+    ],
+    "action": "visit",
+    "label": "Node 1 is processing. Both arrows into node 3 are still pending — it needs two predecessors to finish before it can start."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
+      {"id": "1", "label": "1", "x": 40, "y": 24, "tone": "done"},
+      {"id": "2", "label": "2", "x": 40, "y": 72, "tone": "current", "badge": "processing"},
+      {"id": "3", "label": "3", "x": 78, "y": 50, "tone": "default", "badge": "in: 1"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
+      {"from": "0", "to": "2", "tone": "traversed", "directed": true},
+      {"from": "1", "to": "3", "tone": "traversed", "directed": true},
+      {"from": "2", "to": "3", "tone": "active", "directed": true}
+    ],
+    "facts": [
+      {"name": "indegree[3]", "value": 1, "tone": "blue"},
+      {"name": "queue", "value": "[2]", "tone": "orange"}
+    ],
+    "action": "mark",
+    "label": "Node 1 done — indegree[3] drops from 2 to 1. One prerequisite cleared, one remaining. Node 2 now processing."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
+      {"id": "1", "label": "1", "x": 40, "y": 24, "tone": "done"},
+      {"id": "2", "label": "2", "x": 40, "y": 72, "tone": "done"},
+      {"id": "3", "label": "3", "x": 78, "y": 50, "tone": "frontier", "badge": "in: 0"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
+      {"from": "0", "to": "2", "tone": "traversed", "directed": true},
+      {"from": "1", "to": "3", "tone": "traversed", "directed": true},
+      {"from": "2", "to": "3", "tone": "traversed", "directed": true}
+    ],
+    "facts": [
+      {"name": "indegree[3]", "value": 0, "tone": "green"},
+      {"name": "status", "value": "ready — joins queue", "tone": "green"}
+    ],
+    "action": "done",
+    "label": "Node 2 done — indegree[3] drops to 0. All prerequisites cleared. Node 3 joins the queue and can now be processed."
+  }
+]
+:::
+
+The adjacency list is built the same way as Level 1 — walk every edge, record neighbors — with two differences: edges are directed, so only push `b` into `adj[a]`, no reverse entry. And while walking each edge, increment `indegree[b]`. That second array is the only new piece of state. Seeding the queue differs from Level 1: instead of one starting node, scan all nodes and enqueue every one whose in-degree is already zero.
+
+The loop introduces two counters not present in Level 1. `head` is an index into the queue that replaces `.shift()` — calling `.shift()` costs O(n) per call because the array shifts every element left; `queue[head++]` reads one slot and advances the pointer in O(1). `processed` increments once per dequeued node, tracking how many nodes were successfully unblocked. After the loop, `processed === n` means every node was freed and the graph is acyclic. If `processed < n`, some nodes were never enqueued — their in-degree never reached zero because they are all waiting on each other, forming a cycle.
 
 `n = 4`, `edges = [[0,1],[0,2],[1,3],[2,3]]` (directed: `[from, to]`)
 
@@ -749,11 +818,13 @@ The build pattern is the same one from Level 1 — walk every edge and record ne
       {"from": "2", "to": "3", "tone": "default", "directed": true}
     ],
     "facts": [
-      {"name": "dispatch line", "value": "[0]", "tone": "orange"},
-      {"name": "order", "value": "[]", "tone": "blue"}
+      {"name": "head", "value": 0, "tone": "purple"},
+      {"name": "processed", "value": 0, "tone": "blue"},
+      {"name": "queue", "value": "[0]", "tone": "orange"},
+      {"name": "order", "value": "[]", "tone": "default"}
     ],
     "action": "queue",
-    "label": "Only 0 has no unfinished incoming arrows, so the order must begin there."
+    "label": "Only node 0 has in-degree 0. It seeds the queue. head=0 points to it, processed=0 — nothing has run yet."
   },
   {
     "nodes": [
@@ -769,11 +840,13 @@ The build pattern is the same one from Level 1 — walk every edge and record ne
       {"from": "2", "to": "3", "tone": "queued", "directed": true}
     ],
     "facts": [
-      {"name": "dispatch line", "value": "[1,2]", "tone": "orange"},
+      {"name": "head", "value": 1, "tone": "purple"},
+      {"name": "processed", "value": 1, "tone": "blue"},
+      {"name": "queue", "value": "[0, 1, 2]", "tone": "orange"},
       {"name": "order", "value": "[0]", "tone": "green"}
     ],
     "action": "expand",
-    "label": "Removing 0's outgoing arrows frees both 1 and 2. They can be dispatched in either order."
+    "label": "queue[head++] dequeues node 0 — head advances to 1, processed becomes 1. Decrementing node 0's neighbors drops indegree[1] and indegree[2] to 0. Both join the queue."
   },
   {
     "nodes": [
@@ -789,10 +862,83 @@ The build pattern is the same one from Level 1 — walk every edge and record ne
       {"from": "2", "to": "3", "tone": "traversed", "directed": true}
     ],
     "facts": [
-      {"name": "valid order", "value": "[0,1,2,3]", "tone": "green"}
+      {"name": "head", "value": 4, "tone": "purple"},
+      {"name": "processed", "value": 4, "tone": "blue"},
+      {"name": "processed === n", "value": "4 === 4", "tone": "green"},
+      {"name": "order", "value": "[0,1,2,3]", "tone": "green"}
     ],
     "action": "done",
-    "label": "After 1 and 2 finish, 3 drops to zero incoming arrows. Processing all nodes means there is no cycle."
+    "label": "Nodes 1, 2, and 3 each process in turn. head reaches 4, processed reaches 4. processed === n — every node was unblocked. No cycle, order is valid."
+  }
+]
+:::
+
+When `processed < n`, the queue runs dry before every node is reached — some nodes had in-degrees that never hit zero because they were waiting on each other. `n = 4`, `edges = [[0,1],[1,2],[2,3],[3,1]]` (directed: `[from, to]`)
+
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "frontier", "badge": "0 in"},
+      {"id": "1", "label": "1", "x": 50, "y": 20, "tone": "default", "badge": "2 in"},
+      {"id": "2", "label": "2", "x": 82, "y": 50, "tone": "default", "badge": "1 in"},
+      {"id": "3", "label": "3", "x": 50, "y": 75, "tone": "default", "badge": "1 in"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "queued", "directed": true},
+      {"from": "1", "to": "2", "tone": "default", "directed": true},
+      {"from": "2", "to": "3", "tone": "default", "directed": true},
+      {"from": "3", "to": "1", "tone": "default", "directed": true}
+    ],
+    "facts": [
+      {"name": "head", "value": 0, "tone": "purple"},
+      {"name": "processed", "value": 0, "tone": "blue"},
+      {"name": "queue", "value": "[0]", "tone": "orange"}
+    ],
+    "action": "queue",
+    "label": "Only node 0 has in-degree 0. The chain 1→2→3→1 is a cycle — every node in it has at least one incoming arrow and none can start first."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
+      {"id": "1", "label": "1", "x": 50, "y": 20, "tone": "default", "badge": "1 in"},
+      {"id": "2", "label": "2", "x": 82, "y": 50, "tone": "default", "badge": "1 in"},
+      {"id": "3", "label": "3", "x": 50, "y": 75, "tone": "default", "badge": "1 in"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
+      {"from": "1", "to": "2", "tone": "default", "directed": true},
+      {"from": "2", "to": "3", "tone": "default", "directed": true},
+      {"from": "3", "to": "1", "tone": "default", "directed": true}
+    ],
+    "facts": [
+      {"name": "head", "value": 1, "tone": "purple"},
+      {"name": "processed", "value": 1, "tone": "blue"},
+      {"name": "queue", "value": "[0]", "tone": "orange"}
+    ],
+    "action": "expand",
+    "label": "Dequeue node 0. processed becomes 1. Its neighbor is node 1 — indegree[1] drops from 2 to 1, but not to 0. Nothing new joins the queue. head=1 equals queue.length=1 — the loop ends."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
+      {"id": "1", "label": "1", "x": 50, "y": 20, "tone": "muted", "badge": "stuck"},
+      {"id": "2", "label": "2", "x": 82, "y": 50, "tone": "muted", "badge": "stuck"},
+      {"id": "3", "label": "3", "x": 50, "y": 75, "tone": "muted", "badge": "stuck"}
+    ],
+    "edges": [
+      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
+      {"from": "1", "to": "2", "tone": "default", "directed": true},
+      {"from": "2", "to": "3", "tone": "default", "directed": true},
+      {"from": "3", "to": "1", "tone": "default", "directed": true}
+    ],
+    "facts": [
+      {"name": "head", "value": 1, "tone": "purple"},
+      {"name": "processed", "value": 1, "tone": "blue"},
+      {"name": "processed < n", "value": "1 < 4", "tone": "orange"}
+    ],
+    "action": "done",
+    "label": "Queue exhausted with processed=1 and n=4. Nodes 1, 2, and 3 were never unblocked — each is waiting on a predecessor that is also waiting. That shortfall is the cycle signal."
   }
 ]
 :::
@@ -813,9 +959,20 @@ for (const [from, to] of edges) {
 }
 ```
 
-Before the loop starts, seed the queue with every node whose `indegree` is 0 — nothing is blocking them. Inside the loop, each time you process a node, decrement the indegree of each of its neighbors. If a neighbor hits 0, it becomes ready.
+Before the loop starts, seed the queue with every node whose `indegree` is 0 — nothing is blocking them. The loop uses a `head` index to pull from the front without the O(n) cost of `.shift()`, and a `processed` counter that increments once per dequeued node:
 
-After the loop ends, how do you know whether a cycle exists?
+```typescript
+let head = 0;
+let processed = 0;
+
+while (head < queue.length) {
+  const node = queue[head++];
+  processed++;
+  // decrement neighbors here
+}
+```
+
+Inside the neighbor loop, decrement `indegree[neighbor]`. If a neighbor hits 0, it joins the queue. After the loop ends, `processed` tells you how many nodes were successfully unblocked — how do you use that to decide whether a cycle exists?
 
 :::stackblitz{step=3 total=3 exercises="step3-exercise1-problem.ts" solutions="step3-exercise1-solution.ts"}
 
