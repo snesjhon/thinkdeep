@@ -61,6 +61,7 @@ interface MarkdownRendererProps {
   problemId?: string;
   fundamentalsSlug?: string;
   codeFiles?: Record<string, string>;
+  exercisePromptsByFile?: Record<string, string>;
 }
 
 // Segment types added by DSA
@@ -326,6 +327,7 @@ export default function MarkdownRenderer({
   problemId,
   fundamentalsSlug,
   codeFiles,
+  exercisePromptsByFile,
 }: MarkdownRendererProps) {
   return (
     <BaseMarkdownRenderer
@@ -410,6 +412,7 @@ export default function MarkdownRenderer({
               }
               base={fundamentalsSlug ? 'fundamentals' : undefined}
               initialFiles={codeFiles}
+              exercisePromptsByFile={exercisePromptsByFile}
             />
           );
         }
@@ -431,6 +434,7 @@ export default function MarkdownRenderer({
               progressStepId={problemId ? `dsa-${problemId}-step-${s.step}` : undefined}
               base={fundamentalsSlug ? 'fundamentals' : undefined}
               initialFiles={codeFiles}
+              exercisePromptsByFile={exercisePromptsByFile}
             />
           );
         }

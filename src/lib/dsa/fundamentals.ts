@@ -11,6 +11,7 @@ export interface FundamentalsGuide {
   title: string; // "Binary Trees - Fundamentals"
   content: string;
   sections: string[]; // top-level ## headings
+  exercisePromptsByFile: Record<string, string>;
 }
 
 function extractTitle(content: string, fallback = ''): string {
@@ -23,12 +24,40 @@ function extractH2Sections(content: string): string[] {
   return Array.from(matches).map((m) => m[1]);
 }
 
+function normalizeExercisePromptHeading(heading: string): string {
+  return heading.trim().replace(/^`|`$/g, '');
+}
+
+function parseExercisePrompts(raw: string): Record<string, string> {
+  const headingRe = /^##\s+(.+)$/gm;
+  const matches = Array.from(raw.matchAll(headingRe));
+  const promptsByFile: Record<string, string> = {};
+
+  for (let index = 0; index < matches.length; index += 1) {
+    const match = matches[index];
+    const heading = normalizeExercisePromptHeading(match[1] ?? '');
+    const start = (match.index ?? 0) + match[0].length;
+    const end =
+      index + 1 < matches.length ? matches[index + 1].index ?? raw.length : raw.length;
+    const body = raw.slice(start, end).trim();
+
+    if (!heading.endsWith('.ts') || !body) continue;
+    promptsByFile[heading] = body;
+  }
+
+  return promptsByFile;
+}
+
 export function getFundamentalsGuide(slug: string): FundamentalsGuide | null {
   const filename = `${slug}-fundamentals.md`;
   const filePath = path.join(FUNDAMENTALS_DIR, slug, filename);
   if (!fs.existsSync(filePath)) return null;
+  const promptPath = path.join(FUNDAMENTALS_DIR, slug, 'exercise-prompts.md');
 
   const raw = fs.readFileSync(filePath, 'utf-8');
+  const promptRaw = fs.existsSync(promptPath)
+    ? fs.readFileSync(promptPath, 'utf-8')
+    : '';
 
   // although we're not using front-matter currently, let's save this for now as I'm not sure
   // if we'll develop this a bit later
@@ -40,6 +69,7 @@ export function getFundamentalsGuide(slug: string): FundamentalsGuide | null {
     title: extractTitle(content, slug.replace(/-/g, ' ')),
     content,
     sections: extractH2Sections(content),
+    exercisePromptsByFile: parseExercisePrompts(promptRaw),
   };
 }
 

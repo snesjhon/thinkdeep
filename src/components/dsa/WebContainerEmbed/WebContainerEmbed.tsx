@@ -5,11 +5,12 @@ import { useTransition } from 'react';
 import type { EditorView } from '@codemirror/view';
 import type { Transaction } from '@codemirror/state';
 import type { WebContainer } from '@webcontainer/api';
-import { Check, Command, CornerDownLeft, Expand, Shrink } from 'lucide-react';
+import { Check, Command, CornerDownLeft, Expand, PenTool, Shrink } from 'lucide-react';
 import useSWRImmutable from 'swr/immutable';
 import { useSWRConfig } from 'swr';
 import styles from './WebContainerEmbed.module.css';
 import { useOptionalProgress } from '@/components/ui/ProgressProvider/ProgressProvider';
+import ExerciseChatSidebar from '../ExerciseChatSidebar/ExerciseChatSidebar';
 import {
   applyEditableSnippet,
   buildDsaCodeStorageKey,
@@ -94,6 +95,39 @@ function buildCodeSyncKey(base: DsaCodeBase, slug: string, file: string) {
   return `/api/dsa/code-sync?${params.toString()}`;
 }
 
+function normalizeExercisePromptFile(file: string): string {
+  return file.replace(/-solution\.ts$/, '-problem.ts');
+}
+
+function extractExerciseGoal(content: string | undefined): string | undefined {
+  const match = content?.match(/^\/\/ Goal:\s*(.+)$/m);
+  return match?.[1]?.trim();
+}
+
+function formatExerciseLabel(file: string, fallback: string): string {
+  const standardMatch = file.match(/^step(\d+)-exercise(\d+)-problem\.ts$/);
+  if (standardMatch) {
+    return `Step ${standardMatch[1]} Exercise ${standardMatch[2]}`;
+  }
+
+  const genericMatch = file.match(/exercise(\d+)-problem\.ts$/);
+  if (genericMatch) {
+    return `Exercise ${genericMatch[1]}`;
+  }
+
+  return fallback.replace(/^Solution/, 'Exercise');
+}
+
+function buildFallbackExercisePrompt(
+  exerciseLabel: string,
+  exerciseGoal: string | undefined,
+): string {
+  return `Stay inside ${exerciseLabel}. Focus on the learner's understanding of the problem goal, the required data structure choices, the algorithm invariant, the step-by-step state changes, the stopping condition, and the edge cases that could break the approach.
+
+Push the learner to sketch the execution before writing code. If they draw the algorithm, analyze the drawing first and use it to ask the next pointed question.
+${exerciseGoal ? `Keep returning to this goal: ${exerciseGoal}` : ''}`.trim();
+}
+
 async function fetchCodeSyncRecord(
   url: string,
 ): Promise<CodeSyncRecord | null> {
@@ -164,6 +198,7 @@ interface Props {
   progressStepId?: string;
   base?: DsaCodeBase;
   initialFiles?: Record<string, string>;
+  exercisePromptsByFile?: Record<string, string>;
 }
 
 interface ExpandedLayout {
@@ -181,6 +216,7 @@ export default function WebContainerEmbed({
   progressStepId,
   base = 'problems',
   initialFiles = {},
+  exercisePromptsByFile = {},
 }: Props) {
   const { mutate } = useSWRConfig();
   const progress = useOptionalProgress();
@@ -192,6 +228,9 @@ export default function WebContainerEmbed({
     'idle' | 'booting' | 'running' | 'done' | 'error'
   >('idle');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDiagramOpen, setIsDiagramOpen] = useState(false);
+  const [isDiagramWorkspaceOpen, setIsDiagramWorkspaceOpen] = useState(false);
+  const [diagramSessionKey, setDiagramSessionKey] = useState(0);
   const [expandedLayout, setExpandedLayout] = useState<ExpandedLayout | null>(
     null,
   );
@@ -220,6 +259,19 @@ export default function WebContainerEmbed({
 
   const activeFile = tabs[tabIdx]?.file ?? '';
   activeFileRef.current = activeFile;
+  const exercisePromptFile = normalizeExercisePromptFile(activeFile);
+  const exerciseSource =
+    initialFiles[exercisePromptFile] ?? initialFiles[activeFile] ?? '';
+  const exerciseGoal = extractExerciseGoal(exerciseSource);
+  const exerciseLabel = formatExerciseLabel(
+    exercisePromptFile,
+    tabs[tabIdx]?.label ?? 'Exercise',
+  );
+  const supportsDiagramWorkspace = base === 'fundamentals' && !!activeFile;
+  const exercisePromptContent =
+    exercisePromptsByFile[exercisePromptFile] ??
+    buildFallbackExercisePrompt(exerciseLabel, exerciseGoal);
+  const exerciseStorageKey = `dsa-exercise-chat:${base}:${contentSlug}:${exercisePromptFile}`;
   const isStepLoading = progressStepId
     ? (progress?.isLoading('step') ?? true)
     : false;
@@ -761,6 +813,22 @@ export default function WebContainerEmbed({
       <div
         style={inlineHeight ? { minHeight: `${inlineHeight}px` } : undefined}
       >
+        {supportsDiagramWorkspace ? (
+          <ExerciseChatSidebar
+            key={`${exerciseStorageKey}:${diagramSessionKey}`}
+            isOpen={isDiagramOpen}
+            onClose={() => setIsDiagramOpen(false)}
+            initialDrawOpen={isDiagramWorkspaceOpen}
+            onDrawOpenChange={setIsDiagramWorkspaceOpen}
+            promptContent={exercisePromptContent}
+            phase={Math.min(step, 3)}
+            exerciseLabel={exerciseLabel}
+            exerciseFile={exercisePromptFile}
+            exerciseGoal={exerciseGoal}
+            exerciseSource={exerciseSource}
+            storageKey={exerciseStorageKey}
+          />
+        ) : null}
         <div
           ref={rootRef}
           className={`relative my-6 overflow-hidden rounded-lg border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] shadow-[0_0_0_rgba(0,0,0,0)] transition-[box-shadow,border-color] duration-150 ease-in-out ${
@@ -880,6 +948,20 @@ export default function WebContainerEmbed({
                     </button>
                   ) : null}
 
+                  {supportsDiagramWorkspace ? (
+                    <button
+                      type="button"
+                      className="mb-0 inline-flex px-2 py-1"
+                      onClick={() => {
+                        setDiagramSessionKey((previous) => previous + 1);
+                        setIsDiagramOpen(true);
+                      }}
+                      aria-label={`Open diagram workspace for ${exerciseLabel}`}
+                      title={`Open diagram workspace for ${exerciseLabel}`}
+                    >
+                      <PenTool className="h-4 w-4" />
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     className="px-2 py-1 mb-0 inline-flex "

@@ -128,6 +128,7 @@ export default function FundamentalsPage({ params }: Props) {
             content={guide.content}
             fundamentalsSlug={params.slug}
             codeFiles={codeFiles}
+            exercisePromptsByFile={guide.exercisePromptsByFile}
           />
           <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-8">
             <Link
