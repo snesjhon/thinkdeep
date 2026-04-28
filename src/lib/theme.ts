@@ -12,6 +12,15 @@ export const THEME_FLAVORS = [
 
 export type ThemeFlavor = (typeof THEME_FLAVORS)[number];
 
+export const THEME_LABELS: Record<ThemeFlavor, string> = {
+  latte: 'Latte',
+  mocha: 'Mocha',
+  'github-light': 'GitHub Light',
+  'github-dark': 'GitHub Dark',
+  'tokyo-light': 'Light',
+  'tokyo-storm': 'Storm',
+};
+
 export const DEFAULT_THEME_FLAVOR: ThemeFlavor = 'latte';
 
 const DARK_THEME_FLAVORS: readonly ThemeFlavor[] = [

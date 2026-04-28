@@ -1,40 +1,38 @@
-// =============================================================================
-// Product of Array Except Self — Complete Solution
-// =============================================================================
-// Two-messenger approach: eastbound pass fills left products, westbound pass
-// multiplies in right products. O(n) time, O(1) extra space.
+// Goal: Build each locker tag in two passes, first by storing the left-side
+//       product, then by multiplying in the right-side product.
 
 function productExceptSelf(nums: number[]): number[] {
-  const board = new Array(nums.length);  // village board — one slot per village
+  const answer = new Array(nums.length).fill(1);
 
-  // Eastbound pass: fill board with left products
-  let leftTally = 1;                     // product of all villages seen so far (coming from the west)
-  for (let i = 0; i < nums.length; i++) {
-    board[i] = leftTally;               // write BEFORE absorbing — board[i] = product of nums[0..i-1]
-    leftTally *= nums[i];               // absorb this village's harvest, continue east
+  let prefix = 1;
+  for (let i = 0; i < nums.length; i += 1) {
+    answer[i] = prefix;
+    prefix *= nums[i];
   }
 
-  // Westbound pass: multiply right products into each board slot
-  let rightTally = 1;                    // product of all villages seen so far (coming from the east)
-  for (let i = nums.length - 1; i >= 0; i--) {
-    board[i] *= rightTally;             // combine left × right — board[i] = product of all except nums[i]
-    rightTally *= nums[i];             // absorb this village's harvest, continue west
+  let suffix = 1;
+  for (let i = nums.length - 1; i >= 0; i -= 1) {
+    answer[i] *= suffix;
+    suffix *= nums[i];
   }
 
-  return board;
+  return answer;
 }
 
-// Tests — all must print PASS
-test('[1,2,3,4]', () => productExceptSelf([1, 2, 3, 4]), [24, 12, 8, 6]);
-test('[2,3]', () => productExceptSelf([2, 3]), [3, 2]);
-test('[-1,1,0,-3,3]', () => productExceptSelf([-1, 1, 0, -3, 3]), [0, 0, 9, 0, 0]);
-test('zeros [0,1,2]', () => productExceptSelf([0, 1, 2]), [2, 0, 0]);
-test('single element', () => productExceptSelf([42]), [1]);
-test('negatives [2,-3,4]', () => productExceptSelf([2, -3, 4]), [-12, 8, -6]);
+// ---Tests
+runCase('empty hallway', () => productExceptSelf([]), []);
+runCase('single locker', () => productExceptSelf([5]), [1]);
+runCase('example 1', () => productExceptSelf([1, 2, 3, 4]), [24, 12, 8, 6]);
+runCase('example 2 with zero', () => productExceptSelf([-1, 1, 0, -3, 3]), [0, 0, 9, 0, 0]);
+runCase('all positive', () => productExceptSelf([2, 3, 4, 5]), [60, 40, 30, 24]);
+runCase('two zeros wipe every tag', () => productExceptSelf([0, 4, 0]), [0, 0, 0]);
+runCase('single zero only helps one locker', () => productExceptSelf([2, 0, 4, 5]), [0, 40, 0, 0]);
+runCase('negatives without zero', () => productExceptSelf([-2, 3, -4]), [-12, 8, -6]);
+// ---End Tests
 
 // ---Helpers
 
-function test(desc: string, fn: () => unknown, expected: unknown): void {
+function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
     const pass = JSON.stringify(actual) === JSON.stringify(expected);
@@ -46,6 +44,8 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }

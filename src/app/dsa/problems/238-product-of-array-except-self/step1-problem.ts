@@ -1,22 +1,21 @@
-// Goal: Walk the eastbound messenger left to right, writing the running left-product
-//       to each village's board slot BEFORE absorbing the current harvest.
-//
-// After this step, board[i] = product of nums[0..i-1]  (everything to the LEFT of i)
+// Goal: Walk left to right and let the left messenger write each locker's
+//       left-side product onto the answer tags.
 
 function productExceptSelf(nums: number[]): number[] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('single element', () => productExceptSelf([5]), [1]);
-test('[1,2,3,4] — left products', () => productExceptSelf([1, 2, 3, 4]), [1, 1, 2, 6]);
-test('[2,3,4] — left products', () => productExceptSelf([2, 3, 4]), [1, 2, 6]);
-test('zeros [0,1,2] — left products', () => productExceptSelf([0, 1, 2]), [1, 0, 0]);
+runCase('empty hallway', () => productExceptSelf([]), []);
+runCase('single locker has no left side', () => productExceptSelf([5]), [1]);
+runCase('forward tags for [1,2,3,4]', () => productExceptSelf([1, 2, 3, 4]), [1, 1, 2, 6]);
+runCase('forward tags for [2,3,4,5]', () => productExceptSelf([2, 3, 4, 5]), [1, 2, 6, 24]);
+runCase('zero affects later left bundles', () => productExceptSelf([2, 0, 4, 5]), [1, 2, 0, 0]);
 // ---End Tests
 
 // ---Helpers
 
-function test(desc: string, fn: () => unknown, expected: unknown): void {
+function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
     const pass = JSON.stringify(actual) === JSON.stringify(expected);
@@ -28,6 +27,8 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }

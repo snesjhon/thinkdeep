@@ -6,6 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   applyThemeFlavor,
   getActiveThemeFlavor,
+  THEME_LABELS,
   THEME_CHANGE_EVENT,
   type ThemeFlavor,
 } from '@/lib/theme';
@@ -14,15 +15,6 @@ interface ThemeSwitcherProps {
   collapsed?: boolean;
   compact?: boolean;
 }
-
-const FLAVOR_LABELS: Record<ThemeFlavor, string> = {
-  latte: 'Latte',
-  mocha: 'Mocha',
-  'github-light': 'GitHub Light',
-  'github-dark': 'GitHub Dark',
-  'tokyo-light': 'Light',
-  'tokyo-storm': 'Storm',
-};
 
 const FLAVOR_ICONS: Record<ThemeFlavor, LucideIcon> = {
   latte: Sun,
@@ -94,8 +86,8 @@ export function ThemeSwitcher({
     return (
       <button
         onClick={() => applyThemeFlavor(next)}
-        aria-label={`Switch to ${FLAVOR_LABELS[next]} theme`}
-        title={`Switch to ${FLAVOR_LABELS[next]}`}
+        aria-label={`Switch to ${THEME_LABELS[next]} theme`}
+        title={`Switch to ${THEME_LABELS[next]}`}
         className="appearance-none shadow-none cursor-pointer border-none bg-transparent px-2 py-1 text-[var(--ms-text-subtle)] outline-none ring-0 transition-colors hover:text-[var(--ms-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
       >
         {theme === 'mocha' ||
@@ -114,8 +106,8 @@ export function ThemeSwitcher({
       <div ref={dropdownRef} className="relative">
         <button
           onClick={() => setOpen((value) => !value)}
-          aria-label={`Theme: ${FLAVOR_LABELS[theme]}`}
-          title={`Theme: ${FLAVOR_LABELS[theme]}`}
+          aria-label={`Theme: ${THEME_LABELS[theme]}`}
+          title={`Theme: ${THEME_LABELS[theme]}`}
           className="flex h-6 w-6 cursor-pointer items-center justify-center border-none bg-transparent p-0 text-[var(--ms-text-body)] outline-none transition-colors hover:text-[var(--ms-blue)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
         >
           <Layers3 aria-hidden="true" className="h-5 w-5" strokeWidth={1.9} />
@@ -142,7 +134,7 @@ export function ThemeSwitcher({
                   }`}
                 >
                   <Icon aria-hidden="true" className="h-3.5 w-3.5" />
-                  {FLAVOR_LABELS[flavor]}
+                  {THEME_LABELS[flavor]}
                 </button>
               );
             })}
@@ -170,7 +162,7 @@ export function ThemeSwitcher({
             }`}
           >
             <Icon aria-hidden="true" className="h-3.5 w-3.5" />
-            {FLAVOR_LABELS[flavor]}
+            {THEME_LABELS[flavor]}
           </button>
         );
       })}

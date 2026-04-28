@@ -309,6 +309,8 @@ When node 0 is processed, its two outgoing arrows are removed. That frees nodes 
 
 The trace labels the nodes I, L, B, and D (Install, Lint, Build, Deploy) — a realistic CI pipeline: I must run first to get dependencies in place, then L and B can run in parallel since neither depends on the other, and D only ships once both pass.
 
+The cycle check comes from what happens when the queue runs dry too early. If the graph still has unprocessed nodes but none of them have `indegree === 0`, then none are safe to process next. That can only happen if the remaining nodes are still blocking one another through a directed loop. In the failure trace below, node 0 is processed, but nodes 1, 2, and 3 stay stuck with incoming arrows from each other. The queue empties, `processed` stops at 1, and `processed !== n` becomes the proof that a cycle survived.
+
 :::trace-graph
 [
   {
