@@ -1,23 +1,34 @@
-// Goal: Practice sweeping one district from a starting intersection.
+// Goal: Practice counting how many direct roads touch each intersection in the street ledger.
 //
-// Return all intersections reachable from start in ascending order.
-// The city roads are two-way.
+// Return the degree of every node in an undirected graph.
 //
 // Example:
-//   reachableDistrict(5, [[0,1],[1,2],[3,4]], 0) → [0,1,2]
-//   reachableDistrict(5, [[0,1],[1,2],[3,4]], 3) → [3,4]
+//   countStreetConnections(4, [[0, 1], [0, 2], [2, 3]]) -> [2,1,2,1]
+//   countStreetConnections(3, [])                        -> [0,0,0]
 type Road = [number, number];
 
-function reachableDistrict(n: number, roads: Road[], start: number): number[] {
+function countStreetConnections(n: number, roads: Road[]): number[] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-check('start intersection is included', () => reachableDistrict(1, [], 0), [0]);
-check('sweeps one connected district', () => reachableDistrict(5, [[0, 1], [1, 2], [3, 4]], 0), [0, 1, 2]);
-check('ignores disconnected district', () => reachableDistrict(5, [[0, 1], [1, 2], [3, 4]], 3), [3, 4]);
-check('cycle does not duplicate intersections', () => reachableDistrict(4, [[0, 1], [1, 2], [2, 0], [2, 3]], 0), [0, 1, 2, 3]);
-check('isolated start returns only itself', () => reachableDistrict(4, [[0, 1]], 3), [3]);
+check('empty graph gives all zero counts', () => countStreetConnections(3, []), [0, 0, 0]);
+check('single road increments both endpoints', () => countStreetConnections(2, [[0, 1]]), [1, 1]);
+check(
+  'chain graph has expected degrees',
+  () => countStreetConnections(4, [[0, 1], [1, 2], [2, 3]]),
+  [1, 2, 2, 1],
+);
+check(
+  'hub node counts every attached road',
+  () => countStreetConnections(5, [[1, 0], [1, 2], [1, 3], [1, 4]]),
+  [1, 4, 1, 1, 1],
+);
+check(
+  'duplicate roads count as separate ledger entries',
+  () => countStreetConnections(3, [[0, 1], [0, 1], [1, 2]]),
+  [2, 3, 1],
+);
 // ---End Tests
 
 // ---Helpers
@@ -30,11 +41,11 @@ function check(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
     } else {
-      throw e;
+      throw error;
     }
   }
 }

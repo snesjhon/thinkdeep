@@ -342,7 +342,7 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlugs: ['graphs', 'graphs-dfs'],
         fundamentalsLabels: ['Fundamentals', 'DFS Fundamentals'],
         fundamentalsBlurb:
-          'Graph representation and vocabulary first, then DFS — recursive flood fill, adjacency-list traversal, and cycle detection via visited coloring.',
+          'Graph vocabulary and representation first, then DFS and BFS as separate traversal strategies for reachability, component sweeps, and shortest-path thinking.',
         firstPass: [
           { id: '200', isFirstPass: true, difficulty: 'medium' },
           { id: '695', isFirstPass: true, difficulty: 'medium' },

@@ -1,22 +1,38 @@
-// Goal: Practice spotting a one-way traffic loop by dispatching only intersections with zero incoming arrows.
+// Goal: Practice reading a city block grid as an implicit graph by listing valid orthogonal neighbors.
 //
-// Return true if the directed graph contains a cycle.
+// Return the in-bounds neighbor coordinates for one cell in this exact order: up, right, down, left.
 //
 // Example:
-//   oneWayLoopExists(3, [[0,1],[1,2]])     → false
-//   oneWayLoopExists(3, [[0,1],[1,2],[2,0]]) → true
-type Street = [number, number];
+//   orthogonalBlockNeighbors([[1,1,0],[0,1,0],[1,0,1]], 1, 1) -> [[0,1],[1,2],[2,1],[1,0]]
+//   orthogonalBlockNeighbors([[1]], 0, 0)                     -> []
+type Coord = [number, number];
 
-function oneWayLoopExists(n: number, streets: Street[]): boolean {
+function orthogonalBlockNeighbors(grid: number[][], row: number, col: number): Coord[] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-check('empty city has no loop', () => oneWayLoopExists(0, []), false);
-check('simple chain has no loop', () => oneWayLoopExists(3, [[0, 1], [1, 2]]), false);
-check('triangle loop is detected', () => oneWayLoopExists(3, [[0, 1], [1, 2], [2, 0]]), true);
-check('self-loop counts as cycle', () => oneWayLoopExists(2, [[1, 1]]), true);
-check('disconnected graph can still contain a loop', () => oneWayLoopExists(5, [[0, 1], [2, 3], [3, 4], [4, 2]]), true);
+check('single cell has no neighbors', () => orthogonalBlockNeighbors([[1]], 0, 0), []);
+check(
+  'center cell returns four orthogonal neighbors',
+  () => orthogonalBlockNeighbors([[1, 1, 0], [0, 1, 0], [1, 0, 1]], 1, 1),
+  [[0, 1], [1, 2], [2, 1], [1, 0]],
+);
+check(
+  'top left corner has only right and down',
+  () => orthogonalBlockNeighbors([[1, 1], [1, 0]], 0, 0),
+  [[0, 1], [1, 0]],
+);
+check(
+  'top edge cell skips out of bounds coordinates',
+  () => orthogonalBlockNeighbors([[1, 1, 1], [0, 1, 0]], 0, 1),
+  [[0, 2], [1, 1], [0, 0]],
+);
+check(
+  'bottom right corner has only up and left',
+  () => orthogonalBlockNeighbors([[1, 0], [1, 1]], 1, 1),
+  [[0, 1], [1, 0]],
+);
 // ---End Tests
 
 // ---Helpers
@@ -29,11 +45,11 @@ function check(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
     } else {
-      throw e;
+      throw error;
     }
   }
 }

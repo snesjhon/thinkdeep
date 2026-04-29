@@ -1,376 +1,307 @@
 ## Overview
 
-Graphs are what arrays and trees turn into once the structure stops being a single line or a single rooted hierarchy. The brute-force trap is easy to fall into: from every intersection, try every road again and again, and the city explodes into repeated work. Graph thinking fixes that by turning the map into a ledger of neighbors plus a rule for when a street has already been accounted for.
+Graphs are what you use when the data is no longer a single line like an array or a parent-child hierarchy like a tree. The performance barrier is not "how do I loop faster," it is "how do I describe the connections once so I do not keep rediscovering them." A good graph representation turns a messy map into a predictable lookup structure.
 
-You already know how arrays give you indexed storage, how hash maps remember what you have seen, and how stacks and queues change visit order. Graphs fuse those ideas into one system. This guide builds that in three stages: **Draw the Street Ledger**, **Sweep Every District**, and **Respect One-Way Streets**.
+You already know arrays for indexed storage and hash-based sets for remembering what you have seen. This guide adds the graph layer on top of that: how to name the parts, how to store neighbors, and how to recognize components without committing to a traversal strategy yet. We will build that in three stages: **Write the Street Ledger**, **Read the Arrows and Tolls**, and **See Districts Without Walking Them**.
 
 ## Core Concept & Mental Model
 
 ### The City Map
 
-A **node** is the basic unit of a graph — a location, a state, or an entity. Nodes have no inherent order; what matters is what they connect to. In the city map, a node is an intersection: a place you can stand.
+Picture a city map. Each **node** is an intersection where you can stand. Each **edge** is a road between intersections. Some roads run both ways, some are one-way, and some have a posted toll or travel time. The graph is not the picture itself, it is the rulebook that says which intersections connect and what each connection means.
 
-An **edge** is a connection between two nodes. Edges can be **undirected** (the connection works both ways) or **directed** (the connection only works one way). In the city map, edges are streets — some run both ways, some are one-way arrows.
+- **intersection** -> node
+- **road** -> edge
+- **street ledger** -> adjacency list
+- **stamp sheet** -> visited set
+- **district** -> connected component
+- **city block grid** -> implicit graph
 
-A graph is **unweighted** when edges simply exist or don't — every connection is treated equally, with no associated cost. A graph is **weighted** when each edge carries a numeric value (distance, time, fee). Most of the problems in this guide use unweighted graphs. BFS finds the shortest path only in unweighted graphs; weighted shortest paths require different algorithms (Dijkstra's, Bellman-Ford). In the city map, an unweighted street just connects two intersections. A weighted street has a travel time posted on it.
-
-An **adjacency list** is the standard way to store a graph in code. Rather than keeping a flat edge list you have to scan repeatedly, each node gets its own list of neighbors. Building it is O(V + E). Looking up a node's neighbors is O(degree). In the city map, it is the street ledger: each intersection has a list of the streets leaving it.
-
-A **visited set** tracks which nodes have already been processed so traversal never revisits them. Without it, traversal on any graph with cycles loops forever. This is the core invariant that makes graph traversal linear instead of exponential. In the city map, it is the stamp sheet: once an intersection is stamped, you do not send another expedition there.
-
-A **connected component** is a maximal set of nodes where every node is reachable from every other. A graph can have one component or many — if it has more than one, no edge crosses the gap. In the city map, a component is a district: all the intersections reachable from one starting point.
-
-**In-degree** is the count of directed edges pointing *into* a node. Each edge `A → B` adds 1 to B's in-degree. A node with in-degree 0 has no incoming edges — nothing points to it, so nothing needs to happen before it. In dependency graphs (course prerequisites, build steps, install order), a node's in-degree is the number of tasks that must finish before this one can start. Those tasks are its **prerequisites**. When all prerequisites are done, in-degree drops to zero and the node becomes safe to process. In the city map, in-degree counts the one-way arrows arriving at an intersection.
-
-A **queue or stack** determines the order in which nodes are expanded. A queue (FIFO) gives BFS: nodes are processed level by level. A stack (LIFO) gives DFS: traversal goes as deep as possible before backtracking. In the city map, it is the dispatch line — the queue of intersections waiting to be explored.
+The efficiency claim is simple: once the street ledger is written, you ask "who are this node's neighbors?" directly, instead of rescanning every road in the city each time.
 
 ### The Adjacency List
 
-Graphs are usually given as an edge list: `[[0,1],[1,2],[2,3]]`. Scanning that list every time you need a node's neighbors costs O(E) per lookup. The adjacency list fixes this: build it once in O(V + E), then each neighbor lookup takes O(degree) time.
+An edge list like `[[0,1],[0,2],[2,3]]` is compact input, but it is poor working memory. If you want the neighbors of node 2, scanning the whole edge list costs O(E). An adjacency list fixes that by giving every node its own neighbor bucket, so building takes O(V + E) and reading one node's neighbors takes O(degree).
 
-For an undirected graph, each edge `[a, b]` produces two entries — push `b` into `adj[a]` and push `a` into `adj[b]`. For a directed graph, only push `b` into `adj[from]`.
+In the city map, the adjacency list is the street ledger. Every intersection has a line item listing the roads leaving it. For an undirected road between `a` and `b`, both ledgers change. For a directed road `a -> b`, only `a` records the outgoing road.
 
 ```mermaid
 graph TD
-    Input["edge list: [[0,1],[0,2],[1,3],[2,3]]"] --> Build["build adjacency list — O(V + E)"]
-    Build --> A0["adj[0] = [1, 2]"]
-    Build --> A1["adj[1] = [0, 3]"]
-    Build --> A2["adj[2] = [0, 3]"]
-    Build --> A3["adj[3] = [1, 2]"]
+    EdgeList["edge list input"] --> Undirected{"undirected?"}
+    Undirected -- yes --> Both["write b into adj[a]\nwrite a into adj[b]"]
+    Undirected -- no --> OneWay["write b into adj[a] only"]
+    Both --> Ledger["adjacency list"]
+    OneWay --> Ledger
 ```
 
-### Mark at Discovery, Not at Dispatch
+### Directed vs. Undirected, Weighted vs. Unweighted
 
-The visited set works correctly only if nodes are marked when they enter the queue or stack — at discovery time — not when they are removed and processed. Marking at dispatch (pop time) lets the same node be enqueued once per incoming edge before it is ever processed. On any graph with multiple paths to the same node this produces duplicate work. On cyclic graphs it produces an infinite loop.
+The same node-and-edge idea appears in four common forms, and the input notation tells you which one you are holding.
 
-The fix is one line earlier: mark the node before pushing it, not after popping it.
+- **Undirected, unweighted**: `edges = [[0,1],[1,2]]`. The only fact that matters is whether a connection exists, and each edge is symmetric.
+- **Directed, unweighted**: `edges = [[0,1],[1,2]]` but now each pair means one-way travel from the first node to the second.
+- **Undirected, weighted**: `edges = [[0,1,7],[1,2,3]]`. You still have two-way travel, but each edge carries a cost.
+- **Directed, weighted**: `edges = [[0,1,7],[1,2,3]]` and direction plus cost both matter.
+
+In the city map, some roads are two-way neighborhood streets, some are one-way ramps, and some have a toll sign attached. The representation has to preserve exactly those facts and no others.
 
 ```mermaid
 graph LR
-    Discover["discover neighbor"] --> Check{already visited?}
-    Check -- No --> Mark["mark visited\nthen enqueue"]
-    Check -- Yes --> Skip["skip"]
-    Mark --> Process["dequeue and expand later"]
-    Process --> Discover
+    Graph["graph input"] --> Dir["direction rule"]
+    Graph --> Weight["weight rule"]
+    Dir --> U["undirected: record both ways"]
+    Dir --> D["directed: record outgoing way only"]
+    Weight --> N["unweighted: neighbor id only"]
+    Weight --> W["weighted: neighbor id + cost"]
 ```
 
-### BFS, DFS, and Kahn's Algorithm
+### The Visited Set
 
-The same mark-and-expand loop powers three different traversal algorithms. The difference is the data structure driving the expansion and what the algorithm is trying to answer.
+A visited set is not a property of the graph itself. It is a piece of working state you bring with you when you start walking the graph. Its job is to remember which nodes have already been claimed so repeated edges do not create repeated work.
 
-**BFS** uses a queue — FIFO — so it processes nodes in order of their discovery distance from the start. Every node at distance `d` is processed before any node at distance `d + 1`. This level-by-level guarantee is why BFS finds the shortest path in unweighted graphs: the first time a target node is dequeued, it was reached by the fewest possible edges.
-
-**DFS** uses a stack — LIFO, or equivalently recursion — so it goes as deep as possible before backtracking. No shortest-path guarantee, but DFS is simpler to implement recursively and works well for reachability, cycle detection, and connected components.
-
-**Kahn's algorithm** is a BFS variant for directed graphs with dependencies. Rather than starting from one node, it initializes the queue with every node whose in-degree is zero — nothing is blocking them yet. Processing a node decrements the in-degree of each of its neighbors; any neighbor that reaches zero joins the queue. If the total processed count equals `n`, the graph is acyclic and the order is valid. If any nodes remain unprocessed, they are locked in a cycle.
+The important idea comes before any DFS or BFS code: the graph can contain cycles and multiple roads into the same node. That means "I have seen this node before" is separate information from "this node exists in the ledger." In the city map, the stamp sheet prevents dispatching another crew to an intersection that has already been claimed.
 
 ```mermaid
 graph TD
-    Q["Graph problem"] --> Q1{Shortest path in unweighted graph?}
-    Q1 -- Yes --> BFS["BFS — queue, O(V+E)"]
-    Q1 -- No --> Q2{Directed with prerequisites?}
-    Q2 -- Yes --> Kahn["Kahn's — in-degree queue, O(V+E)"]
-    Q2 -- No --> Q3{Single component or all components?}
-    Q3 -- Single --> DFS["DFS or BFS from one start"]
-    Q3 -- All --> Scan["outer scan + component sweeps"]
+    Neighbor["read neighbor from ledger"] --> Seen{"already stamped?"}
+    Seen -- yes --> Skip["ignore duplicate work"]
+    Seen -- no --> Mark["stamp it once"]
+```
+
+### Grid as an Implicit Graph
+
+A grid problem often hides a graph without ever saying the word "graph." Each cell is a node. The allowed moves, usually up/down/left/right and sometimes diagonals, define the edges. You usually do not build an explicit adjacency list because the neighbors can be generated from row/column arithmetic in O(1).
+
+In the city map, the grid is a neighborhood of perfectly aligned blocks. You do not need a ledger entry for every curb if the rule "north, south, east, west if still in bounds" already tells you the legal roads.
+
+```mermaid
+graph TD
+    Cell["cell (r,c)"] --> Up["(r-1,c) if in bounds"]
+    Cell --> Down["(r+1,c) if in bounds"]
+    Cell --> Left["(r,c-1) if in bounds"]
+    Cell --> Right["(r,c+1) if in bounds"]
+```
+
+### Connected Components
+
+A connected component is a maximal group of nodes where every node belongs to the same reachable district. You do not need traversal code to understand the concept. If the graph has no edge crossing between `{0,1,2}` and `{3,4}`, those are two separate components by definition.
+
+The important mental shift is that "one graph" does not imply "one piece." In the city map, a district is everything inside one connected street network. If there is no road between two districts, they stay separate no matter how long you stare at the map.
+
+```mermaid
+graph TD
+    Graph["graph"] --> C1["component A: {0,1,2}"]
+    Graph --> C2["component B: {3,4}"]
+    Graph --> C3["component C: {5}"]
 ```
 
 ### How I Think Through This
 
-Before I touch code, I ask one question: **am I finding what is reachable from one node, counting or measuring components across the whole graph, or ordering nodes in a directed graph that may have cycles?**
+Before I touch code, I ask one question: **what exactly counts as a node, what exactly counts as an edge, and do I need to store those edges explicitly or can I generate them from structure?**
 
-**When the problem gives me a start node:** One BFS or DFS sweep handles it. The only discipline is marking nodes at discovery, not dispatch, and keeping the queue or stack fed until it empties.
+**When the input is an edge list for a normal graph:** I write the adjacency list once. The first thing I decide is whether each edge should be recorded once or twice, because that is the whole difference between directed and undirected storage.
 
-**When the graph may have multiple components:** One traversal from one node only covers one component. I add an outer loop over every node: if a node is already visited, skip it; if not, launch a full sweep from it. Each launch means I found a new component.
+**When the input adds arrows or costs:** I stop thinking "neighbor list of numbers" and start thinking "what fact must each ledger entry preserve?" One-way travel changes which node owns the entry. Weights change the shape of each entry from a plain node id to a `(neighbor, cost)` pair.
 
-**When edges are directed and create dependencies:** I shift from reachability thinking to ordering thinking. Nodes with in-degree zero are safe to process immediately — nothing upstream is blocking them. Kahn's algorithm maintains that invariant as it processes each node and decrements the in-degrees of its neighbors. Processed count equal to `n` means the graph is a valid DAG. Less than `n` means a cycle is blocking the remainder.
+**When the input is a grid:** I do not build roads one by one unless the problem truly needs it. The edges are implied by row and column movement rules, so the representation becomes coordinates plus the movement rule.
 
-The building blocks below work through those three situations.
+The building blocks below work through those three situations before DFS and BFS enter the picture.
 
-**Scenario 1 — BFS from one start node**
+**Scenario 1 - Writing an undirected street ledger**
 
 **Graph:** undirected, unweighted
-**Input:** `n = 5`, `edges = [[0,1],[0,2],[1,3],[2,3]]`, `start = 0`
+**Input:** `n = 4`, `edges = [[0,1],[0,2],[2,3]]`
 
-Node 4 is isolated — no edges connect it. Nodes 0–3 form one component. Node 3 is reachable by two paths (0→1→3 and 0→2→3), but the visited set ensures node 3 is only enqueued once regardless of how many edges point to it.
+The key observation is that each two-way road updates two ledgers. If you forget the reverse write, the stored graph silently changes meaning.
 
 :::trace-graph
 [
   {
     "nodes": [
-      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "current", "badge": "start"},
-      {"id": "B", "label": "1", "x": 40, "y": 24, "tone": "frontier"},
-      {"id": "C", "label": "2", "x": 40, "y": 66, "tone": "frontier"},
-      {"id": "D", "label": "3", "x": 66, "y": 48, "tone": "default"},
-      {"id": "E", "label": "4", "x": 86, "y": 48, "tone": "muted"}
+      {"id": "A", "label": "0", "x": 20, "y": 50, "tone": "current"},
+      {"id": "B", "label": "1", "x": 42, "y": 24, "tone": "default"},
+      {"id": "C", "label": "2", "x": 42, "y": 76, "tone": "default"},
+      {"id": "D", "label": "3", "x": 72, "y": 76, "tone": "default"}
     ],
     "edges": [
       {"from": "A", "to": "B", "tone": "active"},
-      {"from": "A", "to": "C", "tone": "active"},
-      {"from": "B", "to": "D", "tone": "queued"},
+      {"from": "A", "to": "C", "tone": "default"},
       {"from": "C", "to": "D", "tone": "default"}
     ],
     "facts": [
-      {"name": "queue", "value": "[0]", "tone": "orange"},
-      {"name": "visited", "value": "{0}", "tone": "green"}
+      {"name": "edge", "value": "[0,1]", "tone": "orange"},
+      {"name": "adj[0]", "value": "[1]", "tone": "blue"},
+      {"name": "adj[1]", "value": "[0]", "tone": "blue"}
     ],
-    "action": "visit",
-    "label": "Start at 0. Mark visited, enqueue neighbors 1 and 2."
+    "action": "mark",
+    "label": "Record [0,1]. Because the road is undirected, both ledgers change."
   },
   {
     "nodes": [
-      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "visited"},
-      {"id": "B", "label": "1", "x": 40, "y": 24, "tone": "visited"},
-      {"id": "C", "label": "2", "x": 40, "y": 66, "tone": "visited"},
-      {"id": "D", "label": "3", "x": 66, "y": 48, "tone": "current", "badge": "once"},
-      {"id": "E", "label": "4", "x": 86, "y": 48, "tone": "muted"}
+      {"id": "A", "label": "0", "x": 20, "y": 50, "tone": "current"},
+      {"id": "B", "label": "1", "x": 42, "y": 24, "tone": "default"},
+      {"id": "C", "label": "2", "x": 42, "y": 76, "tone": "default"},
+      {"id": "D", "label": "3", "x": 72, "y": 76, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "A", "to": "B", "tone": "traversed"},
+      {"from": "A", "to": "C", "tone": "active"},
+      {"from": "C", "to": "D", "tone": "default"}
+    ],
+    "facts": [
+      {"name": "edge", "value": "[0,2]", "tone": "orange"},
+      {"name": "adj[0]", "value": "[1,2]", "tone": "blue"},
+      {"name": "adj[2]", "value": "[0]", "tone": "blue"}
+    ],
+    "action": "mark",
+    "label": "Record [0,2]. Node 0 now has two outgoing neighbor entries."
+  },
+  {
+    "nodes": [
+      {"id": "A", "label": "0", "x": 20, "y": 50, "tone": "done"},
+      {"id": "B", "label": "1", "x": 42, "y": 24, "tone": "done"},
+      {"id": "C", "label": "2", "x": 42, "y": 76, "tone": "current"},
+      {"id": "D", "label": "3", "x": 72, "y": 76, "tone": "default"}
     ],
     "edges": [
       {"from": "A", "to": "B", "tone": "traversed"},
       {"from": "A", "to": "C", "tone": "traversed"},
-      {"from": "B", "to": "D", "tone": "active"},
-      {"from": "C", "to": "D", "tone": "traversed"}
+      {"from": "C", "to": "D", "tone": "active"}
     ],
     "facts": [
-      {"name": "queue", "value": "[3]", "tone": "orange"},
-      {"name": "visited", "value": "{0,1,2,3}", "tone": "green"}
+      {"name": "edge", "value": "[2,3]", "tone": "orange"},
+      {"name": "adj[2]", "value": "[0,3]", "tone": "blue"},
+      {"name": "adj[3]", "value": "[2]", "tone": "blue"}
+    ],
+    "action": "done",
+    "label": "After the last write, the final ledger is [[1,2],[0],[0,3],[2]]."
+  }
+]
+:::
+
+**Scenario 2 - Reading arrows and toll labels**
+
+**Graph:** directed, weighted
+**Input:** `n = 4`, `edges = [[0,1,5],[0,2,2],[2,3,7]]`
+
+The key observation is that the ledger entry must preserve both direction and cost. Recording the reverse edge would invent a road that was never present.
+
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "current"},
+      {"id": "B", "label": "1", "x": 42, "y": 20, "tone": "default"},
+      {"id": "C", "label": "2", "x": 42, "y": 76, "tone": "default"},
+      {"id": "D", "label": "3", "x": 74, "y": 76, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "A", "to": "B", "directed": true, "tone": "active", "label": "5"},
+      {"from": "A", "to": "C", "directed": true, "tone": "default", "label": "2"},
+      {"from": "C", "to": "D", "directed": true, "tone": "default", "label": "7"}
+    ],
+    "facts": [
+      {"name": "entry", "value": "adj[0].push((1,5))", "tone": "blue"},
+      {"name": "reverse?", "value": "no", "tone": "purple"}
     ],
     "action": "mark",
-    "label": "3 discovered via 1, marked visited. When 2's neighbor check reaches 3, it is already visited — skip. 3 enters the queue exactly once."
+    "label": "A directed weighted edge stores one outgoing neighbor plus its cost."
+  },
+  {
+    "nodes": [
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "current"},
+      {"id": "B", "label": "1", "x": 42, "y": 20, "tone": "default"},
+      {"id": "C", "label": "2", "x": 42, "y": 76, "tone": "default"},
+      {"id": "D", "label": "3", "x": 74, "y": 76, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "A", "to": "B", "directed": true, "tone": "traversed", "label": "5"},
+      {"from": "A", "to": "C", "directed": true, "tone": "active", "label": "2"},
+      {"from": "C", "to": "D", "directed": true, "tone": "default", "label": "7"}
+    ],
+    "facts": [
+      {"name": "adj[0]", "value": "[(1,5),(2,2)]", "tone": "blue"},
+      {"name": "adj[2]", "value": "[]", "tone": "blue"}
+    ],
+    "action": "mark",
+    "label": "Node 0 owns two outgoing roads. Node 2 still has an empty ledger until its own edge is processed."
   },
   {
     "nodes": [
       {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "done"},
-      {"id": "B", "label": "1", "x": 40, "y": 24, "tone": "done"},
-      {"id": "C", "label": "2", "x": 40, "y": 66, "tone": "done"},
-      {"id": "D", "label": "3", "x": 66, "y": 48, "tone": "done"},
-      {"id": "E", "label": "4", "x": 86, "y": 48, "tone": "muted"}
+      {"id": "B", "label": "1", "x": 42, "y": 20, "tone": "done"},
+      {"id": "C", "label": "2", "x": 42, "y": 76, "tone": "current"},
+      {"id": "D", "label": "3", "x": 74, "y": 76, "tone": "default"}
     ],
     "edges": [
-      {"from": "A", "to": "B", "tone": "traversed"},
-      {"from": "A", "to": "C", "tone": "traversed"},
-      {"from": "B", "to": "D", "tone": "traversed"},
-      {"from": "C", "to": "D", "tone": "traversed"}
+      {"from": "A", "to": "B", "directed": true, "tone": "traversed", "label": "5"},
+      {"from": "A", "to": "C", "directed": true, "tone": "traversed", "label": "2"},
+      {"from": "C", "to": "D", "directed": true, "tone": "active", "label": "7"}
     ],
     "facts": [
-      {"name": "visited", "value": "{0,1,2,3}", "tone": "green"},
-      {"name": "unreachable", "value": "{4}", "tone": "muted"}
+      {"name": "adj[2]", "value": "[(3,7)]", "tone": "blue"},
+      {"name": "final", "value": "[[(1,5),(2,2)],[],[(3,7)],[]]", "tone": "green"}
     ],
     "action": "done",
-    "label": "Queue empty. {0,1,2,3} are reachable from node 0. Node 4 is isolated — BFS from 0 never reaches it."
+    "label": "The finished ledger keeps both facts intact: direction and weight."
   }
 ]
 :::
 
-**Scenario 2 — Multiple components, outer scan**
+**Scenario 3 - Treating a grid as an implicit graph**
 
-**Graph:** undirected, unweighted
-**Input:** `n = 5`, `edges = [[0,1],[0,2],[3,4]]`
+**Graph:** grid, orthogonal neighbors
+**Input:** `grid = [[1,1,0],[0,1,0],[1,0,1]]`, `start = (0,1)`
 
-No edge crosses between {0,1,2} and {3,4} — two separate components. The outer scan loops over all nodes 0–4. It skips any node already visited. When it reaches 3 and finds it unvisited, that signals a new component. Each launch of the inner BFS covers exactly one component.
+The key observation is that no explicit edge list is needed. The legal neighbors come from bounds checks and movement rules, and component membership is about which cells belong to the same district if you were to walk them later.
 
 :::trace-graph
 [
   {
     "nodes": [
-      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "current", "badge": "start"},
-      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "default"},
-      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "default"},
-      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "default"},
-      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "default"}
+      {"id": "A", "label": "0,0", "x": 24, "y": 24, "tone": "frontier"},
+      {"id": "B", "label": "0,1", "x": 50, "y": 24, "tone": "current", "badge": "start"},
+      {"id": "C", "label": "0,2", "x": 76, "y": 24, "tone": "muted"},
+      {"id": "D", "label": "1,0", "x": 24, "y": 50, "tone": "muted"},
+      {"id": "E", "label": "1,1", "x": 50, "y": 50, "tone": "frontier"},
+      {"id": "F", "label": "1,2", "x": 76, "y": 50, "tone": "muted"},
+      {"id": "G", "label": "2,0", "x": 24, "y": 76, "tone": "default"},
+      {"id": "H", "label": "2,1", "x": 50, "y": 76, "tone": "muted"},
+      {"id": "I", "label": "2,2", "x": 76, "y": 76, "tone": "default"}
     ],
     "edges": [
-      {"from": "A", "to": "B", "tone": "default"},
-      {"from": "A", "to": "C", "tone": "default"},
-      {"from": "D", "to": "E", "tone": "default"}
+      {"from": "B", "to": "A", "tone": "active"},
+      {"from": "B", "to": "E", "tone": "active"}
     ],
     "facts": [
-      {"name": "districts", "value": 1, "tone": "purple"},
-      {"name": "queue", "value": "[0]", "tone": "orange"},
-      {"name": "visited", "value": "{0}", "tone": "green"}
-    ],
-    "action": "queue",
-    "label": "Outer scan starts at 0. It's unvisited — district 1 begins. Mark 0 and enqueue it."
-  },
-  {
-    "nodes": [
-      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "visited"},
-      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "frontier"},
-      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "frontier"},
-      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "default"},
-      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "default"}
-    ],
-    "edges": [
-      {"from": "A", "to": "B", "tone": "active"},
-      {"from": "A", "to": "C", "tone": "active"},
-      {"from": "D", "to": "E", "tone": "default"}
-    ],
-    "facts": [
-      {"name": "districts", "value": 1, "tone": "purple"},
-      {"name": "queue", "value": "[1, 2]", "tone": "orange"},
-      {"name": "visited", "value": "{0, 1, 2}", "tone": "green"}
-    ],
-    "action": "expand",
-    "label": "Dequeue 0. Neighbors 1 and 2 are unvisited — mark both and enqueue. The visited set ensures neither can be enqueued again."
-  },
-  {
-    "nodes": [
-      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "done"},
-      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "done"},
-      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "done"},
-      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "default"},
-      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "default"}
-    ],
-    "edges": [
-      {"from": "A", "to": "B", "tone": "traversed"},
-      {"from": "A", "to": "C", "tone": "traversed"},
-      {"from": "D", "to": "E", "tone": "default"}
-    ],
-    "facts": [
-      {"name": "districts", "value": 1, "tone": "purple"},
-      {"name": "queue", "value": "[]", "tone": "orange"},
-      {"name": "visited", "value": "{0, 1, 2}", "tone": "green"}
+      {"name": "neighbors", "value": "[(0,0),(1,1)]", "tone": "blue"},
+      {"name": "rule", "value": "up/down/left/right in bounds", "tone": "purple"}
     ],
     "action": "mark",
-    "label": "Dequeue 1 and 2. Each has only node 0 as a neighbor, already visited — skip. Queue empties. Component {0,1,2} is complete."
+    "label": "From cell (0,1), only in-bounds orthogonal land neighbors count."
   },
   {
     "nodes": [
-      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "done"},
-      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "done"},
-      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "done"},
-      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "current", "badge": "new"},
-      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "default"}
+      {"id": "A", "label": "0,0", "x": 24, "y": 24, "tone": "visited"},
+      {"id": "B", "label": "0,1", "x": 50, "y": 24, "tone": "visited"},
+      {"id": "C", "label": "0,2", "x": 76, "y": 24, "tone": "muted"},
+      {"id": "D", "label": "1,0", "x": 24, "y": 50, "tone": "muted"},
+      {"id": "E", "label": "1,1", "x": 50, "y": 50, "tone": "visited"},
+      {"id": "F", "label": "1,2", "x": 76, "y": 50, "tone": "muted"},
+      {"id": "G", "label": "2,0", "x": 24, "y": 76, "tone": "default"},
+      {"id": "H", "label": "2,1", "x": 50, "y": 76, "tone": "muted"},
+      {"id": "I", "label": "2,2", "x": 76, "y": 76, "tone": "default"}
     ],
     "edges": [
-      {"from": "A", "to": "B", "tone": "traversed"},
-      {"from": "A", "to": "C", "tone": "traversed"},
-      {"from": "D", "to": "E", "tone": "default"}
+      {"from": "B", "to": "A", "tone": "traversed"},
+      {"from": "B", "to": "E", "tone": "traversed"}
     ],
     "facts": [
-      {"name": "districts", "value": 2, "tone": "purple"},
-      {"name": "outer scan", "value": "first unstamped = 3", "tone": "blue"},
-      {"name": "queue", "value": "[3]", "tone": "orange"}
-    ],
-    "action": "queue",
-    "label": "Outer scan resumes: 1 and 2 are visited, skip. Node 3 is unvisited — second district begins. Mark 3 and enqueue."
-  },
-  {
-    "nodes": [
-      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "done"},
-      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "done"},
-      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "done"},
-      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "visited"},
-      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "frontier"}
-    ],
-    "edges": [
-      {"from": "A", "to": "B", "tone": "traversed"},
-      {"from": "A", "to": "C", "tone": "traversed"},
-      {"from": "D", "to": "E", "tone": "active"}
-    ],
-    "facts": [
-      {"name": "districts", "value": 2, "tone": "purple"},
-      {"name": "queue", "value": "[4]", "tone": "orange"},
-      {"name": "visited", "value": "{0,1,2,3,4}", "tone": "green"}
-    ],
-    "action": "expand",
-    "label": "Dequeue 3. Neighbor 4 is unvisited — mark and enqueue. All 5 nodes are now stamped."
-  },
-  {
-    "nodes": [
-      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "done"},
-      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "done"},
-      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "done"},
-      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "done"},
-      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "done"}
-    ],
-    "edges": [
-      {"from": "A", "to": "B", "tone": "traversed"},
-      {"from": "A", "to": "C", "tone": "traversed"},
-      {"from": "D", "to": "E", "tone": "traversed"}
-    ],
-    "facts": [
-      {"name": "final districts", "value": 2, "tone": "green"}
+      {"name": "district tag", "value": "component 1", "tone": "green"},
+      {"name": "cells", "value": "{(0,0),(0,1),(1,1)}", "tone": "green"}
     ],
     "action": "done",
-    "label": "Dequeue 4. Neighbor 3 is already visited — skip. Queue empties. Outer scan finds no more unvisited nodes. 2 districts total."
-  }
-]
-:::
-
-**Scenario 3 — Directed graph, Kahn's topological sort**
-
-**Graph:** directed, unweighted
-**Input:** `n = 4`, `edges = [[0,1],[0,2],[1,3],[2,3]]` (directed: `[from, to]`)
-
-To start, count how many arrows point *into* each node: node 0 has none, nodes 1 and 2 each have one, and node 3 has two. Kahn's puts every node with zero incoming arrows into the queue first — that's only node 0, since nothing needs to happen before it.
-
-When node 0 is processed, its two outgoing arrows are removed. That frees nodes 1 and 2 — they now have zero incoming arrows and join the queue. Once both are processed, node 3's two incoming arrows are gone and it becomes the last node ready to go.
-
-The trace labels the nodes I, L, B, and D (Install, Lint, Build, Deploy) — a realistic CI pipeline: I must run first to get dependencies in place, then L and B can run in parallel since neither depends on the other, and D only ships once both pass.
-
-The cycle check comes from what happens when the queue runs dry too early. If the graph still has unprocessed nodes but none of them have `indegree === 0`, then none are safe to process next. That can only happen if the remaining nodes are still blocking one another through a directed loop. In the failure trace below, node 0 is processed, but nodes 1, 2, and 3 stay stuck with incoming arrows from each other. The queue empties, `processed` stops at 1, and `processed !== n` becomes the proof that a cycle survived.
-
-:::trace-graph
-[
-  {
-    "nodes": [
-      {"id": "Install", "label": "I", "x": 16, "y": 50, "tone": "frontier", "badge": "0 in"},
-      {"id": "Lint", "label": "L", "x": 40, "y": 26, "tone": "default", "badge": "1 in"},
-      {"id": "Build", "label": "B", "x": 40, "y": 66, "tone": "default", "badge": "1 in"},
-      {"id": "Deploy", "label": "D", "x": 72, "y": 50, "tone": "default", "badge": "2 in"}
-    ],
-    "edges": [
-      {"from": "Install", "to": "Lint", "tone": "queued", "directed": true},
-      {"from": "Install", "to": "Build", "tone": "queued", "directed": true},
-      {"from": "Lint", "to": "Deploy", "tone": "default", "directed": true},
-      {"from": "Build", "to": "Deploy", "tone": "default", "directed": true}
-    ],
-    "facts": [
-      {"name": "ready now", "value": "[Install]", "tone": "orange"},
-      {"name": "remaining arrows", "value": 4, "tone": "blue"}
-    ],
-    "action": "queue",
-    "label": "Install has no incoming arrows — nothing blocks it. The CI pipeline must start here."
-  },
-  {
-    "nodes": [
-      {"id": "Install", "label": "I", "x": 16, "y": 50, "tone": "visited"},
-      {"id": "Lint", "label": "L", "x": 40, "y": 26, "tone": "frontier", "badge": "0 in"},
-      {"id": "Build", "label": "B", "x": 40, "y": 66, "tone": "frontier", "badge": "0 in"},
-      {"id": "Deploy", "label": "D", "x": 72, "y": 50, "tone": "default", "badge": "2 in"}
-    ],
-    "edges": [
-      {"from": "Install", "to": "Lint", "tone": "traversed", "directed": true},
-      {"from": "Install", "to": "Build", "tone": "traversed", "directed": true},
-      {"from": "Lint", "to": "Deploy", "tone": "queued", "directed": true},
-      {"from": "Build", "to": "Deploy", "tone": "queued", "directed": true}
-    ],
-    "facts": [
-      {"name": "ready now", "value": "[Lint, Build]", "tone": "orange"},
-      {"name": "order so far", "value": "[Install]", "tone": "green"}
-    ],
-    "action": "expand",
-    "label": "Processing Install removes its arrows. Lint and Build both drop to zero incoming arrows — neither depends on the other, so they can run in parallel."
-  },
-  {
-    "nodes": [
-      {"id": "Install", "label": "I", "x": 16, "y": 50, "tone": "done"},
-      {"id": "Lint", "label": "L", "x": 40, "y": 26, "tone": "done"},
-      {"id": "Build", "label": "B", "x": 40, "y": 66, "tone": "done"},
-      {"id": "Deploy", "label": "D", "x": 72, "y": 50, "tone": "answer", "badge": "0 in"}
-    ],
-    "edges": [
-      {"from": "Install", "to": "Lint", "tone": "traversed", "directed": true},
-      {"from": "Install", "to": "Build", "tone": "traversed", "directed": true},
-      {"from": "Lint", "to": "Deploy", "tone": "traversed", "directed": true},
-      {"from": "Build", "to": "Deploy", "tone": "traversed", "directed": true}
-    ],
-    "facts": [
-      {"name": "valid order", "value": "[Install, Lint, Build, Deploy]", "tone": "green"}
-    ],
-    "action": "done",
-    "label": "Once Lint and Build finish, Deploy drops to zero and ships. All nodes processed — no dependency cycle."
+    "label": "Those three land cells form one connected district. Cells (2,0) and (2,2) belong to different districts."
   }
 ]
 :::
@@ -379,686 +310,323 @@ The cycle check comes from what happens when the queue runs dry too early. If th
 
 ## Building Blocks: Progressive Learning
 
-### Level 1: Adjacency List and Single-Source BFS
+### Level 1: Write the Street Ledger
 
-The input is an edge list — every connection as a pair `[a, b]`. Scanning the full edge list every time you need a node's neighbors costs O(E) per step. For a graph with ten thousand edges, that's ten thousand scans repeated for every node you visit. The adjacency list converts this once: walk every edge and record each endpoint in the other's neighbor bucket. Build cost is O(V + E); after that, each neighbor lookup is O(degree). In the city map, this is the street ledger — each intersection already knows its own roads.
+Most graph problems do not start with the structure you want to work with. They start with raw edge pairs, and the brute-force mistake is to keep rescanning those pairs every time you need a node's neighbors. If a graph has ten thousand roads, that turns one local question into ten thousand checks over and over again. The adjacency list fixes that by paying the O(V + E) construction cost once.
 
-Graph traversal is local: at any node, the only thing that matters is its immediate neighbors. The adjacency list delivers those in constant time. The other essential piece is the visited set — a boolean array, one slot per node. Without it, any graph with a cycle would loop forever, re-enqueuing the same nodes indefinitely. The visited set makes each node a one-time entry: mark it the moment you discover it, and any future arrival is a no-op.
+The structural guarantee here is simple: every edge explicitly tells you which nodes touch. That means you can rewrite the input into per-node neighbor buckets without guessing anything. For an undirected graph, each edge contributes two writes. For a directed graph, it contributes one. The whole mechanic is just "initialize `n` empty buckets, then process each edge and update the correct bucket or buckets."
 
-To run a BFS, build the adjacency list, allocate the visited array, push the start node, and mark it visited immediately — before the loop, not inside it. Then loop: dequeue a node, and for each neighbor check the visited array. If unvisited, mark it and enqueue it right there. That one-line-earlier mark is what keeps duplicates out of the queue. When the queue empties, every node that was marked is reachable from the start.
+The important discipline is that the ledger stores exactly the neighbors a node can move to later, no more and no less. If you forget the reverse write in an undirected graph, you silently change reachability. If you add a reverse write in a directed graph, you invent a road that does not exist.
 
-`n = 5`, `edges = [[0,1],[0,2],[1,3],[2,3],[3,4]]`, `start = 0`
+`n = 5`, `edges = [[0,1],[0,2],[2,4],[1,3]]`
 
 :::trace-graph
 [
   {
     "nodes": [
-      {"id": "0", "label": "0", "x": 16, "y": 50, "tone": "current", "badge": "start"},
-      {"id": "1", "label": "1", "x": 38, "y": 24, "tone": "frontier"},
-      {"id": "2", "label": "2", "x": 38, "y": 66, "tone": "frontier"},
-      {"id": "3", "label": "3", "x": 64, "y": 50, "tone": "default"},
-      {"id": "4", "label": "4", "x": 86, "y": 50, "tone": "default"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "current"},
+      {"id": "B", "label": "1", "x": 40, "y": 20, "tone": "default"},
+      {"id": "C", "label": "2", "x": 40, "y": 76, "tone": "default"},
+      {"id": "D", "label": "3", "x": 68, "y": 20, "tone": "default"},
+      {"id": "E", "label": "4", "x": 68, "y": 76, "tone": "default"}
     ],
     "edges": [
-      {"from": "0", "to": "1", "tone": "active"},
-      {"from": "0", "to": "2", "tone": "active"},
-      {"from": "1", "to": "3", "tone": "default"},
-      {"from": "2", "to": "3", "tone": "default"},
-      {"from": "3", "to": "4", "tone": "default"}
+      {"from": "A", "to": "B", "tone": "active"},
+      {"from": "A", "to": "C", "tone": "default"},
+      {"from": "C", "to": "E", "tone": "default"},
+      {"from": "B", "to": "D", "tone": "default"}
     ],
     "facts": [
-      {"name": "street ledger", "value": "0:[1,2]", "tone": "blue"},
-      {"name": "dispatch line", "value": "[0]", "tone": "orange"}
-    ],
-    "action": "visit",
-    "label": "The ledger turns road scanning into neighbor lookup. From 0, the next legal expansions are 1 and 2."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 16, "y": 50, "tone": "visited"},
-      {"id": "1", "label": "1", "x": 38, "y": 24, "tone": "visited"},
-      {"id": "2", "label": "2", "x": 38, "y": 66, "tone": "visited"},
-      {"id": "3", "label": "3", "x": 64, "y": 50, "tone": "current", "badge": "new"},
-      {"id": "4", "label": "4", "x": 86, "y": 50, "tone": "default"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed"},
-      {"from": "0", "to": "2", "tone": "traversed"},
-      {"from": "1", "to": "3", "tone": "active"},
-      {"from": "2", "to": "3", "tone": "traversed"},
-      {"from": "3", "to": "4", "tone": "queued"}
-    ],
-    "facts": [
-      {"name": "stamped", "value": "{0,1,2,3}", "tone": "green"},
-      {"name": "dispatch line", "value": "[3]", "tone": "orange"}
+      {"name": "edge", "value": "[0,1]", "tone": "orange"},
+      {"name": "adj[0]", "value": "[1]", "tone": "blue"},
+      {"name": "adj[1]", "value": "[0]", "tone": "blue"}
     ],
     "action": "mark",
-    "label": "Intersection 3 is stamped the first time it is discovered. The second road into 3 does not create duplicate work."
+    "label": "Process one road at a time and update both endpoints."
   },
   {
     "nodes": [
-      {"id": "0", "label": "0", "x": 16, "y": 50, "tone": "done"},
-      {"id": "1", "label": "1", "x": 38, "y": 24, "tone": "done"},
-      {"id": "2", "label": "2", "x": 38, "y": 66, "tone": "done"},
-      {"id": "3", "label": "3", "x": 64, "y": 50, "tone": "done"},
-      {"id": "4", "label": "4", "x": 86, "y": 50, "tone": "answer", "badge": "last"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "current"},
+      {"id": "B", "label": "1", "x": 40, "y": 20, "tone": "default"},
+      {"id": "C", "label": "2", "x": 40, "y": 76, "tone": "default"},
+      {"id": "D", "label": "3", "x": 68, "y": 20, "tone": "default"},
+      {"id": "E", "label": "4", "x": 68, "y": 76, "tone": "default"}
     ],
     "edges": [
-      {"from": "0", "to": "1", "tone": "traversed"},
-      {"from": "0", "to": "2", "tone": "traversed"},
-      {"from": "1", "to": "3", "tone": "traversed"},
-      {"from": "2", "to": "3", "tone": "traversed"},
-      {"from": "3", "to": "4", "tone": "traversed"}
+      {"from": "A", "to": "B", "tone": "traversed"},
+      {"from": "A", "to": "C", "tone": "active"},
+      {"from": "C", "to": "E", "tone": "default"},
+      {"from": "B", "to": "D", "tone": "default"}
     ],
     "facts": [
-      {"name": "reachable district", "value": "{0,1,2,3,4}", "tone": "green"}
+      {"name": "edge", "value": "[0,2]", "tone": "orange"},
+      {"name": "adj[0]", "value": "[1,2]", "tone": "blue"},
+      {"name": "adj[2]", "value": "[0]", "tone": "blue"}
+    ],
+    "action": "mark",
+    "label": "Each new road only changes the ledgers of the nodes it touches."
+  },
+  {
+    "nodes": [
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "done"},
+      {"id": "B", "label": "1", "x": 40, "y": 20, "tone": "done"},
+      {"id": "C", "label": "2", "x": 40, "y": 76, "tone": "done"},
+      {"id": "D", "label": "3", "x": 68, "y": 20, "tone": "done"},
+      {"id": "E", "label": "4", "x": 68, "y": 76, "tone": "done"}
+    ],
+    "edges": [
+      {"from": "A", "to": "B", "tone": "traversed"},
+      {"from": "A", "to": "C", "tone": "traversed"},
+      {"from": "C", "to": "E", "tone": "traversed"},
+      {"from": "B", "to": "D", "tone": "traversed"}
+    ],
+    "facts": [
+      {"name": "final", "value": "[[1,2],[0,3],[0,4],[1],[2]]", "tone": "green"}
     ],
     "action": "done",
-    "label": "When the dispatch line empties, the stamped set is exactly the reachable district from 0."
+    "label": "After all edges are processed, neighbor lookups are direct."
   }
 ]
 :::
 
 #### **Exercise 1**
 
-Every step of graph traversal needs to know a node's neighbors. Scanning the full edge list each time costs O(E) per lookup — on a graph with many nodes, that compounds traversal from O(V + E) to O(V × E). The adjacency list eliminates that: build it once in O(V + E), and each neighbor lookup costs only O(degree).
-
-You're given `n` nodes (labeled `0` to `n-1`) and a flat edge list like `[[0,1],[0,2],[1,3]]`. The goal is a structure where `adj[node]` gives you all of that node's neighbors directly, without scanning the whole edge list.
-
-Start by allocating `n` empty arrays — one bucket per node:
-
-```typescript
-const adj: number[][] = Array.from({ length: n }, () => []);
-```
-
-Then walk every edge. For each `[a, b]`, `b` is a neighbor of `a`. Because this graph is undirected, the reverse is also true. What does the push into `adj[b]` look like?
+Why this matters: if you cannot write the street ledger correctly, every later graph question starts on the wrong structure. You're given the number of intersections and a list of two-way roads. Return the adjacency list exactly as it should appear after all roads are recorded. Think in terms of bucket creation first, then one edge causing two writes.
 
 :::stackblitz{step=1 total=3 exercises="step1-exercise1-problem.ts" solutions="step1-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Reachability is the foundation of graph problems: "are these two users connected?", "can this packet reach its destination?", "which cells belong to this island?" all reduce to the same sweep. The visited set and the mark-at-discovery rule are what keep that sweep from looping forever on cyclic graphs — getting those two invariants right is the foundation everything else in this guide builds on.
-
-You're given `n` nodes, a road list, and a `start` intersection. The goal is to return every intersection reachable from `start`.
-
-The BFS loop needs three pieces of state before it starts: a visited array, a queue seeded with `start`, and a result collector. The order of operations at setup matters — start must be marked visited before the loop, not inside it.
-
-```typescript
-const visited = new Array(n).fill(false);
-const queue = [start];
-visited[start] = true;  // mark at enqueue time, not dequeue
-const result: number[] = [];
-```
-
-The loop itself has a fixed shape: pull one node off the front, record it, then look at its neighbors. You do not need to decide what to do with neighbors yet — just get the loop running first.
-
-```typescript
-while (queue.length > 0) {
-  const node = queue.shift();
-  result.push(node);
-  // expand neighbors here
-}
-```
-
-For each neighbor, the question is one check: has it been visited? If not, two things happen — in a specific order. What is the right order, and why does it matter?
+Why this matters: node degree is the quickest way to read how busy each intersection is without walking the city. You're given the same undirected road list, and you need to return how many direct roads touch each node. Use the same two-write idea from Exercise 1, but now the output is counts instead of full neighbor buckets.
 
 :::stackblitz{step=1 total=3 exercises="step1-exercise2-problem.ts" solutions="step1-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-"List everything reachable" rarely appears in interviews on its own — "can I get from A to B?" is the real question behind routing, prerequisite checking, and access control. Early termination also matters: once the target is found, continuing the sweep wastes time that compounds badly on large graphs.
-
-You're given `n` nodes, a road list, a `start` intersection, and a `target` — the destination you want to reach. The goal is to return `true` if `target` is reachable from `start`, `false` otherwise.
-
-The loop shape is identical to Exercise 2. One line is added: after dequeuing a node, check whether it is the target before expanding neighbors. If it matches, you are done.
-
-```typescript
-const node = queue.shift();
-if (node === target) return true;
-// neighbor expansion same as Exercise 2
-```
-
-If the queue empties without a match, what do you return?
+Why this matters: many interview questions first ask whether two nodes share a direct edge before they ask anything about whole-path reachability. You're given an undirected road list and several node-pair queries. Return one boolean per query showing whether the pair shares a direct road, using the ledger rather than rescanning the full edge list for every question.
 
 :::stackblitz{step=1 total=3 exercises="step1-exercise3-problem.ts" solutions="step1-exercise3-solution.ts"}
 
-> **Mental anchor**: One district sweep needs three things only: a street ledger, a stamp sheet, and a rule that every intersection enters the line once.
+> **Mental anchor**: An adjacency list is a ledger, not a picture. Each edge rewrites a small local fact so later neighbor lookup is cheap.
 
-**→ Bridge to Level 2**: Level 1 assumes the city is one connected place from the chosen start. The moment the map contains multiple disconnected districts, one perfect sweep is still only one district, so you need an outer scan that knows when to launch a fresh traversal.
+**-> Bridge to Level 2**: Level 1 only works when every road is two-way and costless. The next level fixes the concrete failure where arrows and weights matter, because now each ledger entry must preserve more than a plain neighbor id.
 
-### Level 2: Connected Components
+### Level 2: Read the Arrows and Tolls
 
-Level 1 covers every node reachable from a single start — one component, fully swept. But a disconnected graph has multiple components, and BFS from node 0 never reaches the others. You need a way to cover every component exactly once.
+Level 1 gave you a clean way to store plain undirected graphs. Now the input changes shape: some edges are one-way, and some edges carry a weight. If you keep treating every connection as a symmetric neighbor id, the representation is wrong before any algorithm starts. A flight route is not a two-way street, and a toll road without its cost is missing half its meaning.
 
-The solution is an outer loop over every node `0` to `n - 1`, paired with the same visited set from Level 1. When the outer loop reaches a node that is already marked, a prior BFS already covered its entire component — skip it. When it reaches a node that is still unvisited, that node belongs to a component no sweep has touched yet. Launch a full BFS from it, let it mark every reachable node, then continue the outer loop. The visited set is shared across all launches, so no node is ever swept twice. Each launch corresponds to exactly one component — count it.
+The exploitable structure is still the same edge-by-edge build pattern. What changes is the exact write rule. Directed edges update only the source node's bucket. Weighted edges store a pair such as `(neighbor, cost)` instead of a plain number. This is also the moment to make room for the visited set mentally: the graph stores what exists, while the visited set stores what work has already been claimed.
 
-`n = 6`, `edges = [[0,1],[1,2],[3,4]]`
+That separation matters because duplicate arrivals are normal in graphs. Two different edges can point to the same node. A visited set is the stamp sheet that filters "still new" from "already accounted for." Even before you learn DFS or BFS, you should be able to read a neighbor list and say which entries would produce fresh work and which would be skipped.
+
+`n = 5`, `edges = [[0,1,4],[0,2,1],[2,4,6],[3,4,2]]`
 
 :::trace-graph
 [
   {
     "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "current", "badge": "start"},
-      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "default"},
-      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "default"},
-      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "default"},
-      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "default"},
-      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "current"},
+      {"id": "B", "label": "1", "x": 40, "y": 20, "tone": "default"},
+      {"id": "C", "label": "2", "x": 40, "y": 76, "tone": "default"},
+      {"id": "D", "label": "3", "x": 68, "y": 20, "tone": "default"},
+      {"id": "E", "label": "4", "x": 68, "y": 76, "tone": "default"}
     ],
     "edges": [
-      {"from": "0", "to": "1", "tone": "default"},
-      {"from": "1", "to": "2", "tone": "default"},
-      {"from": "3", "to": "4", "tone": "default"}
+      {"from": "A", "to": "B", "directed": true, "tone": "active", "label": "4"},
+      {"from": "A", "to": "C", "directed": true, "tone": "default", "label": "1"},
+      {"from": "C", "to": "E", "directed": true, "tone": "default", "label": "6"},
+      {"from": "D", "to": "E", "directed": true, "tone": "default", "label": "2"}
     ],
     "facts": [
-      {"name": "districts", "value": 1, "tone": "purple"},
-      {"name": "queue", "value": "[0]", "tone": "orange"},
-      {"name": "visited", "value": "{0}", "tone": "green"}
+      {"name": "adj[0]", "value": "[(1,4)]", "tone": "blue"},
+      {"name": "reverse write", "value": "no", "tone": "purple"}
     ],
-    "action": "queue",
-    "label": "Outer scan starts at 0. It's unvisited — district 1 begins. Mark and enqueue."
+    "action": "mark",
+    "label": "A one-way weighted edge records exactly one outgoing entry."
   },
   {
     "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "visited"},
-      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "frontier"},
-      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "default"},
-      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "default"},
-      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "default"},
-      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "done"},
+      {"id": "B", "label": "1", "x": 40, "y": 20, "tone": "default"},
+      {"id": "C", "label": "2", "x": 40, "y": 76, "tone": "current"},
+      {"id": "D", "label": "3", "x": 68, "y": 20, "tone": "default"},
+      {"id": "E", "label": "4", "x": 68, "y": 76, "tone": "default"}
     ],
     "edges": [
-      {"from": "0", "to": "1", "tone": "active"},
-      {"from": "1", "to": "2", "tone": "default"},
-      {"from": "3", "to": "4", "tone": "default"}
+      {"from": "A", "to": "B", "directed": true, "tone": "traversed", "label": "4"},
+      {"from": "A", "to": "C", "directed": true, "tone": "traversed", "label": "1"},
+      {"from": "C", "to": "E", "directed": true, "tone": "active", "label": "6"},
+      {"from": "D", "to": "E", "directed": true, "tone": "default", "label": "2"}
     ],
     "facts": [
-      {"name": "districts", "value": 1, "tone": "purple"},
-      {"name": "queue", "value": "[1]", "tone": "orange"},
-      {"name": "visited", "value": "{0, 1}", "tone": "green"}
+      {"name": "adj[0]", "value": "[(1,4),(2,1)]", "tone": "blue"},
+      {"name": "adj[2]", "value": "[(4,6)]", "tone": "blue"}
     ],
-    "action": "expand",
-    "label": "Dequeue 0. Neighbor 1 is unvisited — mark and enqueue."
+    "action": "mark",
+    "label": "Weights live inside the ledger entry, not somewhere off to the side."
   },
   {
     "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "done"},
-      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "visited"},
-      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "frontier"},
-      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "default"},
-      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "default"},
-      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "visited"},
+      {"id": "B", "label": "1", "x": 40, "y": 20, "tone": "visited"},
+      {"id": "C", "label": "2", "x": 40, "y": 76, "tone": "visited"},
+      {"id": "D", "label": "3", "x": 68, "y": 20, "tone": "current"},
+      {"id": "E", "label": "4", "x": 68, "y": 76, "tone": "frontier"}
     ],
     "edges": [
-      {"from": "0", "to": "1", "tone": "traversed"},
-      {"from": "1", "to": "2", "tone": "active"},
-      {"from": "3", "to": "4", "tone": "default"}
+      {"from": "A", "to": "B", "directed": true, "tone": "traversed", "label": "4"},
+      {"from": "A", "to": "C", "directed": true, "tone": "traversed", "label": "1"},
+      {"from": "C", "to": "E", "directed": true, "tone": "queued", "label": "6"},
+      {"from": "D", "to": "E", "directed": true, "tone": "active", "label": "2"}
     ],
     "facts": [
-      {"name": "districts", "value": 1, "tone": "purple"},
-      {"name": "queue", "value": "[2]", "tone": "orange"},
-      {"name": "visited", "value": "{0, 1, 2}", "tone": "green"}
-    ],
-    "action": "expand",
-    "label": "Dequeue 1. Neighbor 0 already visited — skip. Neighbor 2 is unvisited — mark and enqueue."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "done"},
-      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "done"},
-      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "done"},
-      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "current", "badge": "new"},
-      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "default"},
-      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed"},
-      {"from": "1", "to": "2", "tone": "traversed"},
-      {"from": "3", "to": "4", "tone": "default"}
-    ],
-    "facts": [
-      {"name": "districts", "value": 2, "tone": "purple"},
-      {"name": "outer scan", "value": "first unstamped = 3", "tone": "blue"},
-      {"name": "queue", "value": "[3]", "tone": "orange"}
-    ],
-    "action": "queue",
-    "label": "Dequeue 2. Neighbor 1 already visited — skip. Queue empties. Component {0,1,2} done. Outer scan advances past 1 and 2, finds 3 unvisited — district 2 begins."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "done"},
-      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "done"},
-      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "done"},
-      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "done"},
-      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "done"},
-      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "current", "badge": "solo"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed"},
-      {"from": "1", "to": "2", "tone": "traversed"},
-      {"from": "3", "to": "4", "tone": "traversed"}
-    ],
-    "facts": [
-      {"name": "districts", "value": 3, "tone": "purple"},
-      {"name": "outer scan", "value": "first unstamped = 5", "tone": "blue"}
-    ],
-    "action": "expand",
-    "label": "Dequeue 3, discover 4. Dequeue 4, neighbor 3 already visited. Component {3,4} done. Outer scan finds 5 unvisited — district 3. Node 5 has no roads, but it is still its own district."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 42, "tone": "done"},
-      {"id": "1", "label": "1", "x": 30, "y": 26, "tone": "done"},
-      {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "done"},
-      {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "done"},
-      {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "done"},
-      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "answer", "badge": "3"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed"},
-      {"from": "1", "to": "2", "tone": "traversed"},
-      {"from": "3", "to": "4", "tone": "traversed"}
-    ],
-    "facts": [
-      {"name": "final districts", "value": 3, "tone": "green"}
+      {"name": "stamped", "value": "{0,1,2,4}", "tone": "green"},
+      {"name": "fresh from [4,4,1]", "value": "[]", "tone": "orange"}
     ],
     "action": "done",
-    "label": "Outer scan finds no more unvisited nodes. 3 districts total — including the isolated intersection."
+    "label": "Once node 4 is stamped, later arrivals to 4 are not fresh work anymore."
   }
 ]
 :::
 
-> [!TIP]
-> In disconnected-graph problems, the inner traversal does not change. Almost every bug comes from the outer scan: either forgetting to skip stamped intersections or forgetting that an isolated node is still a full district.
-
 #### **Exercise 1**
 
-Real graphs are almost never fully connected. Social networks have isolated users, road maps have disconnected regions, dependency graphs have independent modules. A single BFS from one node answers one island and silently ignores the rest — no error, just a quiet miss. The outer scan is what ensures every node gets visited exactly once across all components, not just the one you started on.
-
-You're given `n` nodes and an edge list that may describe multiple disconnected components. The goal is to count how many components exist.
-
-The BFS from Level 1 does not change. What changes is the frame around it — an outer loop that scans every node and decides whether to launch a fresh sweep:
-
-```typescript
-for (let i = 0; i < n; i++) {
-  if (visited[i]) continue;  // already covered by a previous sweep
-  // what happens when you find an unvisited node?
-}
-```
-
-Each time you reach an unvisited node, that is a new component. Launch the full BFS from it. The BFS will mark everything reachable, so the next iteration of the outer loop will skip all of those nodes automatically.
+Why this matters: one-way edges are the first place graph notation punishes loose thinking. You're given `n` nodes and a list of directed edges. Return the outgoing-neighbor ledger for each node, and make sure nodes with only incoming edges still keep an empty outgoing bucket.
 
 :::stackblitz{step=2 total=3 exercises="step2-exercise1-problem.ts" solutions="step2-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Knowing a component exists tells you nothing about its size — and size is what most real questions care about. "What is the largest island?", "which subnet has the most machines?", "how big is the biggest cluster?" all need a count per component, not just a total. Measuring during the sweep rather than after is the pattern for any per-component metric: it costs nothing extra since you're already visiting every node.
-
-You're given the same input as Exercise 1. The goal is to return the size of the largest component.
-
-Add a counter inside the BFS and increment it each time you dequeue a node — dequeue, not enqueue, because each node is processed exactly once.
-
-```typescript
-let size = 0;
-while (queue.length > 0) {
-  const node = queue.shift();
-  size++;  // count here — after pulling from queue
-  // neighbor expansion same as Level 1
-}
-```
-
-After each sweep finishes, how do you decide whether this component is larger than any you've seen before?
+Why this matters: weighted graphs use the same overall shape as unweighted graphs, but each ledger entry has to preserve the cost along with the destination. You're given directed weighted edges and need to build the adjacency list of `(to, weight)` entries in insertion order. The mechanical question is not whether an edge exists, but what exact payload each bucket should store.
 
 :::stackblitz{step=2 total=3 exercises="step2-exercise2-problem.ts" solutions="step2-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-A single running maximum tells you how big the biggest group is, but it loses the rest of the picture. Problems that ask "return all component sizes sorted", "how many groups have at least k members?", or "are all components the same size?" need the full distribution — a max discards that. Collecting all sizes gives you the flexibility to answer any of those questions after a single pass.
-
-You're given the same input as Exercise 2. Instead of returning the largest size, return all component sizes sorted in ascending order.
-
-The outer loop and size-counting BFS are unchanged. What replaces `largest = Math.max(largest, size)`?
+Why this matters: the visited set exists to separate fresh work from duplicate work before duplicate work spreads. You're given a list of candidate neighbors and a list of nodes that are already stamped. Return only the neighbors that are fresh the first time they appear, in the order they first become eligible.
 
 :::stackblitz{step=2 total=3 exercises="step2-exercise3-problem.ts" solutions="step2-exercise3-solution.ts"}
 
-> **Mental anchor**: A new district is not "an unstamped road," it is "the first unstamped intersection the outer scan finds."
+> **Mental anchor**: The graph stores roads. The visited set stores bookkeeping about work on those roads. Do not mix those jobs.
 
-**→ Bridge to Level 3**: Level 2 still treats every road as symmetric. Once streets become one-way, reachability is no longer enough. The map starts encoding prerequisites, and the next question becomes which intersections are safe to dispatch before others.
+**-> Bridge to Level 3**: Level 2 can read arrows, weights, and freshness, but it still assumes the graph is written out explicitly. The next level fixes the case where the graph is hidden inside a grid or inside pre-labeled district information.
 
-### Level 3: Directed Graphs and Topological Order
+### Level 3: See Districts Without Walking Them
 
-Level 2 handled undirected graphs — edges that work both ways. Directed graphs break that symmetry: an edge `A → B` means B depends on A, not the reverse. BFS reachability no longer answers the useful question: in what order can you safely process all nodes respecting those dependencies? Scanning every edge on every pass to check "is this node unblocked yet?" is O(E) per node at worst — the same repeated-scan problem the adjacency list was built to avoid.
+Level 2 still expects an explicit edge list. Many real interview graphs do not arrive that way. A grid gives you coordinates and movement rules instead of neighbor buckets. Component questions often hand you enough structure to reason about districts directly, even before you choose DFS or BFS to discover them in the wild.
 
-A node is safe to process the moment all of its predecessors have been processed. In-degree is the count of edges currently pointing into a node — think of it as a prerequisites-remaining counter. When it reaches zero, the node is unblocked. Each time you process a node, you consume one incoming arrow for each of its neighbors, decrementing their counts. Any neighbor that hits zero joins the ready queue immediately.
+The structural guarantee in a grid is geometry. If movement is orthogonal, each cell has at most four neighbors, and those neighbors come from simple bounds checks. For component summaries, the key property is shared district identity: if two nodes carry the same component tag, they belong to the same connected piece. Counting the size of that piece is then just a counting pass over the labels, not a traversal.
 
-The trace below shows the prerequisite countdown for node 3 across `edges = [[0,1],[0,2],[1,3],[2,3]]`. Nodes 0, 1, and 2 have already been seeded or freed by earlier steps — watch how node 3's in-degree drops each time a predecessor finishes.
+This level matters because it teaches you to separate representation from search. You should be able to say "these cells are neighbors," "these two nodes share a component," and "this component has size 4" without accidentally jumping ahead into a traversal algorithm. That keeps the graph vocabulary clean.
+
+`grid = [[1,1,0],[0,1,0],[1,0,1]]`, `cell = (1,1)`
 
 :::trace-graph
 [
   {
     "nodes": [
-      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
-      {"id": "1", "label": "1", "x": 40, "y": 24, "tone": "current", "badge": "processing"},
-      {"id": "2", "label": "2", "x": 40, "y": 72, "tone": "frontier"},
-      {"id": "3", "label": "3", "x": 78, "y": 50, "tone": "default", "badge": "in: 2"}
+      {"id": "A", "label": "0,0", "x": 24, "y": 24, "tone": "frontier"},
+      {"id": "B", "label": "0,1", "x": 50, "y": 24, "tone": "frontier"},
+      {"id": "C", "label": "0,2", "x": 76, "y": 24, "tone": "muted"},
+      {"id": "D", "label": "1,0", "x": 24, "y": 50, "tone": "muted"},
+      {"id": "E", "label": "1,1", "x": 50, "y": 50, "tone": "current"},
+      {"id": "F", "label": "1,2", "x": 76, "y": 50, "tone": "muted"},
+      {"id": "G", "label": "2,0", "x": 24, "y": 76, "tone": "default"},
+      {"id": "H", "label": "2,1", "x": 50, "y": 76, "tone": "muted"},
+      {"id": "I", "label": "2,2", "x": 76, "y": 76, "tone": "default"}
     ],
     "edges": [
-      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
-      {"from": "0", "to": "2", "tone": "traversed", "directed": true},
-      {"from": "1", "to": "3", "tone": "active", "directed": true},
-      {"from": "2", "to": "3", "tone": "default", "directed": true}
+      {"from": "E", "to": "B", "tone": "active"},
+      {"from": "E", "to": "A", "tone": "muted"},
+      {"from": "E", "to": "D", "tone": "muted"},
+      {"from": "E", "to": "F", "tone": "muted"},
+      {"from": "E", "to": "H", "tone": "muted"}
     ],
     "facts": [
-      {"name": "indegree[3]", "value": 2, "tone": "blue"},
-      {"name": "queue", "value": "[1, 2]", "tone": "orange"}
-    ],
-    "action": "visit",
-    "label": "Node 1 is processing. Both arrows into node 3 are still pending — it needs two predecessors to finish before it can start."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
-      {"id": "1", "label": "1", "x": 40, "y": 24, "tone": "done"},
-      {"id": "2", "label": "2", "x": 40, "y": 72, "tone": "current", "badge": "processing"},
-      {"id": "3", "label": "3", "x": 78, "y": 50, "tone": "default", "badge": "in: 1"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
-      {"from": "0", "to": "2", "tone": "traversed", "directed": true},
-      {"from": "1", "to": "3", "tone": "traversed", "directed": true},
-      {"from": "2", "to": "3", "tone": "active", "directed": true}
-    ],
-    "facts": [
-      {"name": "indegree[3]", "value": 1, "tone": "blue"},
-      {"name": "queue", "value": "[2]", "tone": "orange"}
+      {"name": "valid neighbors", "value": "[(0,1)]", "tone": "blue"},
+      {"name": "blocked/out of bounds", "value": "all others", "tone": "purple"}
     ],
     "action": "mark",
-    "label": "Node 1 done — indegree[3] drops from 2 to 1. One prerequisite cleared, one remaining. Node 2 now processing."
+    "label": "The grid itself tells you which coordinates can touch."
   },
   {
     "nodes": [
-      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
-      {"id": "1", "label": "1", "x": 40, "y": 24, "tone": "done"},
-      {"id": "2", "label": "2", "x": 40, "y": 72, "tone": "done"},
-      {"id": "3", "label": "3", "x": 78, "y": 50, "tone": "frontier", "badge": "in: 0"}
+      {"id": "A", "label": "0", "x": 18, "y": 48, "tone": "visited"},
+      {"id": "B", "label": "1", "x": 42, "y": 24, "tone": "visited"},
+      {"id": "C", "label": "2", "x": 42, "y": 76, "tone": "default"},
+      {"id": "D", "label": "3", "x": 68, "y": 24, "tone": "default"},
+      {"id": "E", "label": "4", "x": 68, "y": 76, "tone": "answer"}
     ],
     "edges": [
-      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
-      {"from": "0", "to": "2", "tone": "traversed", "directed": true},
-      {"from": "1", "to": "3", "tone": "traversed", "directed": true},
-      {"from": "2", "to": "3", "tone": "traversed", "directed": true}
+      {"from": "A", "to": "B", "tone": "traversed"},
+      {"from": "C", "to": "E", "tone": "active"},
+      {"from": "D", "to": "E", "tone": "active"}
     ],
     "facts": [
-      {"name": "indegree[3]", "value": 0, "tone": "green"},
-      {"name": "status", "value": "ready — joins queue", "tone": "green"}
+      {"name": "component tags", "value": "[7,7,3,3,3]", "tone": "green"},
+      {"name": "size of node 4's district", "value": 3, "tone": "orange"}
     ],
     "action": "done",
-    "label": "Node 2 done — indegree[3] drops to 0. All prerequisites cleared. Node 3 joins the queue and can now be processed."
-  }
-]
-:::
-
-The adjacency list is built the same way as Level 1 — walk every edge, record neighbors — with two differences: edges are directed, so only push `b` into `adj[a]`, no reverse entry. And while walking each edge, increment `indegree[b]`. That second array is the only new piece of state. Seeding the queue differs from Level 1: instead of one starting node, scan all nodes and enqueue every one whose in-degree is already zero.
-
-The loop introduces two counters not present in Level 1. `head` is an index into the queue that replaces `.shift()` — calling `.shift()` costs O(n) per call because the array shifts every element left; `queue[head++]` reads one slot and advances the pointer in O(1). `processed` increments once per dequeued node, tracking how many nodes were successfully unblocked. After the loop, `processed === n` means every node was freed and the graph is acyclic. If `processed < n`, some nodes were never enqueued — their in-degree never reached zero because they are all waiting on each other, forming a cycle.
-
-`n = 4`, `edges = [[0,1],[0,2],[1,3],[2,3]]` (directed: `[from, to]`)
-
-:::trace-graph
-[
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 50, "tone": "frontier", "badge": "0 in"},
-      {"id": "1", "label": "1", "x": 40, "y": 26, "tone": "default", "badge": "1 in"},
-      {"id": "2", "label": "2", "x": 40, "y": 66, "tone": "default", "badge": "1 in"},
-      {"id": "3", "label": "3", "x": 74, "y": 50, "tone": "default", "badge": "2 in"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "queued", "directed": true},
-      {"from": "0", "to": "2", "tone": "queued", "directed": true},
-      {"from": "1", "to": "3", "tone": "default", "directed": true},
-      {"from": "2", "to": "3", "tone": "default", "directed": true}
-    ],
-    "facts": [
-      {"name": "head", "value": 0, "tone": "purple"},
-      {"name": "processed", "value": 0, "tone": "blue"},
-      {"name": "queue", "value": "[0]", "tone": "orange"},
-      {"name": "order", "value": "[]", "tone": "default"}
-    ],
-    "action": "queue",
-    "label": "Only node 0 has in-degree 0. It seeds the queue. head=0 points to it, processed=0 — nothing has run yet."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 50, "tone": "visited"},
-      {"id": "1", "label": "1", "x": 40, "y": 26, "tone": "frontier", "badge": "0 in"},
-      {"id": "2", "label": "2", "x": 40, "y": 66, "tone": "frontier", "badge": "0 in"},
-      {"id": "3", "label": "3", "x": 74, "y": 50, "tone": "default", "badge": "2 in"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
-      {"from": "0", "to": "2", "tone": "traversed", "directed": true},
-      {"from": "1", "to": "3", "tone": "queued", "directed": true},
-      {"from": "2", "to": "3", "tone": "queued", "directed": true}
-    ],
-    "facts": [
-      {"name": "head", "value": 1, "tone": "purple"},
-      {"name": "processed", "value": 1, "tone": "blue"},
-      {"name": "queue", "value": "[0, 1, 2]", "tone": "orange"},
-      {"name": "order", "value": "[0]", "tone": "green"}
-    ],
-    "action": "expand",
-    "label": "queue[head++] dequeues node 0 — head advances to 1, processed becomes 1. Decrementing node 0's neighbors drops indegree[1] and indegree[2] to 0. Both join the queue."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 14, "y": 50, "tone": "done"},
-      {"id": "1", "label": "1", "x": 40, "y": 26, "tone": "done"},
-      {"id": "2", "label": "2", "x": 40, "y": 66, "tone": "done"},
-      {"id": "3", "label": "3", "x": 74, "y": 50, "tone": "answer", "badge": "0 in"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
-      {"from": "0", "to": "2", "tone": "traversed", "directed": true},
-      {"from": "1", "to": "3", "tone": "traversed", "directed": true},
-      {"from": "2", "to": "3", "tone": "traversed", "directed": true}
-    ],
-    "facts": [
-      {"name": "head", "value": 4, "tone": "purple"},
-      {"name": "processed", "value": 4, "tone": "blue"},
-      {"name": "processed === n", "value": "4 === 4", "tone": "green"},
-      {"name": "order", "value": "[0,1,2,3]", "tone": "green"}
-    ],
-    "action": "done",
-    "label": "Nodes 1, 2, and 3 each process in turn. head reaches 4, processed reaches 4. processed === n — every node was unblocked. No cycle, order is valid."
-  }
-]
-:::
-
-When `processed < n`, the queue runs dry before every node is reached — some nodes had in-degrees that never hit zero because they were waiting on each other. `n = 4`, `edges = [[0,1],[1,2],[2,3],[3,1]]` (directed: `[from, to]`)
-
-:::trace-graph
-[
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "frontier", "badge": "0 in"},
-      {"id": "1", "label": "1", "x": 50, "y": 20, "tone": "default", "badge": "2 in"},
-      {"id": "2", "label": "2", "x": 82, "y": 50, "tone": "default", "badge": "1 in"},
-      {"id": "3", "label": "3", "x": 50, "y": 75, "tone": "default", "badge": "1 in"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "queued", "directed": true},
-      {"from": "1", "to": "2", "tone": "default", "directed": true},
-      {"from": "2", "to": "3", "tone": "default", "directed": true},
-      {"from": "3", "to": "1", "tone": "default", "directed": true}
-    ],
-    "facts": [
-      {"name": "head", "value": 0, "tone": "purple"},
-      {"name": "processed", "value": 0, "tone": "blue"},
-      {"name": "queue", "value": "[0]", "tone": "orange"}
-    ],
-    "action": "queue",
-    "label": "Only node 0 has in-degree 0. The chain 1→2→3→1 is a cycle — every node in it has at least one incoming arrow and none can start first."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
-      {"id": "1", "label": "1", "x": 50, "y": 20, "tone": "default", "badge": "1 in"},
-      {"id": "2", "label": "2", "x": 82, "y": 50, "tone": "default", "badge": "1 in"},
-      {"id": "3", "label": "3", "x": 50, "y": 75, "tone": "default", "badge": "1 in"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
-      {"from": "1", "to": "2", "tone": "default", "directed": true},
-      {"from": "2", "to": "3", "tone": "default", "directed": true},
-      {"from": "3", "to": "1", "tone": "default", "directed": true}
-    ],
-    "facts": [
-      {"name": "head", "value": 1, "tone": "purple"},
-      {"name": "processed", "value": 1, "tone": "blue"},
-      {"name": "queue", "value": "[0]", "tone": "orange"}
-    ],
-    "action": "expand",
-    "label": "Dequeue node 0. processed becomes 1. Its neighbor is node 1 — indegree[1] drops from 2 to 1, but not to 0. Nothing new joins the queue. head=1 equals queue.length=1 — the loop ends."
-  },
-  {
-    "nodes": [
-      {"id": "0", "label": "0", "x": 12, "y": 50, "tone": "done"},
-      {"id": "1", "label": "1", "x": 50, "y": 20, "tone": "muted", "badge": "stuck"},
-      {"id": "2", "label": "2", "x": 82, "y": 50, "tone": "muted", "badge": "stuck"},
-      {"id": "3", "label": "3", "x": 50, "y": 75, "tone": "muted", "badge": "stuck"}
-    ],
-    "edges": [
-      {"from": "0", "to": "1", "tone": "traversed", "directed": true},
-      {"from": "1", "to": "2", "tone": "default", "directed": true},
-      {"from": "2", "to": "3", "tone": "default", "directed": true},
-      {"from": "3", "to": "1", "tone": "default", "directed": true}
-    ],
-    "facts": [
-      {"name": "head", "value": 1, "tone": "purple"},
-      {"name": "processed", "value": 1, "tone": "blue"},
-      {"name": "processed < n", "value": "1 < 4", "tone": "orange"}
-    ],
-    "action": "done",
-    "label": "Queue exhausted with processed=1 and n=4. Nodes 1, 2, and 3 were never unblocked — each is waiting on a predecessor that is also waiting. That shortfall is the cycle signal."
+    "label": "Once district labels are known, same-component checks and component size are direct reads."
   }
 ]
 :::
 
 #### **Exercise 1**
 
-Dependency graphs appear everywhere — course prerequisites, package managers, build systems. The challenge is that "which node is safe to process now?" changes after every step: completing a node may unblock several others. Without a way to track this incrementally, you'd rescan all edges on every iteration to find newly ready nodes, costing O(V × E). The in-degree array is what eliminates that: one decrement per edge is enough to unlock the next ready nodes, keeping the whole algorithm at O(V + E).
-
-You're given `n` nodes and a directed edge list. The goal is to detect whether a valid processing order exists — that is, whether the graph contains a cycle.
-
-Edges are directed, so you only push one direction into the adjacency list. You also need a second array — `indegree` — that tracks how many edges point into each node.
-
-```typescript
-const indegree = new Array(n).fill(0);
-for (const [from, to] of edges) {
-  adj[from].push(to);  // directed: no reverse entry
-  indegree[to]++;      // one more arrow pointing into "to"
-}
-```
-
-Before the loop starts, seed the queue with every node whose `indegree` is 0 — nothing is blocking them. The loop uses a `head` index to pull from the front without the O(n) cost of `.shift()`, and a `processed` counter that increments once per dequeued node:
-
-```typescript
-let head = 0;
-let processed = 0;
-
-while (head < queue.length) {
-  const node = queue[head++];
-  processed++;
-  // decrement neighbors here
-}
-```
-
-Inside the neighbor loop, decrement `indegree[neighbor]`. If a neighbor hits 0, it joins the queue. After the loop ends, `processed` tells you how many nodes were successfully unblocked — how do you use that to decide whether a cycle exists?
+Why this matters: grids hide graph edges behind row and column rules, so you need to generate neighbors instead of storing them up front. You're given a grid plus one cell location. Return all valid orthogonal neighbor coordinates in a fixed order: up, right, down, left.
 
 :::stackblitz{step=3 total=3 exercises="step3-exercise1-problem.ts" solutions="step3-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Knowing that a valid order exists is useful, but knowing what that order is is what systems actually need. Package managers produce an install sequence. Course schedulers produce a curriculum. Build pipelines produce a step list. The collected topological order is the deliverable — the list downstream systems consume, not just a boolean.
-
-You're given `n` nodes and a directed edge list. The goal is to return the nodes in a valid topological order, or an empty array if a cycle exists.
-
-The setup — directed adjacency list, in-degree array, zero-in-degree seed — is identical to Exercise 1. The only difference is what you track during the loop: instead of just counting processed nodes, collect them in the order they are dequeued.
-
-```typescript
-const order: number[] = [];
-// inside the loop, alongside your indegree decrement:
-order.push(node);
-```
-
-At the end, the length of `order` tells you whether a cycle blocked any nodes. What do you return in each case?
+Why this matters: once district labels exist, same-component checks should be constant-time reads, not new graph walks. You're given a component-tag array where `tags[node]` names that node's district. Return whether two nodes belong to the same district by comparing the stored labels directly.
 
 :::stackblitz{step=3 total=3 exercises="step3-exercise2-problem.ts" solutions="step3-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-A sequential topological order is one valid execution sequence, but it doesn't tell you which steps could run simultaneously. In real systems — CI pipelines, parallel build graphs, multi-stage deployments — the goal is to minimize total wall-clock time by identifying which nodes share no dependencies at the same moment. Wave-based processing exposes exactly that structure: every node in a wave has in-degree 0 at the same moment, can execute in parallel with the others in that wave, and the number of waves is the minimum number of sequential stages the dependency structure requires.
-
-You're given `n` nodes and a directed edge list. The goal is to return the nodes grouped into waves — each wave containing every node that became ready at the same step.
-
-Instead of processing one node per loop iteration, process all currently-ready nodes as a group.
-
-```typescript
-let current = /* nodes with indegree 0 at the start */;
-
-while (current.length > 0) {
-  // record this wave, then compute the next one
-  const next: number[] = [];
-  for (const node of current) {
-    // decrement neighbors — if any hit 0, add to next
-  }
-  current = next;
-}
-```
-
-The outer `while` loop advances one wave at a time. After it finishes, check whether all nodes were processed before returning your waves.
+Why this matters: component labels become useful only when you can summarize a whole district from them. You're given the same component-tag array plus one target node. Return how many nodes share that target's district by counting matching labels, not by traversing the graph again.
 
 :::stackblitz{step=3 total=3 exercises="step3-exercise3-problem.ts" solutions="step3-exercise3-solution.ts"}
 
-> **Mental anchor**: In a one-way city, zero incoming arrows means "safe now," and processed count tells you whether a hidden loop survived.
+> **Mental anchor**: Sometimes the graph is written explicitly, sometimes the graph is implied. Your first job is to name the neighbors and the districts correctly.
 
 ## Key Patterns
 
-### Pattern: Shortest Route in an Unweighted City
+### Pattern: Explicit Graph from Edge List
 
-**When to use**: the problem asks for the minimum number of streets, hops, or moves in an unweighted graph. Recognition phrases include "fewest moves," "minimum edges," "shortest path in an unweighted network," and "what is the first time we can reach the target?"
+**When to use**: the input gives `n` plus `edges`, `roads`, `flights`, `prereqs`, or any list of node pairs or triples. Recognition signals are "build adjacency list," "neighbors of node x," "direct connection," and any prompt where repeated neighbor lookup will happen.
 
-**How to think about it**: the city map now cares about distance, not just reachability. BFS works because it expands the city in rings. Every intersection pulled from the queue belongs to the earliest possible ring in which it could have been discovered. That means the first time the target is stamped, you already know its minimum hop count.
-
-```mermaid
-graph LR
-    Start[Start intersection]
-    Start --> Layer0[distance 0]
-    Layer0 --> Layer1[all neighbors, distance 1]
-    Layer1 --> Layer2[next ring, distance 2]
-    Layer2 --> Target[first time target appears = shortest route]
-```
-
-**Complexity**: Time O(V + E), Space O(V), because each intersection is enqueued once and each street is inspected when its source is expanded.
-
-### Pattern: The Graph Hidden Inside Another Structure
-
-**When to use**: the input is not literally called a graph, but you can move from one state to another by a fixed rule. Recognition phrases include "grid of land cells," "word transformation," "state machine," "minimum moves on a board," and "neighbors differ by one legal move."
-
-**How to think about it**: the graph is still there, just implicit. A cell, word, or board state is an intersection, and a legal move generates streets on demand. You do not need to prebuild every edge if neighbor generation is cheap. The same traversal rules survive: stamp once, expand legal neighbors, and let the problem's structure decide whether you want one district, all districts, or shortest route layers.
+**How to think about it**: decide the meaning of one edge before you write a single loop. Does one input row create one ledger entry or two? Does each entry need only a neighbor id, or a `(neighbor, weight)` pair? Once that write rule is fixed, the rest is a linear pass over the input.
 
 ```mermaid
 graph TD
-    Structure[Problem structure]
-    Structure --> State[State becomes intersection]
-    Structure --> Move[Legal move becomes street]
-    State --> Traversal[Run DFS or BFS]
-    Move --> Traversal
-    Traversal --> Answer[Reachability, count, or minimum steps]
+    Input["edge row"] --> Ask1{"directed?"}
+    Ask1 -- yes --> Out["write outgoing entry"]
+    Ask1 -- no --> Both["write both directions"]
+    Out --> Ask2{"weighted?"}
+    Both --> Ask2
+    Ask2 -- yes --> Pair["store neighbor + cost"]
+    Ask2 -- no --> Id["store neighbor id"]
 ```
 
-**Complexity**: Usually Time O(number of reachable states × neighbors per state), Space O(number of stamped states). The exact constants depend on how expensive it is to generate neighbors.
+**Complexity**: Time O(V + E) to build, Space O(V + E) to store. The list size is proportional to the number of nodes plus the number of recorded edge entries.
+
+### Pattern: Implicit Graph from Grid Coordinates
+
+**When to use**: the input is a matrix or board and movement rules define adjacency. Recognition signals are "grid," "island," "neighbors," "up/down/left/right," and "in bounds."
+
+**How to think about it**: the graph is not missing, it is compressed. A cell is a node, and the move rule generates its edges on demand. You store coordinates and a movement rule instead of building every edge explicitly.
+
+```mermaid
+graph TD
+    Cell["(r,c)"] --> Bounds{"neighbor in bounds?"}
+    Bounds -- yes --> Move["legal neighbor"]
+    Bounds -- no --> Skip["not an edge"]
+```
+
+**Complexity**: Neighbor generation is O(1) per cell for fixed-direction movement, and explicit storage can often stay O(1) beyond the grid itself because the edges are computed instead of materialized.
 
 ---
 
@@ -1068,101 +636,114 @@ graph TD
 
 ```mermaid
 graph TD
-    Graphs[Graphs]
-    Graphs --> Ledger[Street ledger]
-    Graphs --> Stamps[Visited stamps]
-    Graphs --> Traversal[Traversal order]
-    Graphs --> Direction[Edge direction]
-    Traversal --> DFS[Depth-first sweep]
-    Traversal --> BFS[Breadth-first sweep]
-    Stamps --> Districts[Connected components]
-    Direction --> Indegree[Indegree accounting]
-    BFS --> Shortest[Shortest unweighted route]
-    Indegree --> Topo[Dependency order or cycle]
+    Graph["Graph"] --> Node["Node"]
+    Graph --> Edge["Edge"]
+    Edge --> Direction["Directed or undirected"]
+    Edge --> Weight["Weighted or unweighted"]
+    Graph --> Representation["Representation"]
+    Representation --> Adj["Adjacency list"]
+    Representation --> Grid["Implicit grid graph"]
+    Graph --> State["Working state"]
+    State --> Visited["Visited set"]
+    Graph --> Pieces["Connected components"]
 ```
 
 **Complexity table**
 
-| Technique | Time | Space | Why |
-|-----------|------|-------|-----|
-| Build adjacency list | O(V + E) | O(V + E) | Every road is recorded once or twice depending on direction |
-| DFS/BFS from one start | O(V + E) | O(V) | Each reachable intersection is stamped once |
-| Connected components scan | O(V + E) | O(V) | Outer scan plus one sweep per district |
-| Unweighted shortest path BFS | O(V + E) | O(V) | Queue explores the graph in distance layers |
-| Kahn topological order | O(V + E) | O(V) | Every arrow reduces one indegree exactly once |
+| Representation task | Time | Space | Why |
+| --- | --- | --- | --- |
+| Build unweighted adjacency list from edge list | O(V + E) | O(V + E) | Initialize one bucket per node, then record each edge once or twice |
+| Build weighted adjacency list from edge list | O(V + E) | O(V + E) | Same shape as unweighted, but each entry stores a pair |
+| Read neighbors of one node from adjacency list | O(degree) | O(1) extra | You only inspect that node's bucket |
+| Generate orthogonal grid neighbors for one cell | O(1) | O(1) | At most four bounds checks |
+| Same-component check from precomputed tags | O(1) | O(1) | Compare two stored labels |
+| Component size from precomputed tags | O(V) | O(1) extra | Count matching labels once |
 
 **Decision tree**
 
 ```mermaid
 graph TD
-    Start[Graph-like problem] --> Q1{Do arrows or prerequisites matter?}
-    Q1 -- Yes --> Q2{Need a valid order or cycle check?}
-    Q2 -- Yes --> Topo[Kahn indegree traversal]
-    Q2 -- No --> Directed[Directed DFS or BFS reachability]
-    Q1 -- No --> Q3{Single start or whole city?}
-    Q3 -- Single start --> Q4{Need minimum hops?}
-    Q4 -- Yes --> BFS[BFS by layers]
-    Q4 -- No --> Sweep[DFS or BFS district sweep]
-    Q3 -- Whole city --> Components[Outer scan + component sweeps]
+    Start["Input arrives"] --> Q1{"Grid or edge list?"}
+    Q1 -- Grid --> G1["Treat cells as nodes"]
+    G1 --> G2["Generate neighbors from movement rules"]
+    Q1 -- Edge list --> Q2{"Directed?"}
+    Q2 -- No --> Q3{"Weighted?"}
+    Q2 -- Yes --> Q4{"Weighted?"}
+    Q3 -- No --> A1["Undirected adjacency list of node ids"]
+    Q3 -- Yes --> A2["Undirected adjacency list of (node,cost) pairs"]
+    Q4 -- No --> A3["Directed adjacency list of node ids"]
+    Q4 -- Yes --> A4["Directed adjacency list of (node,cost) pairs"]
 ```
 
 **Recognition signals table**
 
-| Problem signal | Technique |
-|----------------|-----------|
-| "reachable from start", "same network", "flood this area" | Single DFS/BFS sweep |
-| "how many groups", "count provinces", "separate districts" | Outer scan + connected components |
-| "fewest moves", "minimum hops", "nearest target" | BFS layers |
-| "must happen before", "dependency order", "cycle in prerequisites" | Kahn indegree traversal |
-| "grid or word states with legal moves" | Treat it as an implicit graph, then choose DFS or BFS |
+| Prompt language | Reach for |
+| --- | --- |
+| "neighbors of x", "build graph", "roads/flights/prereqs" | explicit adjacency list |
+| "one-way", "depends on", "points to" | directed edges |
+| "cost", "time", "distance", "toll" | weighted entries |
+| "grid", "matrix", "island", "up/down/left/right" | implicit grid graph |
+| "already seen", "do not process twice" | visited set |
+| "disconnected pieces", "districts", "islands" | connected components concept |
 
-**When NOT to use**: do not force graph traversal onto problems where the structure is really a contiguous window, a sorted array, or a tree with a fixed root and parent-child meaning. If the input already has a stronger structure that removes arbitrary connections, use that narrower technique first.
+**When NOT to use**: do not build an explicit adjacency list for every grid by default if the only neighbor rule is local row/column movement, because the grid already encodes the graph. Do not treat weighted or directed inputs like plain undirected edges, because that throws away required meaning.
 
 ## Common Gotchas & Edge Cases
 
-**Gotcha 1: Forgetting the reverse street in an undirected map**
+**Gotcha 1: Forgetting the reverse write in an undirected graph**
 
-Your traversal quietly misses half the city because one side of each two-way road was never written into the ledger. The bug usually appears on maps where the only route to a district uses the missing reverse street.
+The symptom is that direct-neighbor checks fail in one direction even though the road should be two-way. This shows up on tiny graphs like `[[0,1]]`, where `adj[0]` looks right but `adj[1]` is empty.
 
-Why it is tempting: the road list already "looks symmetric," so it feels like one append should be enough.
+Why it is tempting: edge lists only show one pair, so it feels like one write should be enough.
 
-Fix: for every undirected road `[a, b]`, append `b` to `ledger[a]` and `a` to `ledger[b]`.
+Fix: for undirected inputs, every edge `[a, b]` must update both `adj[a]` and `adj[b]`.
 
-**Gotcha 2: Stamping too late**
+**Gotcha 2: Inventing reverse edges in a directed graph**
 
-The same intersection enters the dispatch line multiple times, and on cyclic maps the queue or stack grows with duplicates even though the answer might still look almost correct.
+The symptom is that dependency-style graphs suddenly look reachable backward when they should not be. A course that depends on another course appears to unlock its prerequisite.
 
-Why it is tempting: it feels natural to stamp only when you pop an intersection for work.
+Why it is tempting: Level 1 trains the "two writes per edge" habit, and it is easy to apply it blindly.
 
-Fix: stamp at discovery time, right before pushing into the queue or stack. That guarantees one scheduled visit per intersection.
+Fix: for directed inputs, only the source node records the outgoing edge.
 
-**Gotcha 3: Restarting the same district during component counting**
+**Gotcha 3: Dropping the weight when the edge carries cost**
 
-Your district count becomes too large because the outer scan launches a new sweep from an intersection that was already covered by a previous sweep.
+The symptom is that you can tell which nodes connect but not what the connection means. Later shortest-path or minimum-cost logic has nothing to read.
 
-Why it is tempting: the inner traversal is correct, so it is easy to forget the outer loop needs its own skip rule.
+Why it is tempting: neighbor ids are simpler to store than pairs.
 
-Fix: in the outer scan, `continue` immediately when an intersection is already stamped.
+Fix: make each ledger entry hold both the destination and the weight, such as `(to, cost)`.
 
-**Gotcha 4: Treating a directed problem like an undirected one**
+**Gotcha 4: Treating a visited set like part of the graph**
 
-A dependency order appears valid even though it violates prerequisites, or a cycle slips through because direction was discarded.
+The symptom is conceptual confusion about why the same graph can be walked many times with different visited states. Learners start thinking "visited node" is a permanent property of the input.
 
-Why it is tempting: the same pair representation `[from, to]` is used in both graph types.
+Why it is tempting: the visited set sits next to the adjacency list during traversal work.
 
-Fix: keep directed edges one-way in the ledger, track indegrees, and verify that the processed count matches `n`.
+Fix: keep the separation clear. The adjacency list is the city map. The visited set is temporary bookkeeping for one traversal run.
+
+**Gotcha 5: Assuming one graph always means one component**
+
+The symptom is that isolated nodes or disconnected districts disappear from the mental model. Problems about islands, provinces, or districts get undercounted.
+
+Why it is tempting: most toy examples draw one connected picture.
+
+Fix: always allow for multiple components unless the problem states the graph is connected.
 
 **Edge cases to always check**
 
-- Empty graph or `n = 0`: return the neutral answer immediately.
-- Single intersection with no roads: it is reachable from itself, it counts as one district, and it is a valid topological order of length one.
-- Duplicate roads: visited logic should prevent repeated scheduling even if the ledger contains repeated neighbors.
-- Self-loop `u -> u`: this is an immediate directed cycle.
-- Isolated intersections mixed with larger districts: component counting must include the isolated ones.
+- `n = 0`, the ledger should be empty and component summaries should return zero-sized answers where appropriate.
+- Nodes with no incident edges, because they still need empty buckets in the adjacency list.
+- Duplicate edges, because insertion-order exercises should preserve each appearance unless the prompt says to deduplicate.
+- Directed nodes with only incoming edges, because their outgoing ledger must still exist as an empty list.
+- Grid corners and edges, because they have fewer than four valid orthogonal neighbors.
 
 **Debugging tips**
 
-- Print the built street ledger first. If the neighbors are wrong, every later traversal bug is downstream noise.
-- During DFS or BFS, print the dispatch line plus the stamped set after each expansion. Duplicates usually show up there first.
-- For component problems, print the outer-loop index whenever you launch a new sweep. If launches happen inside an already stamped district, the count bug is in the scan logic.
-- For topological problems, print the indegree array after each processed node. A node that never drops to zero usually points to the blocking cycle or to a missed decrement.
+- Print the adjacency list right after construction and verify one small edge at a time.
+- For directed graphs, print `from`, `to`, and the exact bucket you changed to confirm no reverse writes slipped in.
+- For weighted graphs, print each stored entry and confirm the cost stayed attached to the correct neighbor.
+- For visited-set utilities, print the stamped set before and after each candidate neighbor to see when a duplicate stops being fresh.
+- For grid neighbors, print each candidate coordinate before bounds filtering so corner-cell mistakes become obvious.
+
+The next steps split graph walking into two separate strategies: DFS for going deep and BFS for exploring layer by layer. This guide stops before those traversals on purpose, so the representation vocabulary stays clean first.

@@ -1,60 +1,50 @@
-// Goal: Practice deciding whether a destination lives inside the same stamped district.
+// Goal: Practice using the street ledger to answer which node pairs share a direct road.
 type Road = [number, number];
+type Query = [number, number];
 
-function canReachIntersection(
-  n: number,
-  roads: Road[],
-  start: number,
-  target: number,
-): boolean {
-  const ledger = Array.from({ length: n }, () => [] as number[]);
+function directRoadLookup(n: number, roads: Road[], queries: Query[]): boolean[] {
+  const ledger = Array.from({ length: n }, () => new Set<number>());
+
   for (const [a, b] of roads) {
-    ledger[a].push(b);
-    ledger[b].push(a);
+    ledger[a].add(b);
+    ledger[b].add(a);
   }
 
-  const stack = [start];
-  const visited = Array<boolean>(n).fill(false);
-  visited[start] = true;
-
-  while (stack.length > 0) {
-    const node = stack.pop() as number;
-    if (node === target) return true;
-
-    for (const next of ledger[node]) {
-      if (visited[next]) continue;
-      visited[next] = true;
-      stack.push(next);
-    }
-  }
-
-  return false;
+  return queries.map(([a, b]) => ledger[a].has(b));
 }
 
 // ---Tests
-check('start already equals target', () => canReachIntersection(3, [[0, 1]], 2, 2), true);
-check('finds reachable target in same district', () => canReachIntersection(5, [[0, 1], [1, 2], [3, 4]], 0, 2), true);
-check('returns false across disconnected districts', () => canReachIntersection(5, [[0, 1], [1, 2], [3, 4]], 0, 4), false);
-check('handles cycles safely', () => canReachIntersection(4, [[0, 1], [1, 2], [2, 0]], 0, 2), true);
-check('isolated target stays unreachable', () => canReachIntersection(4, [[0, 1]], 0, 3), false);
+check('empty graph answers false for every query', () => directRoadLookup(3, [], [[0, 1], [1, 2]]), [false, false]);
+check(
+  'returns true for existing direct roads',
+  () => directRoadLookup(4, [[0, 1], [0, 2], [2, 3]], [[0, 2], [2, 3]]),
+  [true, true],
+);
+check(
+  'returns false when nodes only share an indirect path',
+  () => directRoadLookup(4, [[0, 1], [1, 2], [2, 3]], [[0, 2], [1, 3]]),
+  [false, false],
+);
+check(
+  'symmetric queries stay true in an undirected graph',
+  () => directRoadLookup(3, [[0, 1], [1, 2]], [[1, 0], [2, 1]]),
+  [true, true],
+);
+check(
+  'mixed query set preserves order',
+  () => directRoadLookup(5, [[0, 4], [2, 3], [1, 4]], [[0, 4], [0, 1], [3, 2]]),
+  [true, false, true],
+);
 // ---End Tests
 
 // ---Helpers
 function check(desc: string, fn: () => unknown, expected: unknown): void {
-  try {
-    const actual = fn();
-    const pass = JSON.stringify(actual) === JSON.stringify(expected);
-    console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
-    if (!pass) {
-      console.log(`  expected: ${JSON.stringify(expected)}`);
-      console.log(`  received: ${JSON.stringify(actual)}`);
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
-      console.log(`TODO  ${desc}`);
-    } else {
-      throw e;
-    }
+  const actual = fn();
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
   }
 }
 // ---End Helpers

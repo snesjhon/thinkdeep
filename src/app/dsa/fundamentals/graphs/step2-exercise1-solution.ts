@@ -1,59 +1,44 @@
-// Goal: Practice counting every disconnected district in the city map.
-type Road = [number, number];
+// Goal: Practice writing the one-way flight board so only outgoing arrows appear in each ledger.
+type Arrow = [number, number];
 
-function countDistricts(n: number, roads: Road[]): number {
+function buildArrowLedger(n: number, arrows: Arrow[]): number[][] {
   const ledger = Array.from({ length: n }, () => [] as number[]);
-  for (const [a, b] of roads) {
-    ledger[a].push(b);
-    ledger[b].push(a);
+
+  for (const [from, to] of arrows) {
+    ledger[from].push(to);
   }
 
-  const visited = Array<boolean>(n).fill(false);
-  let districts = 0;
-
-  for (let start = 0; start < n; start++) {
-    if (visited[start]) continue;
-    districts++;
-    const stack = [start];
-    visited[start] = true;
-
-    while (stack.length > 0) {
-      const node = stack.pop() as number;
-      for (const next of ledger[node]) {
-        if (visited[next]) continue;
-        visited[next] = true;
-        stack.push(next);
-      }
-    }
-  }
-
-  return districts;
+  return ledger;
 }
 
 // ---Tests
-check('empty city has no districts', () => countDistricts(0, []), 0);
-check('single chain is one district', () => countDistricts(4, [[0, 1], [1, 2], [2, 3]]), 1);
-check('counts multiple disconnected districts', () => countDistricts(6, [[0, 1], [1, 2], [3, 4]]), 3);
-check('isolated intersections each count', () => countDistricts(3, []), 3);
-check('cycle still counts once', () => countDistricts(5, [[0, 1], [1, 2], [2, 0], [3, 4]]), 2);
+check('empty directed graph keeps empty ledgers', () => buildArrowLedger(3, []), [[], [], []]);
+check('single arrow updates only the source node', () => buildArrowLedger(2, [[0, 1]]), [[1], []]);
+check(
+  'multiple outgoing arrows stay grouped by source',
+  () => buildArrowLedger(4, [[0, 1], [0, 2], [2, 3]]),
+  [[1, 2], [], [3], []],
+);
+check(
+  'node with only incoming arrows still has empty outgoing bucket',
+  () => buildArrowLedger(4, [[1, 0], [2, 0], [3, 0]]),
+  [[], [0], [0], [0]],
+);
+check(
+  'duplicate arrows remain in insertion order',
+  () => buildArrowLedger(3, [[0, 1], [0, 1], [1, 2]]),
+  [[1, 1], [2], []],
+);
 // ---End Tests
 
 // ---Helpers
 function check(desc: string, fn: () => unknown, expected: unknown): void {
-  try {
-    const actual = fn();
-    const pass = JSON.stringify(actual) === JSON.stringify(expected);
-    console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
-    if (!pass) {
-      console.log(`  expected: ${JSON.stringify(expected)}`);
-      console.log(`  received: ${JSON.stringify(actual)}`);
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
-      console.log(`TODO  ${desc}`);
-    } else {
-      throw e;
-    }
+  const actual = fn();
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
   }
 }
 // ---End Helpers

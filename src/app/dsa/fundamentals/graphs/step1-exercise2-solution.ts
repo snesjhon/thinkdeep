@@ -1,56 +1,45 @@
-// Goal: Practice sweeping one district from a starting intersection.
+// Goal: Practice counting how many direct roads touch each intersection in the street ledger.
 type Road = [number, number];
 
-function reachableDistrict(n: number, roads: Road[], start: number): number[] {
-  const ledger = Array.from({ length: n }, () => [] as number[]);
+function countStreetConnections(n: number, roads: Road[]): number[] {
+  const degrees = Array.from({ length: n }, () => 0);
+
   for (const [a, b] of roads) {
-    ledger[a].push(b);
-    ledger[b].push(a);
+    degrees[a]++;
+    degrees[b]++;
   }
 
-  const visited = Array<boolean>(n).fill(false);
-  const stack = [start];
-  visited[start] = true;
-  const seen: number[] = [];
-
-  while (stack.length > 0) {
-    const node = stack.pop() as number;
-    seen.push(node);
-
-    for (const next of ledger[node]) {
-      if (visited[next]) continue;
-      visited[next] = true;
-      stack.push(next);
-    }
-  }
-
-  return seen.sort((a, b) => a - b);
+  return degrees;
 }
 
 // ---Tests
-check('start intersection is included', () => reachableDistrict(1, [], 0), [0]);
-check('sweeps one connected district', () => reachableDistrict(5, [[0, 1], [1, 2], [3, 4]], 0), [0, 1, 2]);
-check('ignores disconnected district', () => reachableDistrict(5, [[0, 1], [1, 2], [3, 4]], 3), [3, 4]);
-check('cycle does not duplicate intersections', () => reachableDistrict(4, [[0, 1], [1, 2], [2, 0], [2, 3]], 0), [0, 1, 2, 3]);
-check('isolated start returns only itself', () => reachableDistrict(4, [[0, 1]], 3), [3]);
+check('empty graph gives all zero counts', () => countStreetConnections(3, []), [0, 0, 0]);
+check('single road increments both endpoints', () => countStreetConnections(2, [[0, 1]]), [1, 1]);
+check(
+  'chain graph has expected degrees',
+  () => countStreetConnections(4, [[0, 1], [1, 2], [2, 3]]),
+  [1, 2, 2, 1],
+);
+check(
+  'hub node counts every attached road',
+  () => countStreetConnections(5, [[1, 0], [1, 2], [1, 3], [1, 4]]),
+  [1, 4, 1, 1, 1],
+);
+check(
+  'duplicate roads count as separate ledger entries',
+  () => countStreetConnections(3, [[0, 1], [0, 1], [1, 2]]),
+  [2, 3, 1],
+);
 // ---End Tests
 
 // ---Helpers
 function check(desc: string, fn: () => unknown, expected: unknown): void {
-  try {
-    const actual = fn();
-    const pass = JSON.stringify(actual) === JSON.stringify(expected);
-    console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
-    if (!pass) {
-      console.log(`  expected: ${JSON.stringify(expected)}`);
-      console.log(`  received: ${JSON.stringify(actual)}`);
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
-      console.log(`TODO  ${desc}`);
-    } else {
-      throw e;
-    }
+  const actual = fn();
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
   }
 }
 // ---End Helpers

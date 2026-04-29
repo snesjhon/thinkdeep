@@ -1,22 +1,20 @@
-// Goal: Practice writing one district report for every new sweep the outer scan launches.
+// Goal: Practice using the stamp sheet to keep only fresh neighbors the first time they appear.
 //
-// Return the component sizes in ascending order.
+// Return the neighbors that are not already stamped and do not repeat after their first fresh appearance.
 //
 // Example:
-//   districtSizeReport(6, [[0,1],[1,2],[3,4]]) → [1,2,3]
-//   districtSizeReport(3, [])                   → [1,1,1]
-type Road = [number, number];
-
-function districtSizeReport(n: number, roads: Road[]): number[] {
+//   freshNeighbors([3, 4, 3, 5], [2]) -> [3,4,5]
+//   freshNeighbors([1, 1, 2], [1])    -> [2]
+function freshNeighbors(neighbors: number[], stamped: number[]): number[] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-check('empty city produces empty report', () => districtSizeReport(0, []), []);
-check('isolated intersections each report size one', () => districtSizeReport(3, []), [1, 1, 1]);
-check('mixed city reports all district sizes', () => districtSizeReport(6, [[0, 1], [1, 2], [3, 4]]), [1, 2, 3]);
-check('single district reports one size', () => districtSizeReport(4, [[0, 1], [1, 2], [2, 3]]), [4]);
-check('cycle and isolated node combine correctly', () => districtSizeReport(5, [[0, 1], [1, 2], [2, 0]]), [1, 1, 3]);
+check('empty neighbor list stays empty', () => freshNeighbors([], []), []);
+check('already stamped nodes are skipped', () => freshNeighbors([1, 2, 3], [2]), [1, 3]);
+check('duplicate fresh arrivals only appear once', () => freshNeighbors([3, 4, 3, 5], [2]), [3, 4, 5]);
+check('duplicates already stamped never reappear', () => freshNeighbors([1, 1, 2], [1]), [2]);
+check('first fresh arrival stamps later duplicates in the same pass', () => freshNeighbors([4, 4, 4, 2, 2, 7], []), [4, 2, 7]);
 // ---End Tests
 
 // ---Helpers
@@ -29,11 +27,11 @@ function check(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
     } else {
-      throw e;
+      throw error;
     }
   }
 }

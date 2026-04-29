@@ -1,23 +1,21 @@
-// Goal: Practice writing one legal dispatch order through a one-way city.
+// Goal: Practice reading district tags so you can tell whether two intersections belong to the same component.
 //
-// Return any topological ordering of the intersections.
-// If no valid order exists, return an empty array.
+// tags[node] stores that node's connected-component label.
+// Return true when both nodes belong to the same district.
 //
 // Example:
-//   deliveryOrder(4, [[0,1],[0,2],[1,3],[2,3]]) → [0,1,2,3]
-//   deliveryOrder(2, [[0,1],[1,0]])             → []
-type Street = [number, number];
-
-function deliveryOrder(n: number, streets: Street[]): number[] {
+//   sameDistrict([7, 7, 3, 3, 3], 0, 1) -> true
+//   sameDistrict([7, 7, 3, 3, 3], 0, 4) -> false
+function sameDistrict(tags: number[], a: number, b: number): boolean {
   throw new Error('not implemented');
 }
 
 // ---Tests
-check('empty city has empty order', () => deliveryOrder(0, []), []);
-check('simple dependency chain keeps order', () => deliveryOrder(3, [[0, 1], [1, 2]]), [0, 1, 2]);
-check('branching dependency returns valid order', () => deliveryOrder(4, [[0, 1], [0, 2], [1, 3], [2, 3]]), [0, 1, 2, 3]);
-check('multiple zero-indegree starts still work', () => deliveryOrder(4, [[1, 3], [2, 3]]), [0, 1, 2, 3]);
-check('cycle returns empty order', () => deliveryOrder(2, [[0, 1], [1, 0]]), []);
+check('same node always shares its own district', () => sameDistrict([5, 2, 2], 1, 1), true);
+check('matching tags mean same district', () => sameDistrict([7, 7, 3, 3, 3], 0, 1), true);
+check('different tags mean different districts', () => sameDistrict([7, 7, 3, 3, 3], 0, 4), false);
+check('isolated district label still compares normally', () => sameDistrict([4, 1, 9], 2, 2), true);
+check('comparison works at both ends of the array', () => sameDistrict([8, 6, 6, 8], 0, 3), true);
 // ---End Tests
 
 // ---Helpers
@@ -30,11 +28,11 @@ function check(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
     } else {
-      throw e;
+      throw error;
     }
   }
 }

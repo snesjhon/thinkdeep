@@ -1,23 +1,21 @@
-// Goal: Practice grouping zero-arrow intersections into parallel dispatch waves.
+// Goal: Practice reading district tags so you can count how many intersections belong to one component.
 //
-// Return the topological layers, where each inner array contains the intersections
-// that can be processed in the same round. If a cycle exists, return an empty array.
+// tags[node] stores that node's connected-component label.
+// Return the size of the target node's district by counting matching labels.
 //
 // Example:
-//   dispatchWaves(4, [[0,2],[1,2],[2,3]]) → [[0,1],[2],[3]]
-//   dispatchWaves(2, [[0,1],[1,0]])       → []
-type Street = [number, number];
-
-function dispatchWaves(n: number, streets: Street[]): number[][] {
+//   districtSize([7, 7, 3, 3, 3], 4) -> 3
+//   districtSize([2, 5, 9], 1)       -> 1
+function districtSize(tags: number[], node: number): number {
   throw new Error('not implemented');
 }
 
 // ---Tests
-check('empty city has no waves', () => dispatchWaves(0, []), []);
-check('independent starts share first wave', () => dispatchWaves(4, [[0, 2], [1, 2], [2, 3]]), [[0, 1], [2], [3]]);
-check('single chain creates one node per wave', () => dispatchWaves(3, [[0, 1], [1, 2]]), [[0], [1], [2]]);
-check('multiple later unlocks are grouped together', () => dispatchWaves(6, [[0, 3], [1, 3], [2, 4], [3, 5], [4, 5]]), [[0, 1, 2], [3, 4], [5]]);
-check('cycle returns empty waves', () => dispatchWaves(3, [[0, 1], [1, 2], [2, 1]]), []);
+check('single-node district has size one', () => districtSize([2, 5, 9], 1), 1);
+check('counts every node with the same district tag', () => districtSize([7, 7, 3, 3, 3], 4), 3);
+check('works for the first district in the array', () => districtSize([4, 4, 4, 9], 0), 3);
+check('works for a target at the end of the array', () => districtSize([8, 6, 6, 8], 3), 2);
+check('all nodes in one district count together', () => districtSize([1, 1, 1, 1], 2), 4);
 // ---End Tests
 
 // ---Helpers
@@ -30,11 +28,11 @@ function check(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
     } else {
-      throw e;
+      throw error;
     }
   }
 }
