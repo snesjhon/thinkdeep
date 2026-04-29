@@ -110,8 +110,8 @@ export default function FundamentalsPage({ params }: Props) {
             {prereq ? (
               <Link
                 href={
-                  prereq.fundamentalsSlug
-                    ? `/fundamentals/${prereq.fundamentalsSlug}`
+                  prereq.fundamentalsSlugs?.[0]
+                    ? `/fundamentals/${prereq.fundamentalsSlugs[0]}`
                     : '/'
                 }
                 className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--ms-blue)] bg-[var(--ms-blue-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ms-blue)] transition-opacity no-underline hover:opacity-80"

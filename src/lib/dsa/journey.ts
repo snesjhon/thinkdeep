@@ -12,7 +12,8 @@ export interface JourneySection {
   patternIds: string[];
   mentalModelHook: string;
   analogies: string[];
-  fundamentalsSlug?: string;
+  fundamentalsSlugs?: string[];
+  fundamentalsLabels?: string[];
   fundamentalsBlurb?: string;
   firstPass: JourneyProblem[];
   reinforce: JourneyProblem[];
@@ -47,7 +48,7 @@ export const JOURNEY: Phase[] = [
           'Two Messengers (prefix/suffix pass)',
           'Quality Control Line (two-pointer)',
         ],
-        fundamentalsSlug: 'arrays-strings',
+        fundamentalsSlugs: ['arrays-strings'],
         fundamentalsBlurb:
           'Index manipulation, the write-cursor pattern, and converging two pointers — the three tools behind every array and string technique you will use throughout the path.',
         firstPass: [
@@ -69,7 +70,7 @@ export const JOURNEY: Phase[] = [
         mentalModelHook:
           "Trading space for time — find what you need in O(1) by remembering what you've seen.",
         analogies: ['Checkpoint Journey (prefix sum + hash map)'],
-        fundamentalsSlug: 'hash-maps',
+        fundamentalsSlugs: ['hash-maps'],
         fundamentalsBlurb:
           'Frequency counting, complement lookups, and prefix sums stored in a map — the three tools that replace O(n²) scans with a single pass.',
         firstPass: [
@@ -91,7 +92,7 @@ export const JOURNEY: Phase[] = [
         mentalModelHook:
           'Two pointers converge — eliminate the need for nested loops by moving inward together.',
         analogies: ['Quality Control Line (fast/slow pointer)'],
-        fundamentalsSlug: 'two-pointers',
+        fundamentalsSlugs: ['two-pointers'],
         fundamentalsBlurb:
           'Sorted-pair targeting, greedy gate advancement, and multi-pointer reduction — the three settings where two pointers eliminate the nested loop.',
         firstPass: [
@@ -116,7 +117,7 @@ export const JOURNEY: Phase[] = [
           'Adjustable Magnifying Glass (min window)',
           'Fence Renovation (longest repeating)',
         ],
-        fundamentalsSlug: 'sliding-window',
+        fundamentalsSlugs: ['sliding-window'],
         fundamentalsBlurb:
           'Fixed-size sliding, variable expand-and-shrink, and frequency-map tracking — the three tools behind every contiguous subarray and substring problem.',
         firstPass: [
@@ -140,7 +141,7 @@ export const JOURNEY: Phase[] = [
           'Reverse Linked List II (with sentinel node)',
           'Hot Shelf (LRU Cache)',
         ],
-        fundamentalsSlug: 'linked-lists',
+        fundamentalsSlugs: ['linked-lists'],
         fundamentalsBlurb:
           'Sentinel nodes, fast/slow pointers, and in-place pointer rewiring — the three building blocks behind every linked list problem you will encounter on the path.',
         firstPass: [
@@ -170,7 +171,7 @@ export const JOURNEY: Phase[] = [
           'Ticket line (FIFO)',
           'Monotonic bouncer (daily temperatures)',
         ],
-        fundamentalsSlug: 'stack-queue',
+        fundamentalsSlugs: ['stack-queue'],
         fundamentalsBlurb:
           'LIFO vs FIFO, shadow-state design, and monotonic watchlists — the three building blocks behind stacks, queues, and their most common interview variations.',
         firstPass: [
@@ -195,7 +196,7 @@ export const JOURNEY: Phase[] = [
           'Mountain Climber (generate parentheses)',
           'Vending Machine (subsets)',
         ],
-        fundamentalsSlug: 'recursion-backtracking-intro',
+        fundamentalsSlugs: ['recursion-backtracking-intro'],
         fundamentalsBlurb:
           'The Summit Rule (trust the recursion), branching peaks with memoization, and the choose-explore-undo cycle — the three building blocks before you write your first backtracking problem.',
         firstPass: [
@@ -216,7 +217,7 @@ export const JOURNEY: Phase[] = [
           'Thermostat Testing (koko)',
           '2D Matrix search',
         ],
-        fundamentalsSlug: 'binary-search',
+        fundamentalsSlugs: ['binary-search'],
         fundamentalsBlurb:
           'Exact-hit search, first-true boundary search, and monotone answer-space search — the three Binary Search modes that let you remove half the possibilities every step.',
         firstPass: [
@@ -261,7 +262,7 @@ export const JOURNEY: Phase[] = [
           'Mirror reflection',
           'Diameter as hidden path through root',
         ],
-        fundamentalsSlug: 'binary-trees',
+        fundamentalsSlugs: ['binary-trees'],
         fundamentalsBlurb:
           'DFS vs BFS, recursive tree thinking, traversal patterns, and when to use each — before you write a single line of problem code.',
         firstPass: [
@@ -289,7 +290,7 @@ export const JOURNEY: Phase[] = [
         mentalModelHook:
           'The BST property gives you direction — at every node you know exactly which subtree to enter.',
         analogies: ['Navigation by comparison (insert into BST)'],
-        fundamentalsSlug: 'bst',
+        fundamentalsSlugs: ['bst'],
         fundamentalsBlurb:
           'How the BST ordering property turns search into navigation, and why in-order traversal always gives sorted output.',
         firstPass: [
@@ -311,7 +312,7 @@ export const JOURNEY: Phase[] = [
           'Leaderboard (max heap)',
           'Waiting room by priority (min heap)',
         ],
-        fundamentalsSlug: 'heaps-priority-queues',
+        fundamentalsSlugs: ['heaps-priority-queues'],
         fundamentalsBlurb:
           'How heaps maintain the max/min in O(log n), and when to reach for a heap over sorting.',
         firstPass: [
@@ -330,41 +331,22 @@ export const JOURNEY: Phase[] = [
       },
       {
         id: 'graphs',
-        label: 'Graphs — Fundamentals',
+        label: 'Graphs — Fundamentals + DFS',
         patternIds: ['graphs'],
         mentalModelHook:
-          'Graph problems are about connected components. DFS from every unvisited node, marking as you go.',
+          'Graphs are tree recursion with 4 neighbors instead of 2 — master the representation first, then let DFS loose.',
         analogies: [
           'Island explorer (flood fill + count)',
-          'City map with one-way streets',
+          'Maze explorer (go deep, backtrack)',
         ],
-        fundamentalsSlug: 'graphs',
+        fundamentalsSlugs: ['graphs', 'graphs-dfs'],
+        fundamentalsLabels: ['Fundamentals', 'DFS Fundamentals'],
         fundamentalsBlurb:
-          'Graph representation (adjacency list vs matrix), directed vs undirected, and the core BFS/DFS template before applying it to problems.',
+          'Graph representation and vocabulary first, then DFS — recursive flood fill, adjacency-list traversal, and cycle detection via visited coloring.',
         firstPass: [
           { id: '200', isFirstPass: true, difficulty: 'medium' },
           { id: '695', isFirstPass: true, difficulty: 'medium' },
           { id: '133', isFirstPass: true, difficulty: 'medium' },
-        ],
-        reinforce: [
-          { id: '323', isFirstPass: false, difficulty: 'medium' },
-          { id: '261', isFirstPass: false, difficulty: 'medium' },
-        ],
-      },
-      {
-        id: 'graph-traversal-dfs',
-        label: 'Graph Traversal — DFS',
-        patternIds: ['graphs'],
-        mentalModelHook:
-          "DFS is a commitment: go as deep as you can, mark your path, and only backtrack when you're stuck.",
-        analogies: [
-          'Maze explorer (go deep, backtrack)',
-          'Cycle detection via coloring',
-        ],
-        fundamentalsSlug: 'graph-traversal-dfs',
-        fundamentalsBlurb:
-          'Cycle detection, topological ordering, and path-finding — the three things DFS unlocks that BFS cannot.',
-        firstPass: [
           { id: '547', isFirstPass: true, difficulty: 'medium' },
           { id: '797', isFirstPass: true, difficulty: 'medium' },
           { id: '207', isFirstPass: true, difficulty: 'medium' },
@@ -372,6 +354,8 @@ export const JOURNEY: Phase[] = [
         reinforce: [
           { id: '130', isFirstPass: false, difficulty: 'medium' },
           { id: '417', isFirstPass: false, difficulty: 'medium' },
+          { id: '323', isFirstPass: false, difficulty: 'medium' },
+          { id: '261', isFirstPass: false, difficulty: 'medium' },
         ],
       },
       {
@@ -384,7 +368,7 @@ export const JOURNEY: Phase[] = [
           'Ripple in a pond (level-by-level spread)',
           'Multi-source infection spread (rotting oranges)',
         ],
-        fundamentalsSlug: 'graph-bfs',
+        fundamentalsSlugs: ['graphs-bfs'],
         fundamentalsBlurb:
           "BFS by layers, multi-source sweeps, and Kahn's topological sort — the three things a queue unlocks that recursion alone cannot.",
         firstPass: [
@@ -672,11 +656,11 @@ export function getAdvancedPrerequisiteForProblem(
 
     for (let j = i + 1; j < allSections.length; j++) {
       const nextSection = allSections[j];
-      if (!nextSection.fundamentalsSlug) continue;
+      if (!nextSection.fundamentalsSlugs?.length) continue;
 
       return {
         label: section.reinforcePrerequisiteLabel ?? nextSection.label,
-        fundamentalsSlug: nextSection.fundamentalsSlug,
+        fundamentalsSlug: nextSection.fundamentalsSlugs[0],
       };
     }
   }

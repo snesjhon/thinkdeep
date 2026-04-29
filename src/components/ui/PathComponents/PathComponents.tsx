@@ -60,17 +60,20 @@ export function PhaseBannerContent({
 
 export function StepGuideCard({
   href,
+  guideLinks,
   label,
   hook,
   stepNum,
   color,
 }: {
-  href: string;
+  href?: string;
+  guideLinks?: Array<{ href: string; label: string }>;
   label: string;
   hook: string;
   stepNum: string;
   color: string;
 }) {
+  const links = guideLinks ?? (href ? [{ href, label: 'Read the guide' }] : []);
   return (
     <div
       className="flex h-full flex-col box-border rounded-[0.875rem] border bg-transparent px-[22px] py-5 shadow-[0_1px_4px_rgba(0,0,0,0.08)] backdrop-blur-[12px] [--accent:var(--ms-blue)] border-[var(--accent)]"
@@ -81,7 +84,7 @@ export function StepGuideCard({
           Step {stepNum}
         </span>
         <span className="inline-block h-[9px] w-px bg-[var(--accent)]" />
-        <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--accent)]">
+        <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--acc)]">
           📖 Mental Model
         </span>
       </div>
@@ -91,12 +94,17 @@ export function StepGuideCard({
       <p className="mb-5 flex-1 text-[0.9375rem] leading-[1.65] text-[var(--ms-text-subtle)] italic [font-family:var(--font-display)]">
         {hook}
       </p>
-      <Link
-        href={href}
-        className={`${styles.guideButton} inline-block self-start rounded-[6px] bg-[var(--accent)] px-4 py-[7px] text-[0.8rem] font-semibold tracking-[0.01em] text-white no-underline`}
-      >
-        Read the guide →
-      </Link>
+      <div className="flex flex-wrap gap-2">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`${styles.guideButton} inline-block rounded-[6px] bg-[var(--accent)] px-4 py-[7px] text-[0.8rem] font-semibold tracking-[0.01em] text-white no-underline`}
+          >
+            {link.label} →
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

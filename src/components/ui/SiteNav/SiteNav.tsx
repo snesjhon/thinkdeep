@@ -18,8 +18,8 @@ const DSA_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
 const DSA_PROBLEM_TO_SECTION: Record<string, string> = {};
 for (const phase of DSA_JOURNEY) {
   for (const section of phase.sections) {
-    if (section.fundamentalsSlug)
-      DSA_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
+    for (const slug of section.fundamentalsSlugs ?? [])
+      DSA_FUNDAMENTALS_TO_SECTION[slug] = section.id;
     for (const p of section.firstPass)
       DSA_PROBLEM_TO_SECTION[p.id] = section.id;
     for (const p of section.reinforce)
@@ -38,7 +38,8 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
     return {
       id: section.id,
       label: section.label,
-      fundamentalsSlug: section.fundamentalsSlug,
+      fundamentalsSlugs: section.fundamentalsSlugs,
+      fundamentalsLabels: section.fundamentalsLabels,
       items: section.firstPass.map((p) => ({
         key: p.id,
         label: PROBLEM_TITLES[p.id] ?? `Problem ${p.id}`,

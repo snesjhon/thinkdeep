@@ -106,7 +106,7 @@ export function getAllFundamentalsSlugs(): string[] {
 export function getSectionForFundamentals(slug: string) {
   for (const phase of JOURNEY) {
     for (const section of phase.sections) {
-      if (section.fundamentalsSlug === slug) {
+      if (section.fundamentalsSlugs?.includes(slug)) {
         return { phase, section };
       }
     }
@@ -117,7 +117,7 @@ export function getSectionForFundamentals(slug: string) {
 // Return the section that immediately precedes the one linked to this slug
 export function getPrecedingSection(slug: string) {
   const allSections = JOURNEY.flatMap((phase) => phase.sections);
-  const idx = allSections.findIndex((s) => s.fundamentalsSlug === slug);
+  const idx = allSections.findIndex((s) => s.fundamentalsSlugs?.includes(slug));
   if (idx <= 0) return null;
   return allSections[idx - 1];
 }

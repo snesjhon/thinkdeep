@@ -89,9 +89,9 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
         e.section.firstPass.some(p => p.id === activeProblemId) ||
         e.revisitIds.includes(activeProblemId)
       ) ?? entries.find(e =>
-        e.section.fundamentalsSlug === activeFundamentalsSlug
+        e.section.fundamentalsSlugs?.includes(activeFundamentalsSlug ?? '')
       )
-    : entries.find(e => e.section.fundamentalsSlug === activeFundamentalsSlug)
+    : entries.find(e => e.section.fundamentalsSlugs?.includes(activeFundamentalsSlug ?? ''))
 
   let lastPhaseNum = -1
 
@@ -144,16 +144,17 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
                 >
                   {section.label}
                 </p>
-                {section.fundamentalsSlug && (
+                {section.fundamentalsSlugs?.map((slug, idx) => (
                   <Link
-                    href={`/dsa/fundamentals/${section.fundamentalsSlug}`}
-                    className="inline-flex items-center gap-1 mt-1.5 transition-opacity hover:opacity-80 text-[0.68rem] font-semibold no-underline"
+                    key={slug}
+                    href={`/dsa/fundamentals/${slug}`}
+                    className="flex items-center gap-1 mt-1.5 transition-opacity hover:opacity-80 text-[0.68rem] font-semibold no-underline"
                     style={{ color: isCurrentSection ? color : 'var(--ms-text-faint)' }}
                   >
                     <span>📖</span>
-                    <span>Read the guide →</span>
+                    <span>{section.fundamentalsLabels?.[idx] ?? 'Read the guide'} →</span>
                   </Link>
-                )}
+                ))}
               </div>
 
               {/* Practice — this section's firstPass problems */}

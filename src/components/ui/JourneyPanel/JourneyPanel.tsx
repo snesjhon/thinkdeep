@@ -57,7 +57,8 @@ export interface JourneyPanelConcept {
 export interface JourneyPanelSection {
   id: string;
   label: string;
-  fundamentalsSlug?: string;
+  fundamentalsSlugs?: string[];
+  fundamentalsLabels?: string[];
   practiceSlug?: string;
   concepts?: JourneyPanelConcept[];
   items: JourneyPanelItem[];
@@ -423,10 +424,11 @@ export function JourneyPanel({
                 (i) => availableItemKeys.has(i.key),
               );
               const SectionIcon = SECTION_ICONS[section.id];
-              const sectionHref =
-                section.fundamentalsSlug &&
-                availableFundamentalsSlugs.has(section.fundamentalsSlug)
-                  ? getFundamentalsHref(section.fundamentalsSlug)
+              const firstAvailableFundamentalsSlug = section.fundamentalsSlugs?.find(
+                (s) => availableFundamentalsSlugs.has(s),
+              );
+              const sectionHref = firstAvailableFundamentalsSlug
+                  ? getFundamentalsHref(firstAvailableFundamentalsSlug)
                   : availableItems[0]
                     ? getItemHref(availableItems[0].key)
                     : null;
@@ -488,31 +490,27 @@ export function JourneyPanel({
                   isCollapsed={isCollapsed}
                   onToggle={() => toggleSection(section.id, phase.number)}
                 >
-                  {section.fundamentalsSlug &&
-                    availableFundamentalsSlugs.has(
-                      section.fundamentalsSlug,
-                    ) && (
+                  {section.fundamentalsSlugs?.map((slug, idx) =>
+                    availableFundamentalsSlugs.has(slug) ? (
                       <NavItem
+                        key={slug}
                         itemRef={
-                          activeFundamentalsSlug === section.fundamentalsSlug
+                          activeFundamentalsSlug === slug
                             ? activeItemRef
                             : undefined
                         }
-                        href={getFundamentalsHref(section.fundamentalsSlug)}
-                        isActive={
-                          activeFundamentalsSlug === section.fundamentalsSlug
-                        }
+                        href={getFundamentalsHref(slug)}
+                        isActive={activeFundamentalsSlug === slug}
                         mark={
                           <ProgressMark
-                            completed={isFundamentalsComplete(
-                              section.fundamentalsSlug,
-                            )}
+                            completed={isFundamentalsComplete(slug)}
                             fundamentals
                           />
                         }
-                        label="Fundamentals"
+                        label={section.fundamentalsLabels?.[idx] ?? 'Fundamentals'}
                       />
-                    )}
+                    ) : null,
+                  )}
                   {section.practiceSlug &&
                     availablePracticeSlugs.has(section.practiceSlug) && (
                       <NavItem

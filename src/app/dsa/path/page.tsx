@@ -124,9 +124,12 @@ export default async function PathPage() {
                     >
                       {/* LEFT: Guide card + section progress */}
                       <div>
-                        {section.fundamentalsSlug ? (
+                        {section.fundamentalsSlugs?.length ? (
                           <StepGuideCard
-                            href={`/dsa/fundamentals/${section.fundamentalsSlug}`}
+                            guideLinks={section.fundamentalsSlugs.map((slug, idx) => ({
+                              href: `/dsa/fundamentals/${slug}`,
+                              label: section.fundamentalsLabels?.[idx] ?? 'Read the guide',
+                            }))}
                             label={section.label}
                             hook={section.mentalModelHook}
                             stepNum={stepLabel}
