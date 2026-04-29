@@ -360,23 +360,14 @@ Don't try to finish **Revisit** before moving to the next step. Forward momentum
 
 **What You Learn**:
 
-- Graph representation (adjacency list/matrix)
-- Directed vs undirected
-- Weighted vs unweighted
-- Identifying graph problems
+- Graph vocabulary: node, edge, adjacency list, visited set
+- Directed vs undirected, weighted vs unweighted
+- Grid as implicit graph
+- What a connected component is (conceptually)
 
-**Practice** _(do these now — grid-based graphs first, adjacency list second)_:
+**No LeetCode problems at this step.** The fundamentals guide has its own exercises. Work through those before moving to Step 13.
 
-- [x] [200. Number of Islands](https://leetcode.com/problems/number-of-islands/)
-- [x] [695. Max Area of Island](https://leetcode.com/problems/max-area-of-island/)
-- [x] [133. Clone Graph](https://leetcode.com/problems/clone-graph/)
-
-**Revisit** _(return to after Graph DFS)_:
-
-- [ ] [323. Number of Connected Components in an Undirected Graph](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) _(Premium)_
-- [ ] [261. Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) _(Premium)_
-
-**Why Now**: You finally have recursion, trees, and hash maps mastered. Ready for the complexity.
+**Why Now**: You need the vocabulary and mental model before you can reason about traversal. This step is short — move through it and get into DFS.
 
 ---
 
@@ -384,13 +375,16 @@ Don't try to finish **Revisit** before moving to the next step. Forward momentum
 
 **What You Learn**:
 
-- Depth-first exploration
-- Backtracking in graphs
-- Cycle detection
+- Grid DFS — recursive flood fill (tree recursion with 4 neighbors instead of 2)
+- Adjacency-list DFS — general graphs, explicit recursion
+- Directed DFS — cycle detection via visited coloring (unvisited / in-progress / done)
 - Path finding
 
-**Practice** _(do these now — simple DFS before cycle detection)_:
+**Practice** _(do these now — grid DFS first, adjacency list second, directed last)_:
 
+- [x] [200. Number of Islands](https://leetcode.com/problems/number-of-islands/)
+- [x] [695. Max Area of Island](https://leetcode.com/problems/max-area-of-island/)
+- [x] [133. Clone Graph](https://leetcode.com/problems/clone-graph/)
 - [ ] [547. Number of Provinces](https://leetcode.com/problems/number-of-provinces/)
 - [ ] [797. All Paths From Source to Target](https://leetcode.com/problems/all-paths-from-source-to-target/)
 - [ ] [207. Course Schedule](https://leetcode.com/problems/course-schedule/)
@@ -399,8 +393,10 @@ Don't try to finish **Revisit** before moving to the next step. Forward momentum
 
 - [ ] [130. Surrounded Regions](https://leetcode.com/problems/surrounded-regions/)
 - [ ] [417. Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/)
+- [ ] [323. Number of Connected Components in an Undirected Graph](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/) _(Premium)_
+- [ ] [261. Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) _(Premium)_
 
-**Why Now**: After trees, DFS on graphs is natural. You already know recursion deeply.
+**Why Now**: Grid DFS is tree recursion you already know, applied to a 2D grid. Start there and the rest follows naturally.
 
 ---
 
@@ -408,22 +404,21 @@ Don't try to finish **Revisit** before moving to the next step. Forward momentum
 
 **What You Learn**:
 
-- Breadth-first exploration
+- BFS by layers — why a queue finds the shortest path and recursion cannot
+- Multi-source BFS — starting from multiple nodes simultaneously
 - Shortest path in unweighted graphs
-- Level-by-level processing
-- Multi-source BFS
 
-**Practice** _(do these now — grid BFS before multi-source)_:
+**Practice** _(do these now — single-source first, multi-source second)_:
 
 - [ ] [1091. Shortest Path in Binary Matrix](https://leetcode.com/problems/shortest-path-in-binary-matrix/)
 - [ ] [994. Rotting Oranges](https://leetcode.com/problems/rotting-oranges/)
-- [ ] [286. Walls and Gates](https://leetcode.com/problems/walls-and-gates/) _(Premium — multi-source BFS, belongs here not in DFS)_
+- [ ] [286. Walls and Gates](https://leetcode.com/problems/walls-and-gates/) _(Premium — multi-source BFS)_
 
 **Revisit** _(return to after Advanced Graphs)_:
 
-- [ ] [127. Word Ladder](https://leetcode.com/problems/word-ladder/) _(★ challenge — BFS with string transformation)_
+- [ ] [127. Word Ladder](https://leetcode.com/problems/word-ladder/) _(★ challenge — BFS on implicit state graph)_
 
-**Why Now**: After DFS, BFS is just "using a queue instead of recursion."
+**Why Now**: After DFS you know how to traverse. BFS answers the question DFS can't: what's the shortest path?
 
 ---
 

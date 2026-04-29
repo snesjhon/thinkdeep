@@ -384,6 +384,9 @@ export const JOURNEY: Phase[] = [
           'Ripple in a pond (level-by-level spread)',
           'Multi-source infection spread (rotting oranges)',
         ],
+        fundamentalsSlug: 'graph-bfs',
+        fundamentalsBlurb:
+          "BFS by layers, multi-source sweeps, and Kahn's topological sort — the three things a queue unlocks that recursion alone cannot.",
         firstPass: [
           { id: '1091', isFirstPass: true, difficulty: 'medium' },
           { id: '994', isFirstPass: true, difficulty: 'medium' },
@@ -656,9 +659,9 @@ export function getDifficultyForProblem(
   return undefined;
 }
 
-export function getAdvancedPrerequisiteForProblem(problemId: string):
-  | { label: string; fundamentalsSlug: string }
-  | undefined {
+export function getAdvancedPrerequisiteForProblem(
+  problemId: string,
+): { label: string; fundamentalsSlug: string } | undefined {
   const allSections = JOURNEY.flatMap((phase) => phase.sections);
 
   for (let i = 0; i < allSections.length; i++) {
